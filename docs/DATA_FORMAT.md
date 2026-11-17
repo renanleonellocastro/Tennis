@@ -43,6 +43,17 @@ limit agreed for the app is twelve, so two ids stay free.
 
 Ids 10 and 11 are not used.
 
+> **Proposed, not built: a match identifier.** A match that is closed and
+> resumed is saved as several activity files, and nothing in them says
+> "these belong together". The proposal is to use id 10 for a `match_id`
+> field in the session message (UINT32, one value, top bit zero): a value
+> chosen when the match starts, for example the start time of the match in
+> seconds, kept with the stored match so every file of a resumed match
+> carries the same one. The converter does not read it today and works
+> without it: it tells the files of one match apart with the rules in
+> [Several files of one match](#several-files-of-one-match). With the field
+> that check would become exact.
+
 Rules that hold for every field:
 
 * Readers find a field by its **name**, taken from the field description
@@ -201,8 +212,21 @@ reader must refuse a version it does not know instead of guessing.
 
 ### One lap for each set (lap message)
 
-The watch closes a lap when a set ends, so lap `n` covers set `n`. A match
-that is stopped during a set ends with a lap for the part that was played.
+The watch closes a lap when a set ends. A match that is stopped during a
+set ends with a lap for the part that was played.
+
+Lap `n` is not always set `n`, so a reader must not count laps:
+
+* A lap cannot be removed. A set that is undone and played again leaves
+  two laps: the one closed before the undo and the one closed when the set
+  ended again.
+* A match that was closed and resumed is saved as two activity files. The
+  set that was open has one lap at the end of the first file and one at the
+  start of the second.
+* Files from the simulator also repeat laps that lasted no time at all.
+
+The converter places laps by time instead, see
+[Laps and sets](#laps-and-sets).
 
 * `set_score`: four UINT8 values: games for me, games for the opponent, tie
   break points for me, tie break points for the opponent. The tie break
@@ -244,18 +268,45 @@ each point and this document must be corrected where reality differs.
    and distance per set are available on every target watch.
 10. **Field names.** The reader matches fields by name only. It does not
     check the application id of the developer data.
+11. **The point log after a resume.** Joining the files of a resumed match
+    assumes that the sequence numbers go on where the first file stopped,
+    that the match clock of the entries goes on too, and that the first
+    record of the second file with a `point_log` repeats entries the first
+    file already had.
+12. **The summary after a resume.** The converter takes `log_size`,
+    `final_score` and `statistics` of the last file as values for the whole
+    match, and `steps` and `distance` of each file as counted from the
+    start of that file only. The second half was seen on the simulator
+    (two files of one match with 26 and 37 steps); the first half was not,
+    because no file with those fields exists yet.
+13. **The lap that closes a set.** The converter compares the score of a
+    set with the `set_score` of the last lap of that set. It assumes the
+    lap closed when the set ended carries the final score of the set.
+14. **Lap times.** Placing laps needs the native `start_time` and
+    `total_timer_time` of every lap. Simulator files carry both. It also
+    assumes that a lap lasts longer than twice the time between two
+    records. Simulator files had a record only every ten seconds or so,
+    which is fine for a real set and too coarse for a set of a few
+    seconds.
 
 ## Part 2: what the converter produces
 
 ```bash
 uv run tennis-export activity.fit --out some-directory
+uv run tennis-export first-half.fit second-half.fit --out some-directory
 ```
 
+The command takes one file, or every file of one match (see
+[Several files of one match](#several-files-of-one-match)), and always
+writes one `points.csv`, one `match.json` and at most one `heatmap.png`.
+
 Without `--out` the files go to a directory named after the file, next to
-it (`activity-export`). The command prints the path of every file it wrote.
-It exits with status 2 and a one line message when the file cannot be read,
-is not a FIT file, or carries a format version or match format it does not
-know.
+it (`activity-export`). With several files it is named after the one that
+was recorded first. The command prints the path of every file it wrote.
+It exits with status 2 and a one line message when a file cannot be read,
+is not a FIT file, carries a format version or match format it does not
+know, or when the files given are not parts of one match. Nothing is
+written in that case.
 
 The converter rebuilds the point log, then replays it with a Python port of
 the watch scoring rules (formats, tie breaks, no advantage, serve
@@ -263,9 +314,73 @@ rotation). Scores and statistics in the output come from that replay, not
 from the summary fields of the watch. The summary fields are only used to
 cross check (see `integrity`).
 
-A FIT file that was not recorded by this app still converts: `match.json`
-then holds the activity data only and `points.csv` holds only its header
-line.
+A FIT file that was not recorded by this app still converts when it is
+given alone: `match.json` then holds the activity data only and
+`points.csv` holds only its header line.
+
+### Several files of one match
+
+A match that was closed and resumed is saved as two activity files (more
+when it was resumed more than once). Give all of them to get one export.
+
+* **Order.** The files are put in order by the start time of their
+  session. The order on the command line does not matter. A file without a
+  start time cannot be ordered and is refused.
+* **Point log.** The records of all files are read one after the other and
+  the log is rebuilt by sequence number with the usual rules, so entries
+  repeated at the start of a later file count once.
+* **Track and heart rate.** The positions and the heart rate readings of
+  all files are used, in recording order.
+* **Totals.** Elapsed time, timer time, calories, steps and distance are
+  added up. The time between two files is not counted. A total that only
+  some of the files carry is `null`: a partial sum is never shown as the
+  total.
+* **Summary.** The start time comes from the first file. Everything else
+  that describes the whole match (setup, `log_size`, `final_score`,
+  `statistics`) comes from the last file.
+* **Per file details.** `source_files` in `match.json` lists each file
+  with its own start time and duration.
+
+The watch writes no match identifier today, so "the same match" is decided
+from what the files do carry. Files are refused when any of these is true:
+
+1. A file has no `match_setup` (it is not a match of this app).
+2. Two files have a different `match_setup` word.
+3. A file starts before the file ahead of it ends.
+4. The files ahead of a file hold point log entries, and the first
+   `point_log` of that file repeats none of them unchanged. A resumed match
+   goes on writing the newest three entries, so it always repeats some. A
+   new match starts again at sequence number 1 with an entry of its own.
+
+Two limits of these rules, stated plainly. A later file with no
+`point_log` at all (resumed and saved at once) is accepted on rules 1 to 3
+alone. A match resumed after exactly one entry, where that entry is undone
+and marked again before the first record, is refused although it is the
+same match; each file can still be converted alone.
+
+### Laps and sets
+
+Which lap belongs to which set is taken from the point log, not from the
+position of the lap in the file:
+
+1. The end of each closed set is the time of the first record that carried
+   the entry that closed it, as that entry is in the final log. An entry
+   that was undone has no time, and one marked again gets the later time.
+2. Each lap is placed at the middle of the time it recorded: its
+   `start_time` plus half its `total_timer_time`. Laps that lasted no time
+   are ignored.
+3. A lap belongs to the first set that ended at or after that moment. A lap
+   after the last closed set belongs to the set that was still open and is
+   not reported.
+
+So a set that was undone and played again, or one split by a resume, has
+two laps and still counts as one set. Its `steps` and `distance_m` are the
+sums over its laps, and `laps` says how many there were.
+
+The export never guesses. When any lap lacks its start or timer time, or
+the end of any set has no time, no lap is placed: `steps`, `distance_m`
+and `laps` are `null` for every set. A set with no lap, or with a lap that
+lacks the value, has `null` for that value.
 
 ### `points.csv`
 
@@ -306,7 +421,8 @@ that closes a set the game columns read `0`.
 ```
 {
   "format_version": 1,
-  "source": "activity.fit",            file name that was converted
+  "source": "activity.fit",            file name that was converted (the first recorded one)
+  "source_files": [ ... ],              every file that was converted, in recording order
   "activity": { ... },                  always present
   "match": { ... } or null,             null when the file is not from this app
   "point_log": { ... } or null,
@@ -319,13 +435,18 @@ that closes a set the game columns read `0`.
 In every pair written as `[a, b]`, `a` is for me and `b` for the opponent.
 A value the file does not carry is `null`.
 
-`activity`:
+Each object of `source_files`: `file` (file name), `start_time` (text or
+null, ISO 8601 in UTC) and `elapsed_seconds` (number or null) of that file
+alone. With one file the list has one object.
+
+`activity` (with several files: the first start time and the totals over
+all files, see [Several files of one match](#several-files-of-one-match)):
 
 | Key | Type | Meaning |
 |-----|------|---------|
 | `start_time` | text or null | Start of the activity, ISO 8601 in UTC |
 | `sport` | text or null | Sport of the session, `tennis` for this app |
-| `elapsed_seconds` | number or null | Time from start to save |
+| `elapsed_seconds` | number or null | Time from start to save, without the time between two files |
 | `timer_seconds` | number or null | Time with the timer running |
 | `calories` | number or null | Total calories |
 | `heart_rate` | object or null | `average`, `max`, `min` (beats per minute) and `samples` (records with a reading) |
@@ -355,8 +476,10 @@ A value the file does not carry is `null`.
 
 Each object of `sets`: `set` (number from 1), `games` (pair),
 `tie_break_points` (pair or null), `winner`, `duration_seconds` (from the
-match clock of the log), `steps` and `distance_m` (from the lap of the set,
-null without one).
+match clock of the log), `steps` and `distance_m` (added up over the laps
+of the set, null when not known) and `laps` (how many laps the set has,
+null when the laps could not be placed). See
+[Laps and sets](#laps-and-sets).
 
 Each object of `games`: `set`, `game` (number inside the set), `server`,
 `winner`, `tie_break` (true or false) and `duration_seconds`.
@@ -405,7 +528,7 @@ empty cell (`points.csv` has no ratio column today).
 |-----|---------|
 | `score_mismatches` | Sequence numbers whose stored header or score differs from the replay |
 | `statistics_match` | Whether the `statistics` field equals the replayed counts, null without the field |
-| `set_scores_match` | Whether the `set_score` of the laps equals the replayed closed sets, null without the field |
+| `set_scores_match` | Whether the `set_score` of the last lap of each closed set equals the replayed set, null without the field or when the laps could not be placed |
 
 `watch_summary` holds `final_score`, the text the watch stored, untouched.
 
