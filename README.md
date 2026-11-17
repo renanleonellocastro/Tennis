@@ -68,9 +68,32 @@ Project layout:
 * `resources*/`: launcher icon and the strings of the six languages
 * `scripts/`: string table and icon generators, resources check and device
   API audit
-* `tools/`: function length checker and its tests
-* `docs/`: [plan](docs/PLAN.md), [quality bar](docs/QUALITY.md) and
-  [testing strategy](docs/TESTING.md)
+* `tools/`: function length checker, the `tennis_export` converter and
+  their tests
+* `docs/`: [plan](docs/PLAN.md), [quality bar](docs/QUALITY.md),
+  [testing strategy](docs/TESTING.md) and [data format](docs/DATA_FORMAT.md)
+
+## 📤 Export your data
+
+The converter turns the FIT file of an activity into files you can open in
+a spreadsheet or feed to your own scripts:
+
+```bash
+uv run tennis-export activity.fit --out my-match
+```
+
+It writes into the chosen directory:
+
+* `points.csv`: one row for each point, with the score after it.
+* `match.json`: configuration, final score, statistics of both players,
+  duration of every set and game, tags, heart rate, steps and distance.
+* `heatmap.png`: only when the activity has a GPS track. An approximate
+  picture of where you moved on the court.
+
+The watch app does not write the match data into the activity file yet, so
+for now the converter is proven only against files built by its own tests.
+The fields, the columns and the limits of the heat map are described in
+[docs/DATA_FORMAT.md](docs/DATA_FORMAT.md).
 
 ## 🤝 Contributing
 
