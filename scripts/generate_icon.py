@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Generate the launcher icon: a tennis ball mark on a black background.
+"""Generate the launcher icon: a tennis ball mark on a transparent background.
 
 The ball is drawn on a supersampled canvas and scaled down so the edges stay
-smooth. Both colors survive the 64 color Garmin MIP palette (every channel is
-a multiple of 0x55), and the ball yellow matches Theme.COLOR_BALL in the app.
+smooth. The seams are cut out of the ball, so the watch background shows
+through them. The ball yellow survives the 64 color Garmin MIP palette (every
+channel is a multiple of 0x55) and matches Theme.COLOR_BALL in the app.
 
 Usage:
     python3 scripts/generate_icon.py
@@ -20,7 +21,7 @@ ICON_SIZE = 80
 SUPERSAMPLING = 10
 CANVAS = ICON_SIZE * SUPERSAMPLING
 
-BACKGROUND = (0, 0, 0, 255)
+BACKGROUND = (0, 0, 0, 0)  # transparent, like the Stretches icon
 BALL = (170, 255, 0, 255)  # 0xAAFF00
 
 # Geometry in the 0..80 icon space.
