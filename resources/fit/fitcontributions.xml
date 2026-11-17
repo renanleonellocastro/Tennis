@@ -1,0 +1,12 @@
+<!-- Developer fields shown in Garmin Connect. The ids match
+     source/recording/RecordingFields.mc and docs/RECORDING.md. -->
+<fitContributions>
+    <fitField id="5" displayInActivitySummary="true" sortOrder="0" precision="0"
+              dataLabel="@Strings.FitStepsLabel" unitLabel="@Strings.FitStepsUnit"/>
+    <fitField id="6" displayInActivitySummary="true" sortOrder="1" precision="0"
+              dataLabel="@Strings.FitDistanceLabel" unitLabel="@Strings.FitMetersUnit"/>
+    <fitField id="8" displayInActivityLaps="true" sortOrder="2" precision="0"
+              dataLabel="@Strings.FitStepsLabel" unitLabel="@Strings.FitStepsUnit"/>
+    <fitField id="9" displayInActivityLaps="true" sortOrder="3" precision="0"
+              dataLabel="@Strings.FitDistanceLabel" unitLabel="@Strings.FitMetersUnit"/>
+</fitContributions>

@@ -65,4 +65,13 @@ module MatchClockTests {
         Test.assert(now >= before && now <= System.getTimer());
         return true;
     }
+
+    (:test)
+    function testClockGoesOnFromAnAdvance(logger as Test.Logger) as Boolean {
+        var clock = new MatchClock(1000);
+        clock.advance(600);
+        Test.assertEqual(clock.seconds(1000), 600);
+        Test.assertEqual(clock.seconds(6000), 605);
+        return true;
+    }
 }

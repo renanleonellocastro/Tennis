@@ -11,8 +11,10 @@ module Reaction {
 
 // Turns the actions of the match screen into engine calls and keeps what
 // the engine does not: the clock, the pause, the notice and the point that
-// waits for its ending in detailed mode. It never draws and never reads a
-// sensor, so every rule here runs in a unit test.
+// waits for its ending in detailed mode. After every change it stores the
+// log and tells the recorder, which it also pauses with the clock. It never
+// draws and reaches the watch only through the recorder and the store, so
+// every rule here runs in a unit test.
 class MatchController {
     // Indexed by MatchAction.
     hidden const HANDLERS = [:ignore, :pointForMe, :pointForOpponent, :fault, :undo, :openMenu];
@@ -24,12 +26,47 @@ class MatchController {
     hidden var _notice as MatchNotice = new MatchNotice();
     hidden var _pendingWinner as Number = Player.NONE;
     hidden var _isEnded as Boolean = false;
+    hidden var _recorder as MatchRecorder;
+    hidden var _store as MatchStore;
+    hidden var _farewellKey as String? = null;
+    hidden var _isSuspended as Boolean = false;
 
-    function initialize(engine as MatchEngine, isDetailed as Boolean, time as TimeSource) {
+    // An engine that already has entries resumes that match: the clock
+    // goes on from the time of the last entry.
+    function initialize(engine as MatchEngine, isDetailed as Boolean, time as TimeSource,
+                        recorder as MatchRecorder, store as MatchStore) {
         _engine = engine;
         _isDetailed = isDetailed;
         _time = time;
+        _recorder = recorder;
+        _store = store;
         _clock = new MatchClock(time.now());
+        begin();
+    }
+
+    hidden function begin() as Void {
+        var log = _engine.log();
+        _clock.advance(log.size() == 0 ? 0 : PointEntry.time(log.at(log.size() - 1)));
+        _recorder.start(state().finishedSets(), state().isFinished());
+        if (state().isFinished()) {
+            stopClock();
+        }
+    }
+
+    hidden function stopClock() as Void {
+        _clock.pause(_time.now());
+        _recorder.pause();
+    }
+
+    hidden function runClock() as Void {
+        _clock.resume(_time.now());
+        _recorder.resume();
+    }
+
+    // Stores the log and opens the lap of a new set.
+    hidden function persist() as Void {
+        _store.sync(_engine.log().toArray(), state().finishedSets());
+        _recorder.closeSets(state().finishedSets(), state().isFinished());
     }
 
     // Runs one MatchAction and returns the Reaction flags.
@@ -81,7 +118,7 @@ class MatchController {
     hidden function logPoint(winner as Number, ending as Number) as Number {
         var games = ScoreFixer.gamesPlayed(state());
         var sets = state().finishedSets();
-        if (!_engine.point(winner, ending, clockSeconds(), null)) {
+        if (!_engine.point(winner, ending, clockSeconds(), heartRate())) {
             return Reaction.NONE;
         }
         return afterEntry(games, sets);
@@ -96,7 +133,7 @@ class MatchController {
         }
         var games = ScoreFixer.gamesPlayed(state());
         var sets = state().finishedSets();
-        if (!isLive() || !_engine.fault(clockSeconds(), null)) {
+        if (!isLive() || !_engine.fault(clockSeconds(), heartRate())) {
             return Reaction.NONE;
         }
         return afterEntry(games, sets);
@@ -105,8 +142,9 @@ class MatchController {
     // Shows what the entry closed and stops the clock when it ended the match.
     hidden function afterEntry(gamesBefore as Number, setsBefore as Number) as Number {
         _notice.show(noticeKeysSince(gamesBefore, setsBefore), _time.now());
+        persist();
         if (state().isFinished()) {
-            _clock.pause(_time.now());
+            stopClock();
         }
         return state().isChangeOfEndsDue() ? Reaction.REFRESH | Reaction.VIBRATE : Reaction.REFRESH;
     }
@@ -145,10 +183,11 @@ class MatchController {
     hidden function afterCorrection() as Number {
         _notice.clear();
         if (state().isFinished()) {
-            _clock.pause(_time.now());
+            stopClock();
         } else {
-            _clock.resume(_time.now());
+            runClock();
         }
+        persist();
         return Reaction.REFRESH;
     }
 
@@ -170,16 +209,61 @@ class MatchController {
 
     function togglePause() as Void {
         if (_clock.isRunning()) {
-            _clock.pause(_time.now());
+            stopClock();
         } else if (!isOver()) {
-            _clock.resume(_time.now());
+            runClock();
         }
     }
 
     // Ends the match from the menu before it is decided.
     function end() as Void {
         _isEnded = true;
-        _clock.pause(_time.now());
+        stopClock();
+    }
+
+    // Save, discard and the app closing.
+
+    // Keeps the activity and forgets the stored match.
+    function save() as Void {
+        close("SavedMsg");
+        _recorder.save();
+    }
+
+    function discard() as Void {
+        close("DiscardedMsg");
+        _recorder.discard();
+    }
+
+    hidden function close(farewellKey as String) as Void {
+        _farewellKey = farewellKey;
+        _store.clear();
+    }
+
+    // The message to leave with once the match was saved or discarded.
+    function farewellKey() as String? {
+        return _farewellKey;
+    }
+
+    // The app is closing with the match still open. What was recorded so
+    // far is saved, and a match that is not over stays stored to resume.
+    // The watch may report the closing more than once.
+    function suspend() as Void {
+        if (_farewellKey == null && !_isSuspended) {
+            _isSuspended = true;
+            _recorder.save();
+            if (isOver()) {
+                _store.clear();
+            }
+        }
+    }
+
+    // Once a second while the match screen shows.
+    function tick() as Void {
+        _recorder.sample();
+    }
+
+    function heartRate() as Number? {
+        return _recorder.heartRate();
     }
 
     // Goes back from the final screen to the match. A decided match gets

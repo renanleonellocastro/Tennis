@@ -16,6 +16,12 @@ class FinalScoreView extends WatchUi.View {
         _controller = controller;
     }
 
+    // The save menu and the discard question close over this screen, so it
+    // looks at the result each time it comes back.
+    function onShow() as Void {
+        MatchFlow.showFarewellIfClosed(_controller);
+    }
+
     function onUpdate(dc as Dc) as Void {
         var state = _controller.state();
         dc.setColor(Theme.COLOR_TEXT, Theme.COLOR_BG);
@@ -35,8 +41,8 @@ class FinalScoreView extends WatchUi.View {
     }
 }
 
-// START or a tap leaves for the main menu. BACK returns to the match, so a
-// last point entered by mistake can still be taken back.
+// START or a tap asks to save or discard the activity. BACK returns to the
+// match, so a last point entered by mistake can still be taken back.
 class FinalScoreDelegate extends WatchUi.BehaviorDelegate {
     hidden var _controller as MatchController;
 
@@ -46,7 +52,7 @@ class FinalScoreDelegate extends WatchUi.BehaviorDelegate {
     }
 
     function onSelect() as Boolean {
-        WatchUi.popView(WatchUi.SLIDE_RIGHT);
+        MatchFlow.pushFinalMenu(_controller);
         return true;
     }
 

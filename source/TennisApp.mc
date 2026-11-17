@@ -11,4 +11,12 @@ class TennisApp extends Application.AppBase {
     function getInitialView() as [WatchUi.Views] or [WatchUi.Views, WatchUi.InputDelegates] {
         return [new HomeView(), new HomeDelegate()];
     }
+
+    // A match that is still open keeps what it recorded (see RECORDING.md).
+    function onStop(state as Dictionary?) as Void {
+        var match = MatchFlow.active;
+        if (match != null) {
+            match.suspend();
+        }
+    }
 }

@@ -23,10 +23,22 @@ class MatchBench {
     var time as FakeTime = new FakeTime();
     var engine as MatchEngine;
     var controller as MatchController;
+    var session as FakeSession = new FakeSession();
+    var sensors as FakeSensors = new FakeSensors();
+    var locator as FakeLocator = new FakeLocator();
+    var memory as MemoryStore = new MemoryStore();
+    var store as MatchStore;
 
     function initialize(format as Number, isDetailed as Boolean) {
         engine = new MatchEngine(new MatchConfig(format, false, Player.ME), new PointLog([] as Array<Number>));
-        controller = new MatchController(engine, isDetailed, time);
+        store = new MatchStore(memory);
+        controller = controllerOn(engine, isDetailed);
+    }
+
+    // A controller on the fakes of this bench, as the app builds one.
+    function controllerOn(matchEngine as MatchEngine, isDetailed as Boolean) as MatchController {
+        return new MatchController(matchEngine, isDetailed, time,
+                                   new MatchRecorder(session, sensors, locator), store);
     }
 
     // One action per character: 'M', 'O', 'F' as in MatchDriver and 'U' for

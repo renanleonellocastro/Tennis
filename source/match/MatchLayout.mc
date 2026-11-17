@@ -15,6 +15,8 @@ class MatchLayout {
     // The bottom row is sized for the clock and, from the recording
     // milestone on, the heart rate next to it.
     hidden const CLOCK_Y = 89;
+    hidden const FOOTER_GAP = 3;
+    hidden const HEART_DOT_DIVISOR = 60;
     hidden const PLAYER_X = 23;
     hidden const BALL_X = 12;
     hidden const CONTROL_X = 28;
@@ -75,6 +77,23 @@ class MatchLayout {
 
     function clockY() as Number {
         return row(CLOCK_Y);
+    }
+
+    // The bottom row.
+
+    function heartDotRadius() as Number {
+        return _width / HEART_DOT_DIVISOR + 1;
+    }
+
+    // Left edge of the clock, center of the heart dot and left edge of the
+    // heart rate, for the widths of the two texts. The row is centered as
+    // a whole; without a heart rate (width 0) it is the clock alone.
+    function footerXs(clockWidth as Number, heartWidth as Number) as Array<Number> {
+        var gap = _width * FOOTER_GAP / 100;
+        var extra = heartWidth == 0 ? 0 : heartWidth + 2 * gap + 2 * heartDotRadius();
+        var clockX = centerX() - (clockWidth + extra) / 2;
+        var dotX = clockX + clockWidth + gap + heartDotRadius();
+        return [clockX, dotX, dotX + heartDotRadius() + gap] as Array<Number>;
     }
 
     function playerX(player as Number) as Number {

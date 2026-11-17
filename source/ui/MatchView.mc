@@ -16,6 +16,7 @@ class MatchView extends WatchUi.View {
     hidden const TONE_COLORS = [Theme.COLOR_ACCENT, Theme.COLOR_TEXT_DIM, Theme.COLOR_WARM];
     hidden const LABEL_KEYS = ["LabelMe", "LabelOpponent"];
     hidden const CENTERED = Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER;
+    hidden const LEFT = Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER;
 
     hidden var _controller as MatchController;
     hidden var _layout as MatchLayout;
@@ -53,6 +54,7 @@ class MatchView extends WatchUi.View {
     }
 
     function onTick() as Void {
+        _controller.tick();
         WatchUi.requestUpdate();
     }
 
@@ -147,10 +149,19 @@ class MatchView extends WatchUi.View {
         }
     }
 
+    // The clock and, when the watch reads one, the heart rate after a dot.
     hidden function drawClock(dc as Dc) as Void {
+        var clock = MatchPresenter.clockText(_controller.clockSeconds());
+        var beats = MatchPresenter.heartRateText(_controller.heartRate());
+        var xs = _layout.footerXs(dc.getTextWidthInPixels(clock, Graphics.FONT_TINY),
+                                  dc.getTextWidthInPixels(beats, Graphics.FONT_TINY));
         dc.setColor(_controller.isPaused() ? Theme.COLOR_TEXT_DIM : Theme.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(_layout.centerX(), _layout.clockY(), Graphics.FONT_TINY,
-                    MatchPresenter.clockText(_controller.clockSeconds()), CENTERED);
+        dc.drawText(xs[0], _layout.clockY(), Graphics.FONT_TINY, clock, LEFT);
+        if (beats.length() > 0) {
+            dc.drawText(xs[2], _layout.clockY(), Graphics.FONT_TINY, beats, LEFT);
+            dc.setColor(Theme.COLOR_DANGER, Graphics.COLOR_TRANSPARENT);
+            dc.fillCircle(xs[1], _layout.clockY(), _layout.heartDotRadius());
+        }
     }
 
     hidden function drawTouchControls(dc as Dc) as Void {

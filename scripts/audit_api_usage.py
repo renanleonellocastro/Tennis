@@ -38,9 +38,9 @@ def source_files():
 
 
 TOYBOX_MODULES = {
-    "Activity", "ActivityRecording", "Application", "Attention", "Background",
-    "FitContributor", "Graphics", "Lang", "Math", "System", "Time", "Timer",
-    "WatchUi",
+    "Activity", "ActivityMonitor", "ActivityRecording", "Application",
+    "Attention", "Background", "FitContributor", "Graphics", "Lang", "Math",
+    "Position", "System", "Time", "Timer", "WatchUi",
 }
 
 

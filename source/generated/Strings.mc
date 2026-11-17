@@ -36,6 +36,7 @@ module I18n {
                 "SetupFirstServe" => "Primeiro saque",
                 "PlayerMe" => "Eu",
                 "PlayerOpponent" => "Adversário",
+                "SetupGps" => "GPS",
                 "SetupStart" => "Iniciar",
                 "TouchNeededMsg" => "Ligue o toque para pontuar",
                 "LabelMe" => "EU",
@@ -64,7 +65,17 @@ module I18n {
                 "EndingErrorOut" => "Erro fora",
                 "FinalYouWon" => "Você venceu",
                 "FinalYouLost" => "Você perdeu",
-                "FinalMatchEnded" => "Partida encerrada"
+                "FinalMatchEnded" => "Partida encerrada",
+                "FinalSave" => "Salvar",
+                "FinalDiscard" => "Descartar",
+                "DiscardQ" => "Descartar a atividade?",
+                "SavedMsg" => "Salvo!",
+                "DiscardedMsg" => "Descartado",
+                "ResumeTitle" => "Partida aberta",
+                "FitStepsLabel" => "Passos",
+                "FitDistanceLabel" => "Distância",
+                "FitStepsUnit" => "passos",
+                "FitMetersUnit" => "m"
             };
         }
         if (code.equals("spa")) {
@@ -92,6 +103,7 @@ module I18n {
                 "SetupFirstServe" => "Primer saque",
                 "PlayerMe" => "Yo",
                 "PlayerOpponent" => "Rival",
+                "SetupGps" => "GPS",
                 "SetupStart" => "Iniciar",
                 "TouchNeededMsg" => "Activa el toque para puntuar",
                 "LabelMe" => "YO",
@@ -120,7 +132,17 @@ module I18n {
                 "EndingErrorOut" => "Error fuera",
                 "FinalYouWon" => "Ganaste",
                 "FinalYouLost" => "Perdiste",
-                "FinalMatchEnded" => "Partido terminado"
+                "FinalMatchEnded" => "Partido terminado",
+                "FinalSave" => "Guardar",
+                "FinalDiscard" => "Descartar",
+                "DiscardQ" => "¿Descartar la actividad?",
+                "SavedMsg" => "¡Guardado!",
+                "DiscardedMsg" => "Descartado",
+                "ResumeTitle" => "Partido abierto",
+                "FitStepsLabel" => "Pasos",
+                "FitDistanceLabel" => "Distancia",
+                "FitStepsUnit" => "pasos",
+                "FitMetersUnit" => "m"
             };
         }
         if (code.equals("fre")) {
@@ -148,6 +170,7 @@ module I18n {
                 "SetupFirstServe" => "Premier service",
                 "PlayerMe" => "Moi",
                 "PlayerOpponent" => "Adversaire",
+                "SetupGps" => "GPS",
                 "SetupStart" => "Démarrer",
                 "TouchNeededMsg" => "Activez le tactile",
                 "LabelMe" => "MOI",
@@ -176,7 +199,17 @@ module I18n {
                 "EndingErrorOut" => "Faute dehors",
                 "FinalYouWon" => "Victoire",
                 "FinalYouLost" => "Défaite",
-                "FinalMatchEnded" => "Match terminé"
+                "FinalMatchEnded" => "Match terminé",
+                "FinalSave" => "Enregistrer",
+                "FinalDiscard" => "Supprimer",
+                "DiscardQ" => "Supprimer l'activité ?",
+                "SavedMsg" => "Enregistré !",
+                "DiscardedMsg" => "Supprimé",
+                "ResumeTitle" => "Match ouvert",
+                "FitStepsLabel" => "Pas",
+                "FitDistanceLabel" => "Distance",
+                "FitStepsUnit" => "pas",
+                "FitMetersUnit" => "m"
             };
         }
         if (code.equals("deu")) {
@@ -204,6 +237,7 @@ module I18n {
                 "SetupFirstServe" => "Erster Aufschlag",
                 "PlayerMe" => "Ich",
                 "PlayerOpponent" => "Gegner",
+                "SetupGps" => "GPS",
                 "SetupStart" => "Starten",
                 "TouchNeededMsg" => "Touch einschalten",
                 "LabelMe" => "ICH",
@@ -232,7 +266,17 @@ module I18n {
                 "EndingErrorOut" => "Fehler ins Aus",
                 "FinalYouWon" => "Gewonnen",
                 "FinalYouLost" => "Verloren",
-                "FinalMatchEnded" => "Match beendet"
+                "FinalMatchEnded" => "Match beendet",
+                "FinalSave" => "Speichern",
+                "FinalDiscard" => "Verwerfen",
+                "DiscardQ" => "Aktivität verwerfen?",
+                "SavedMsg" => "Gespeichert!",
+                "DiscardedMsg" => "Verworfen",
+                "ResumeTitle" => "Offenes Match",
+                "FitStepsLabel" => "Schritte",
+                "FitDistanceLabel" => "Distanz",
+                "FitStepsUnit" => "Schritte",
+                "FitMetersUnit" => "m"
             };
         }
         if (code.equals("ita")) {
@@ -260,6 +304,7 @@ module I18n {
                 "SetupFirstServe" => "Primo servizio",
                 "PlayerMe" => "Io",
                 "PlayerOpponent" => "Avversario",
+                "SetupGps" => "GPS",
                 "SetupStart" => "Inizia",
                 "TouchNeededMsg" => "Attiva il touch",
                 "LabelMe" => "IO",
@@ -288,7 +333,17 @@ module I18n {
                 "EndingErrorOut" => "Errore fuori",
                 "FinalYouWon" => "Hai vinto",
                 "FinalYouLost" => "Hai perso",
-                "FinalMatchEnded" => "Partita terminata"
+                "FinalMatchEnded" => "Partita terminata",
+                "FinalSave" => "Salva",
+                "FinalDiscard" => "Elimina",
+                "DiscardQ" => "Eliminare l'attività?",
+                "SavedMsg" => "Salvato!",
+                "DiscardedMsg" => "Eliminato",
+                "ResumeTitle" => "Partita aperta",
+                "FitStepsLabel" => "Passi",
+                "FitDistanceLabel" => "Distanza",
+                "FitStepsUnit" => "passi",
+                "FitMetersUnit" => "m"
             };
         }
         return {
@@ -315,6 +370,7 @@ module I18n {
             "SetupFirstServe" => "First serve",
             "PlayerMe" => "Me",
             "PlayerOpponent" => "Opponent",
+            "SetupGps" => "GPS",
             "SetupStart" => "Start",
             "TouchNeededMsg" => "Turn touch on to score",
             "LabelMe" => "ME",
@@ -343,7 +399,17 @@ module I18n {
             "EndingErrorOut" => "Error out",
             "FinalYouWon" => "You won",
             "FinalYouLost" => "You lost",
-            "FinalMatchEnded" => "Match ended"
+            "FinalMatchEnded" => "Match ended",
+            "FinalSave" => "Save",
+            "FinalDiscard" => "Discard",
+            "DiscardQ" => "Discard the activity?",
+            "SavedMsg" => "Saved!",
+            "DiscardedMsg" => "Discarded",
+            "ResumeTitle" => "Open match",
+            "FitStepsLabel" => "Steps",
+            "FitDistanceLabel" => "Distance",
+            "FitStepsUnit" => "steps",
+            "FitMetersUnit" => "m"
         };
     }
 }

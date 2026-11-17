@@ -108,6 +108,78 @@ class EndMatchConfirmDelegate extends WatchUi.ConfirmationDelegate {
     }
 }
 
+// Save or discard, from the final score. The menu closes after the choice
+// and the final screen shows again, which is where a closed match leaves.
+class FinalMenuDelegate extends WatchUi.Menu2InputDelegate {
+    hidden var _controller as MatchController;
+
+    function initialize(controller as MatchController) {
+        Menu2InputDelegate.initialize();
+        _controller = controller;
+    }
+
+    function onSelect(item as WatchUi.MenuItem) as Void {
+        method(item.getId() as Symbol).invoke();
+    }
+
+    function save() as Void {
+        _controller.save();
+        WatchUi.popView(WatchUi.SLIDE_DOWN);
+    }
+
+    function askToDiscard() as Void {
+        MatchFlow.showDiscardConfirmation(_controller);
+    }
+
+    function onBack() as Void {
+        WatchUi.popView(WatchUi.SLIDE_DOWN);
+    }
+}
+
+class DiscardConfirmDelegate extends WatchUi.ConfirmationDelegate {
+    hidden var _controller as MatchController;
+
+    function initialize(controller as MatchController) {
+        ConfirmationDelegate.initialize();
+        _controller = controller;
+    }
+
+    function onResponse(response as WatchUi.Confirm) as Boolean {
+        if (response == WatchUi.CONFIRM_YES) {
+            _controller.discard();
+        }
+        return true;
+    }
+}
+
+// Offered at launch when the app closed during a match. BACK keeps the
+// stored match for the next launch.
+class ResumeMenuDelegate extends WatchUi.Menu2InputDelegate {
+    hidden var _store as MatchStore;
+
+    function initialize(store as MatchStore) {
+        Menu2InputDelegate.initialize();
+        _store = store;
+    }
+
+    function onSelect(item as WatchUi.MenuItem) as Void {
+        method(item.getId() as Symbol).invoke();
+    }
+
+    function resume() as Void {
+        MatchFlow.resume(_store);
+    }
+
+    function discard() as Void {
+        _store.clear();
+        WatchUi.popView(WatchUi.SLIDE_DOWN);
+    }
+
+    function onBack() as Void {
+        WatchUi.popView(WatchUi.SLIDE_DOWN);
+    }
+}
+
 class EndingMenuDelegate extends WatchUi.Menu2InputDelegate {
     hidden var _controller as MatchController;
 

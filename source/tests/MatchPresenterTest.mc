@@ -133,4 +133,11 @@ module MatchPresenterTests {
         }
         return true;
     }
+
+    (:test)
+    function testHeartRateTextIsEmptyWithoutAReading(logger as Test.Logger) as Boolean {
+        Test.assertEqual(MatchPresenter.heartRateText(null), "");
+        Test.assertEqual(MatchPresenter.heartRateText(142), "142");
+        return true;
+    }
 }
