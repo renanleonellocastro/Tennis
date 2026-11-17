@@ -41,7 +41,8 @@ module PracticeFlow {
     }
 
     function deviceRecorder() as PracticeRecorder {
-        return new PracticeRecorder(new FitSession(Strings.t("AppName")), new WatchSensors(), new NoLocator());
+        return new PracticeRecorder(new FitSession(Strings.t("AppName"), RecordingFields.PRACTICE),
+                                    new WatchSensors(), new NoLocator());
     }
 
     function pushTouchNeeded() as Void {

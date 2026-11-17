@@ -30,19 +30,30 @@ module RecordingFields {
     const SET_SCORE_COUNT = 4;
     const SINGLE = 1;
 
-    // [id, name in the file, true for a lap field, unit, type, count]
+    // The kind of activity a field belongs to. A file carries only the
+    // fields of its kind, which is how a reader tells a practice from a
+    // match.
+    const MATCH = 1;
+    const PRACTICE = 2;
+    const BOTH = 3;
+
+    // [id, name in the file, true for a lap field, unit, type, count, kind]
     const TABLE = [
-        [MATCH_SETUP, "match_setup", false, NO_UNIT, FitContributor.DATA_TYPE_UINT32, SINGLE],
-        [FINAL_SCORE, "final_score", false, NO_UNIT, FitContributor.DATA_TYPE_STRING, SCORE_BYTES],
-        [STATISTICS, "statistics", false, COUNTS_UNIT, FitContributor.DATA_TYPE_UINT16, STATISTICS_COUNT],
-        [STEPS, "steps", false, STEPS_UNIT, FitContributor.DATA_TYPE_UINT32, SINGLE],
-        [DISTANCE, "distance", false, METERS_UNIT, FitContributor.DATA_TYPE_UINT32, SINGLE],
-        [SET_SCORE, "set_score", true, NO_UNIT, FitContributor.DATA_TYPE_UINT8, SET_SCORE_COUNT],
-        [SET_STEPS, "set_steps", true, STEPS_UNIT, FitContributor.DATA_TYPE_UINT32, SINGLE],
-        [SET_DISTANCE, "set_distance", true, METERS_UNIT, FitContributor.DATA_TYPE_UINT32, SINGLE],
-        [BLOCK_HITS, "block_hits", true, SHOTS_UNIT, FitContributor.DATA_TYPE_UINT32, SINGLE],
-        [BLOCK_MISSES, "block_misses", true, SHOTS_UNIT, FitContributor.DATA_TYPE_UINT32, SINGLE]
+        [MATCH_SETUP, "match_setup", false, NO_UNIT, FitContributor.DATA_TYPE_UINT32, SINGLE, MATCH],
+        [FINAL_SCORE, "final_score", false, NO_UNIT, FitContributor.DATA_TYPE_STRING, SCORE_BYTES, MATCH],
+        [STATISTICS, "statistics", false, COUNTS_UNIT, FitContributor.DATA_TYPE_UINT16, STATISTICS_COUNT, MATCH],
+        [STEPS, "steps", false, STEPS_UNIT, FitContributor.DATA_TYPE_UINT32, SINGLE, BOTH],
+        [DISTANCE, "distance", false, METERS_UNIT, FitContributor.DATA_TYPE_UINT32, SINGLE, BOTH],
+        [SET_SCORE, "set_score", true, NO_UNIT, FitContributor.DATA_TYPE_UINT8, SET_SCORE_COUNT, MATCH],
+        [SET_STEPS, "set_steps", true, STEPS_UNIT, FitContributor.DATA_TYPE_UINT32, SINGLE, BOTH],
+        [SET_DISTANCE, "set_distance", true, METERS_UNIT, FitContributor.DATA_TYPE_UINT32, SINGLE, BOTH],
+        [BLOCK_HITS, "block_hits", true, SHOTS_UNIT, FitContributor.DATA_TYPE_UINT32, SINGLE, PRACTICE],
+        [BLOCK_MISSES, "block_misses", true, SHOTS_UNIT, FitContributor.DATA_TYPE_UINT32, SINGLE, PRACTICE]
     ];
+
+    function isOfKind(row as Array, kind as Number) as Boolean {
+        return ((row[6] as Number) & kind) != 0;
+    }
 
     // What a field holds before the match gives it a value: zero, zeros or
     // an empty text.

@@ -63,13 +63,19 @@ class MatchRecorder {
     // set that is undone and played again keeps its first lap.
     function closeSets(finishedSets as Number, isFinished as Boolean, closedScore as Array<Number>) as Void {
         if (lapsDue(finishedSets, isFinished) > _laps) {
-            sample();
             _session.setField(RecordingFields.SET_SCORE, closedScore);
-            _session.addLap();
-            _motion.closeLap();
-            _laps++;
-            sample();
+            closeLap();
         }
+    }
+
+    // Closes the open lap with the steps and distance it reached and
+    // starts the next one from zero.
+    function closeLap() as Void {
+        sample();
+        _session.addLap();
+        _motion.closeLap();
+        _laps++;
+        sample();
     }
 
     // What the file says about the match as a whole and about the set of

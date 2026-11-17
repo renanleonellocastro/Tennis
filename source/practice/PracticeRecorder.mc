@@ -1,13 +1,12 @@
 import Toybox.Lang;
 
 // Records a practice as an activity. The session, the pauses, the steps and
-// the distance are the work of the match recorder, which counts a closed
-// block as it counts a closed set: one lap each. This class adds the two
-// lap fields with the hits and misses of the block.
+// the distance are the work of the match recorder, which closes one lap for
+// each block. This class adds the two lap fields with the hits and misses
+// of the block.
 class PracticeRecorder {
     hidden var _session as ActivitySession;
     hidden var _recorder as MatchRecorder;
-    hidden var _closedBlocks as Number = 0;
 
     function initialize(session as ActivitySession, sensors as BodySensors, locator as Locator) {
         _session = session;
@@ -28,8 +27,7 @@ class PracticeRecorder {
 
     // Closes the lap of the block and starts the next one from zero.
     function closeBlock() as Void {
-        _closedBlocks++;
-        _recorder.closeSets(_closedBlocks, false);
+        _recorder.closeLap();
         setBlock(0, 0);
     }
 
