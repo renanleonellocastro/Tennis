@@ -10,7 +10,7 @@ from itertools import pairwise
 from typing import TYPE_CHECKING
 
 from tennis_export.errors import ExportError
-from tennis_export.layout import MATCH_SETUP_FIELD, decode_slots
+from tennis_export.layout import MATCH_SETUP_FIELD, SETUP_KIND, SETUP_SURFACE, decode_slots
 from tennis_export.match_reader import point_log_values
 from tennis_export.point_log import collect_slots
 from tennis_export.source_files import end_of, start_of
@@ -41,8 +41,13 @@ def setup_of(source: SourceFile) -> int:
 
 
 def require_same_setup(earlier: SourceFile, later: SourceFile) -> None:
-    if setup_of(earlier) != setup_of(later):
+    if rules_of(setup_of(earlier)) != rules_of(setup_of(later)):
         raise ExportError(f"{earlier.name} and {later.name} have different match settings, so they are not one match")
+
+
+def rules_of(setup: int) -> int:
+    """The setup without the tags: they are chosen on save, so a part saved when the app closed has none."""
+    return SETUP_KIND.clear(SETUP_SURFACE.clear(setup))
 
 
 def require_one_after_the_other(earlier: SourceFile, later: SourceFile) -> None:

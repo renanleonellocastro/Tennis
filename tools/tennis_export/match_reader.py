@@ -10,9 +10,9 @@ from tennis_export.layout import (
     FORMAT_VERSION,
     LOG_SIZE_FIELD,
     MATCH_SETUP_FIELD,
-    POINT_LOG_FIELD,
     Setup,
     decode_setup,
+    written_point_log,
 )
 from tennis_export.point_log import PointLog, rebuild_point_log
 from tennis_export.replay import Replay, replay
@@ -42,7 +42,8 @@ def read_match(activity: Activity) -> Match | None:
 
 
 def point_log_values(activity: Activity) -> list[Sequence[int]]:
-    return [record.developer[POINT_LOG_FIELD] for record in activity.records if POINT_LOG_FIELD in record.developer]
+    values = [written_point_log(record.developer) for record in activity.records]
+    return [words for words in values if words is not None]
 
 
 def config_of(setup: Setup) -> MatchConfig:

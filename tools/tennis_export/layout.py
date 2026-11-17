@@ -4,10 +4,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from itertools import batched
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    from collections.abc import Mapping, Sequence
 
 FORMAT_VERSION = 1
 
@@ -31,6 +31,7 @@ SURFACE_NAMES = (None, "clay", "hard", "grass")
 KIND_NAMES = (None, "match", "friendly")
 WORDS_PER_SLOT = 3
 EMPTY_SEQUENCE = 0
+NO_VALUE = 0xFFFFFFFF
 
 
 @dataclass(frozen=True)
@@ -40,6 +41,9 @@ class BitField:
 
     def read(self, word: int) -> int:
         return (word >> self.shift) & ((1 << self.width) - 1)
+
+    def clear(self, word: int) -> int:
+        return word & ~(((1 << self.width) - 1) << self.shift)
 
 
 ENTRY_RESULT = BitField(0, 2)
@@ -150,6 +154,12 @@ def decode_slot(header: int, entry: int, score: int) -> Slot:
         entry=decode_entry(entry),
         score=decode_score(score),
     )
+
+
+def written_point_log(developer: Mapping[str, Any]) -> Sequence[int] | None:
+    """The point log value of a record, or None when the record has none or was written before the first one."""
+    words: Sequence[int] | None = developer.get(POINT_LOG_FIELD)
+    return None if words is None or words[0] == NO_VALUE else words
 
 
 def newest_sequence(words: Sequence[int]) -> int:
