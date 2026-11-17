@@ -42,6 +42,11 @@ Tennis is built by the same developer as
 look and feel: black background, one warm accent color, large readable
 numbers and simple button controls that work on every supported watch.
 
+## 🗺 Plan
+
+The agreed requirements, decisions and milestones live in
+[docs/PLAN.md](docs/PLAN.md).
+
 ## 🤝 Contributing
 
 Ideas and feedback are welcome. Open an issue to suggest a statistic, a
