@@ -33,10 +33,11 @@ fixing the developer experience is a contribution too.
 | `source/TennisApp.mc` | App entry point |
 | `source/model/` | Match format, players, court sides and the packed point log |
 | `source/engine/` | Scoring engine: state and statistics derived by replaying the point log (no UI code) |
-| `source/ui/` | Views, delegates, menus and the theme |
+| `source/match/` | Match screen decisions with no drawing: setup store, clock, input map, layout numbers, controller, texts, score fixes |
+| `source/ui/` | Views, delegates, menus and the theme (drawing and navigation only) |
 | `source/i18n/` | Text lookup by language |
 | `source/generated/` | Generated string table (do not edit) |
-| `source/tests/` | Unit tests (`(:test)` functions, Run No Evil) |
+| `source/tests/` | Unit tests (`(:test)` functions, Run No Evil). New test files go inside a module, because the global scope holds at most 253 members |
 | `resources*/` | Launcher icon and the strings of each language |
 | `scripts/` | String table and icon generators, resources check, device API audit |
 | `tools/` | Function length checker and its tests |
