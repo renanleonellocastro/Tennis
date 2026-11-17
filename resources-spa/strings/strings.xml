@@ -10,4 +10,58 @@
     <string id="MenuAbout">Acerca de</string>
     <string id="ComingSoonMsg">Próximamente</string>
     <string id="AboutText">Tennis 0.1.0 MIT</string>
+
+    <!-- Match setup -->
+    <string id="SetupFormat">Formato</string>
+    <string id="FormatBestOf3">Al mejor de 3 sets</string>
+    <string id="FormatMatchTieBreak">2 sets + súper tie break</string>
+    <string id="FormatOneSet">1 set</string>
+    <string id="FormatProSet">Pro set a 8</string>
+    <string id="FormatTieBreakOnly">Solo tie break</string>
+    <string id="SetupNoAd">Sin ventaja</string>
+    <string id="ValueOn">Activado</string>
+    <string id="ValueOff">Desactivado</string>
+    <string id="SetupDetail">Detalle del punto</string>
+    <string id="DetailSimple">Simple</string>
+    <string id="DetailDetailed">Detallado</string>
+    <string id="SetupFirstServe">Primer saque</string>
+    <string id="PlayerMe">Yo</string>
+    <string id="PlayerOpponent">Rival</string>
+    <string id="SetupStart">Iniciar</string>
+    <string id="TouchNeededMsg">Activa el toque para puntuar</string>
+
+    <!-- Match screen -->
+    <string id="LabelMe">YO</string>
+    <string id="LabelOpponent">RIV</string>
+    <string id="LabelAdvantage">AD</string>
+    <string id="LabelBreakPoint">PUNTO DE BREAK</string>
+    <string id="LabelSetPoint">PUNTO DE SET</string>
+    <string id="LabelMatchPoint">PUNTO DE PARTIDO</string>
+    <string id="NoticeGame">Juego</string>
+    <string id="NoticeSet">Set</string>
+    <string id="NoticeChangeEnds">Cambio de lado</string>
+    <string id="Paused">En pausa</string>
+    <string id="ControlFault">FALTA</string>
+
+    <!-- Match menu -->
+    <string id="MatchMenuPause">Pausar</string>
+    <string id="MatchMenuResume">Reanudar</string>
+    <string id="MatchMenuFix">Corregir marcador</string>
+    <string id="MatchMenuEnd">Terminar partido</string>
+    <string id="EndMatchQ">¿Terminar el partido?</string>
+    <string id="FixUndoGame">Deshacer juego</string>
+    <string id="FixGameMe">Juego para mí</string>
+    <string id="FixGameOpponent">Juego para el rival</string>
+
+    <!-- How a point ended (detailed mode) -->
+    <string id="EndingTitle">Punto</string>
+    <string id="EndingWinner">Winner</string>
+    <string id="EndingAce">Ace</string>
+    <string id="EndingErrorNet">Error en la red</string>
+    <string id="EndingErrorOut">Error fuera</string>
+
+    <!-- Final score -->
+    <string id="FinalYouWon">Ganaste</string>
+    <string id="FinalYouLost">Perdiste</string>
+    <string id="FinalMatchEnded">Partido terminado</string>
 </strings>

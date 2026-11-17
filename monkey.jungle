@@ -4,3 +4,9 @@ project.manifest = manifest.xml
 # the per language string folders (resources-por, resources-spa, ...) are
 # picked up automatically. Base resources hold the strings and the launcher
 # icon. Tennis ships no per device resources yet.
+
+# The source path is spelled out because the default one scans the whole
+# project folder, including any untracked folder that holds a second copy
+# of the sources (a git worktree, for example), and then every symbol is
+# defined twice.
+base.sourcePath = source

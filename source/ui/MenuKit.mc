@@ -9,7 +9,7 @@ module MenuKit {
     // row runs. A new entry is one more row here.
     function mainMenuRows() as Array {
         return [
-            ["MenuStartMatch", :startMatch, new Lang.Method(MenuKit, :pushComingSoon)],
+            ["MenuStartMatch", :startMatch, new Lang.Method(MatchFlow, :pushSetup)],
             ["MenuPractice", :practice, new Lang.Method(MenuKit, :pushComingSoon)],
             ["MenuSettings", :settings, new Lang.Method(MenuKit, :pushComingSoon)],
             ["MenuAbout", :about, new Lang.Method(MenuKit, :pushAbout)]
