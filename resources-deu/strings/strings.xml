@@ -66,10 +66,51 @@
     <string id="FinalYouLost">Verloren</string>
     <string id="FinalMatchEnded">Match beendet</string>
     <string id="FinalSave">Speichern</string>
+    <string id="FinalReport">Statistik</string>
     <string id="FinalDiscard">Verwerfen</string>
     <string id="DiscardQ">Aktivität verwerfen?</string>
     <string id="SavedMsg">Gespeichert!</string>
     <string id="DiscardedMsg">Verworfen</string>
+
+    <!-- Tags of a saved match -->
+    <string id="TagSurface">Belag</string>
+    <string id="TagKind">Art</string>
+    <string id="TagNotSet">Keine Angabe</string>
+    <string id="SurfaceClay">Sand</string>
+    <string id="SurfaceHard">Hartplatz</string>
+    <string id="SurfaceGrass">Rasen</string>
+    <string id="KindMatch">Match</string>
+    <string id="KindFriendly">Freundschaftsspiel</string>
+
+    <!-- Report -->
+    <string id="ReportScore">ERGEBNIS</string>
+    <string id="ReportSet">Satz</string>
+    <string id="ReportPoints">Punkte</string>
+    <string id="ReportServe">AUFSCHLAG</string>
+    <string id="ReportFirstIn">1. im Feld</string>
+    <string id="ReportFirstWon">1. gewonnen</string>
+    <string id="ReportSecondWon">2. gewonnen</string>
+    <string id="ReportDoubleFaults">Doppelf.</string>
+    <string id="ReportEndings">PUNKTE</string>
+    <string id="ReportAces">Asse</string>
+    <string id="ReportWinners">Winner</string>
+    <string id="ReportNetErrors">Netzfehler</string>
+    <string id="ReportOutErrors">Ausfehler</string>
+    <string id="ReportPressure">DRUCK</string>
+    <string id="ReportBreaks">Breaks</string>
+    <string id="ReportSaved">Abgewehrt</string>
+    <string id="ReportHolds">Gehalten</string>
+    <string id="ReportBestRun">Serie</string>
+    <string id="ReportTime">ZEIT</string>
+    <string id="ReportMatchTime">Match</string>
+    <string id="ReportAvgGame">Spiel Ø</string>
+    <string id="ReportLongGame">Längstes</string>
+    <string id="ReportPerPoint">Pro Punkt</string>
+    <string id="ReportBody">KÖRPER</string>
+    <string id="ReportAvgHr">Puls Ø</string>
+    <string id="ReportMaxHr">Puls max.</string>
+    <string id="ReportKeyHr">Puls Druck</string>
+    <string id="ReportCalories">Kalorien</string>
 
     <!-- Resume a match the app closed on -->
     <string id="ResumeTitle">Offenes Match</string>

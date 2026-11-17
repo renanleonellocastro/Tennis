@@ -7,12 +7,17 @@ its activity files. It has two halves:
 2. What the converter in `tools/tennis_export` produces from that file
    (`points.csv`, `match.json` and `heatmap.png`).
 
-## Status: a proposal, not yet proven on a watch
+## Status: partly proven on the simulator
 
-The converter half is built and tested. The watch half is **not built yet**:
-the app does not write any of the fields below today. Version 1 of the format
-is a proposal that the watch side must implement and then confirm on the
-simulator and on a real watch. Every item that still needs that confirmation
+The converter half is built and tested. The watch writes eight of the ten
+fields: the summary of the match (`match_setup`, `final_score`,
+`statistics`, `set_score`) and the movement totals (`steps`, `distance`,
+`set_steps`, `set_distance`). A file saved by the simulator was converted
+with this tool and those fields read back as written. The point log
+(`point_log`, `log_size`) is **not written yet**, so today the converter
+has no point by point data: see
+[What a file without a point log gives](#what-a-file-without-a-point-log-gives).
+Nothing has run on a real watch. Every item that still needs confirmation
 is listed in [Still to be confirmed on the watch](#still-to-be-confirmed-on-the-watch).
 
 The tests of the converter build FIT files with the encoder of the official
@@ -181,8 +186,11 @@ reader must refuse a version it does not know instead of guessing.
 ### Session summary (session message)
 
 * `log_size`: number of entries in the log when the activity was saved.
-* `final_score`: the score as the watch shows it, as text. Kept for people
-  who open the file in other tools.
+* `final_score`: the score as text, built the same way as `score.text` of
+  `match.json`: the closed sets as on a scoreboard, then the games of a set
+  that was still open (`7-6(7-5) 6-3`, `6-4 2-1`). Kept for people who open
+  the file in other tools. The watch cuts the text at 31 characters, which
+  only a match with three long tie breaks can reach.
 * `statistics`: thirty UINT16 counts. The value for statistic `s` and
   player `p` is at index `s * 2 + p`.
 
@@ -228,19 +236,30 @@ The converter places laps by time instead, see
 
 * `set_score`: four UINT8 values: games for me, games for the opponent, tie
   break points for me, tie break points for the opponent. The tie break
-  points are 0 and 0 when the set had no tie break.
+  points are 0 and 0 when the set had no tie break. The last lap of a match
+  stopped during a set holds the games played of that set, and the points
+  of a tie break that was under way.
 * `set_steps` and `set_distance`: steps and meters during the set.
 
 The native lap fields (start time, elapsed time, timer time) give the
 duration of the set.
 
+### When the watch writes the summary
+
+The session fields are written when the match opens (so a file always
+carries `match_setup`), again when the app closes with a match in progress,
+and a last time when the player saves. The tags are chosen on the save
+screen, so a match saved by the app closing has both tags at 0 (not set).
+
 ### Still to be confirmed on the watch
 
-None of this has run on a simulator or a watch. The watch side must check
-each point and this document must be corrected where reality differs.
+The summary fields ran on the simulator only. The watch side must check
+each point on a real watch and this document must be corrected where
+reality differs.
 
-1. **Nothing is written yet.** The fields, ids, names and packing above are
-   a proposal until the watch code exists.
+1. **The point log is not written yet.** `point_log` and `log_size` are a
+   proposal until the watch code exists. The other eight fields are written
+   with the ids, names, types and packing above.
 2. **Record fields under Smart Recording.** Smart Recording may write
    records less often than once a second. Three entries per record should
    cover that, but it must be measured: mark points quickly, save, and
@@ -252,14 +271,19 @@ each point and this document must be corrected where reality differs.
 4. **Array fields.** `point_log` (9 values in a record), `statistics`
    (30 values) and `set_score` (4 values) rely on array developer fields.
    Whether the Connect IQ FIT contributor writes them as designed, in
-   records, laps and sessions, must be confirmed.
+   records, laps and sessions, must be confirmed. Confirmed on the
+   simulator for the session (`statistics`, 30 values, and the
+   `final_score` text) and the lap (`set_score`); the record is still open.
 5. **Size limits.** A message may hold at most 256 bytes of developer data.
-   The session uses about 110 and a record 36, by design. To be confirmed
-   with a real file.
+   The session uses about 110 and a record 36, by design. The session was
+   confirmed with a simulator file; the record is still open.
 6. **Number of fields.** Ten fields against a working limit of twelve. The
    real limit of each target watch must be checked.
 7. **Garmin Connect display.** Array fields and packed words are not meant
-   to be shown in Garmin Connect. How Connect treats them is unknown.
+   to be shown in Garmin Connect, so the app declares no label for them
+   (`match_setup`, `final_score`, `statistics`, `set_score` are absent from
+   `resources/fit/fitcontributions.xml`). How Connect treats a field
+   without a label is unknown.
 8. **Undo.** The reader rule for undo (rule 2 above) assumes the watch
    lowers the newest sequence number after an undo and reuses the numbers.
 9. **Laps.** That the watch can close one lap for each set, and that steps
@@ -528,7 +552,24 @@ empty cell (`points.csv` has no ratio column today).
 | `statistics_match` | Whether the `statistics` field equals the replayed counts, null without the field |
 | `set_scores_match` | Whether the `set_score` of the last lap of each closed set equals the replayed set, null without the field or when the laps could not be placed |
 
-`watch_summary` holds `final_score`, the text the watch stored, untouched.
+`watch_summary` holds what the watch stored, untouched, and does not depend
+on the point log:
+
+| Key | Meaning |
+|-----|---------|
+| `final_score` | The text of the `final_score` field, null without it |
+| `statistics` | `me` and `opponent`, each with the fifteen counts of the `statistics` field by name; null when the field is missing or does not hold thirty values |
+| `set_scores` | One item for each lap, in file order: `games` and `tie_break_points` of its `set_score`, or null for a lap without the field |
+
+### What a file without a point log gives
+
+Until the watch writes the point log, a converted file has an empty
+`points.csv` and a `match` section replayed from nothing: `finished` false,
+`score.text` `0-0`, no sets, every statistic zero. `match.config` and
+`match.tags` are right, because they come from `match_setup`. The result of
+the match is then only in `watch_summary`. In `integrity`,
+`statistics_match` is false (stored counts against an empty replay) and
+`set_scores_match` is null (no replayed set to compare).
 
 `heat_map`: `file` (`heatmap.png`), `method` (`principal_axis`),
 `approximate` (always true), `track_points` (positions in the file),

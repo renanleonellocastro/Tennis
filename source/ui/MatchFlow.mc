@@ -32,7 +32,8 @@ module MatchFlow {
 
     function finalMenuRows() as Array {
         return [
-            ["FinalSave", :save],
+            ["FinalSave", :askTags],
+            ["FinalReport", :openReport],
             ["FinalDiscard", :askToDiscard]
         ];
     }
@@ -55,14 +56,21 @@ module MatchFlow {
 
     // Setup.
 
-    function setupMenu(setup as MatchSetup, fields as Array<Number>) as WatchUi.Menu2 {
-        var menu = new WatchUi.Menu2({:title => Strings.t("MenuStartMatch")});
+    // One row per field with its current option, then the row that goes
+    // on. The id of a field row is the field; the last row has a symbol.
+    function optionMenu(titleKey as String, options as OptionList, fields as Array<Number>,
+                        confirmKey as String) as WatchUi.Menu2 {
+        var menu = new WatchUi.Menu2({:title => Strings.t(titleKey)});
         for (var i = 0; i < fields.size(); i++) {
-            menu.addItem(new WatchUi.MenuItem(Strings.t(setup.labelKey(fields[i])),
-                                              Strings.t(setup.valueKey(fields[i])), fields[i], null));
+            menu.addItem(new WatchUi.MenuItem(Strings.t(options.labelKey(fields[i])),
+                                              Strings.t(options.valueKey(fields[i])), fields[i], null));
         }
-        menu.addItem(new WatchUi.MenuItem(Strings.t("SetupStart"), null, :start, null));
+        menu.addItem(new WatchUi.MenuItem(Strings.t(confirmKey), null, :confirm, null));
         return menu;
+    }
+
+    function setupMenu(setup as MatchSetup, fields as Array<Number>) as WatchUi.Menu2 {
+        return optionMenu("MenuStartMatch", setup, fields, "SetupStart");
     }
 
     // Opens with the start row selected, so a match with the remembered
@@ -89,7 +97,7 @@ module MatchFlow {
     // Shows the match that the log adds up to, recording from now on.
     function open(setup as MatchSetup, entries as Array<Number>, store as MatchStore) as Void {
         var engine = new MatchEngine(setup.config(), new PointLog(entries));
-        var controller = new MatchController(engine, setup.isDetailed(), new SystemTime(),
+        var controller = new MatchController(engine, setup, new SystemTime(),
                                              deviceRecorder(setup), store);
         active = controller;
         showMatch(controller, WatchUi.SLIDE_LEFT);
@@ -164,11 +172,56 @@ module MatchFlow {
         }
     }
 
-    // Final score: save or discard.
+    // Final score: save, the report or discard.
 
     function pushFinalMenu(controller as MatchController) as Void {
         WatchUi.pushView(menuOf("FinalMatchEnded", finalMenuRows()), new FinalMenuDelegate(controller),
                          WatchUi.SLIDE_UP);
+    }
+
+    // The tags of the match, opening on the save row so a match with the
+    // remembered tags is one press away. Replaces the final menu.
+    function showSaveMenu(controller as MatchController) as Void {
+        var tags = TagStore.load();
+        var menu = optionMenu("FinalSave", tags, tags.fields(), "FinalSave");
+        menu.setFocus(tags.fields().size());
+        WatchUi.switchToView(menu, new SaveMenuDelegate(controller, tags), WatchUi.SLIDE_LEFT);
+    }
+
+    // Remembers the tags for the next match and saves this one with them.
+    function saveWithTags(controller as MatchController, tags as MatchTags) as Void {
+        TagStore.save(tags);
+        controller.save(tags);
+    }
+
+    // Report.
+
+    // The pages are built once, when the report opens; the statistics they
+    // came from are let go right after.
+    function reportPages(controller as MatchController) as Array<Array> {
+        var presenter = new ReportPresenter(controller.state(), controller.statistics());
+        return presenter.pages(controller.isDetailed(), controller.clockSeconds(), controller.sensors());
+    }
+
+    // [view, delegate] of the report of a match.
+    function reportScreen(controller as MatchController) as Array {
+        var settings = System.getDeviceSettings();
+        var pages = reportPages(controller);
+        var pager = new ReportPager(pages.size());
+        var layout = new ReportLayout(settings.screenWidth, settings.screenHeight);
+        return [new ReportView(pages, layout, pager), new ReportDelegate(pager)];
+    }
+
+    // Over the final score, which shows again when the report closes.
+    function pushReport(controller as MatchController) as Void {
+        var screen = reportScreen(controller);
+        WatchUi.pushView(screen[0] as ReportView, screen[1] as ReportDelegate, WatchUi.SLIDE_UP);
+    }
+
+    // From the final menu, which the report replaces.
+    function showReport(controller as MatchController) as Void {
+        var screen = reportScreen(controller);
+        WatchUi.switchToView(screen[0] as ReportView, screen[1] as ReportDelegate, WatchUi.SLIDE_UP);
     }
 
     function showDiscardConfirmation(controller as MatchController) as Void {

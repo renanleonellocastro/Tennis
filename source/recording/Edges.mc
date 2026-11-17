@@ -5,6 +5,9 @@ import Toybox.Lang;
 // FitSession, WatchSensors, GpsLocator and AppStorage) and the tests pass
 // fakes, so every rule of the recording runs in a unit test.
 
+// A developer field holds one number, a list of numbers or a text.
+typedef FieldValue as Number or Array<Number> or String;
+
 typedef ActivitySession as interface {
     function start() as Void;
     function stop() as Void;
@@ -12,7 +15,7 @@ typedef ActivitySession as interface {
     function save() as Void;
     function discard() as Void;
     // Writes one developer field (see RecordingFields).
-    function setField(id as Number, value as Number) as Void;
+    function setField(id as Number, value as FieldValue) as Void;
 };
 
 // Every reading is null when the watch has none.
@@ -21,6 +24,10 @@ typedef BodySensors as interface {
     // Steps and centimeters walked today, as the watch counts them.
     function steps() as Number?;
     function distanceCm() as Number?;
+    // Of the activity being recorded.
+    function averageHeartRate() as Number?;
+    function maxHeartRate() as Number?;
+    function calories() as Number?;
 };
 
 typedef Locator as interface {

@@ -8,14 +8,6 @@ module MatchSetupTests {
         Test.assertEqual(joinedNumbers(new MatchSetup(stored).toArray()), "0,0,0,0,0");
     }
 
-    function joinedNumbers(values as Array<Number>) as String {
-        var text = "";
-        for (var i = 0; i < values.size(); i++) {
-            text += (i == 0 ? "" : ",") + values[i];
-        }
-        return text;
-    }
-
     (:test)
     function testSetupDefaultsWhenStorageHasNothingUsable(logger as Test.Logger) as Boolean {
         assertFallsBackToDefaults(null);

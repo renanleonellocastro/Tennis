@@ -5,28 +5,68 @@ import Toybox.WatchUi;
 // the setup or the controller and closes its menu; the match screen reads
 // the new state when it shows again.
 
-class SetupMenuDelegate extends WatchUi.Menu2InputDelegate {
-    hidden var _setup as MatchSetup;
+// A menu of choices (see MatchFlow.optionMenu). A choice row moves to its
+// next option; the last row goes on with what was chosen.
+class OptionMenuDelegate extends WatchUi.Menu2InputDelegate {
+    hidden var _options as OptionList;
 
-    function initialize(setup as MatchSetup) {
+    function initialize(options as OptionList) {
         Menu2InputDelegate.initialize();
-        _setup = setup;
+        _options = options;
     }
 
-    // A choice row moves to its next option; the start row starts.
     function onSelect(item as WatchUi.MenuItem) as Void {
         var id = item.getId();
         if (id instanceof Lang.Number) {
-            _setup.cycle(id);
-            item.setSubLabel(Strings.t(_setup.valueKey(id)));
+            _options.cycle(id);
+            item.setSubLabel(Strings.t(_options.valueKey(id)));
             WatchUi.requestUpdate();
         } else {
-            MatchFlow.start(_setup);
+            confirm();
         }
+    }
+
+    function confirm() as Void {
+    }
+}
+
+class SetupMenuDelegate extends OptionMenuDelegate {
+    hidden var _setup as MatchSetup;
+
+    function initialize(setup as MatchSetup) {
+        OptionMenuDelegate.initialize(setup);
+        _setup = setup;
+    }
+
+    function confirm() as Void {
+        MatchFlow.start(_setup);
     }
 
     function onBack() as Void {
         WatchUi.popView(WatchUi.SLIDE_RIGHT);
+    }
+}
+
+// The tags of a match that is being saved. The save row remembers them,
+// saves the activity and closes the menu; the final screen shows again,
+// which is where a closed match leaves. BACK returns without saving.
+class SaveMenuDelegate extends OptionMenuDelegate {
+    hidden var _controller as MatchController;
+    hidden var _tags as MatchTags;
+
+    function initialize(controller as MatchController, tags as MatchTags) {
+        OptionMenuDelegate.initialize(tags);
+        _controller = controller;
+        _tags = tags;
+    }
+
+    function confirm() as Void {
+        MatchFlow.saveWithTags(_controller, _tags);
+        WatchUi.popView(WatchUi.SLIDE_DOWN);
+    }
+
+    function onBack() as Void {
+        WatchUi.popView(WatchUi.SLIDE_DOWN);
     }
 }
 
@@ -108,8 +148,8 @@ class EndMatchConfirmDelegate extends WatchUi.ConfirmationDelegate {
     }
 }
 
-// Save or discard, from the final score. The menu closes after the choice
-// and the final screen shows again, which is where a closed match leaves.
+// Save, the report or discard, from the final score. Each row replaces
+// this menu with the next screen, which closes back to the final score.
 class FinalMenuDelegate extends WatchUi.Menu2InputDelegate {
     hidden var _controller as MatchController;
 
@@ -122,9 +162,12 @@ class FinalMenuDelegate extends WatchUi.Menu2InputDelegate {
         method(item.getId() as Symbol).invoke();
     }
 
-    function save() as Void {
-        _controller.save();
-        WatchUi.popView(WatchUi.SLIDE_DOWN);
+    function askTags() as Void {
+        MatchFlow.showSaveMenu(_controller);
+    }
+
+    function openReport() as Void {
+        MatchFlow.showReport(_controller);
     }
 
     function askToDiscard() as Void {

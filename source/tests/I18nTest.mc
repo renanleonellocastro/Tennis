@@ -70,7 +70,6 @@ function testSystemDefaultIsSupportedCode(logger as Test.Logger) as Boolean {
 function testStringsFollowSystemWhenNothingIsLoaded(logger as Test.Logger) as Boolean {
     Strings._code = null;
     Strings._table = null;
-    Strings._eng = null;
     Test.assertEqual(Strings.language(), Strings.systemDefault());
     Test.assert(Strings.t("AppName").length() > 0);
     return true;

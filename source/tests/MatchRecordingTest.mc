@@ -13,7 +13,7 @@ module MatchRecordingTests {
         next.time.ms = 500000;
         next.session = new FakeSession();
         next.engine = new MatchEngine(bench.engine.config(), new PointLog(stored[1] as Array<Number>));
-        next.controller = next.controllerOn(next.engine, false);
+        next.controller = next.controllerOn(next.engine, next.setupOf(MatchFormat.BEST_OF_3, false));
         return next;
     }
 
@@ -103,11 +103,67 @@ module MatchRecordingTests {
         bench.store.begin([2, 0, 0, 0, 0]);
         bench.games("MMMMMM");
         Test.assert(bench.controller.farewellKey() == null);
-        bench.controller.save();
+        bench.controller.save(new MatchTags(null));
         Test.assertEqual(bench.session.calls, "spS");
         Test.assertEqual(bench.locator.calls, "+-");
         Test.assertEqual(bench.controller.farewellKey() as String, "SavedMsg");
         Test.assert(!bench.store.hasMatch());
+        return true;
+    }
+
+    (:test)
+    function testMatchOpensWithItsSetupInTheFile(logger as Test.Logger) as Boolean {
+        var bench = new MatchBench(MatchFormat.ONE_SET, true);
+        Test.assertEqual(bench.session.fields[RecordingFields.MATCH_SETUP] as Number, 1 + (2 << 4) + (1 << 8));
+        Test.assertEqual(bench.session.fields[RecordingFields.FINAL_SCORE] as String, "0-0");
+        Test.assert(bench.controller.isDetailed());
+        Test.assert(!simpleBench(MatchFormat.ONE_SET).controller.isDetailed());
+        return true;
+    }
+
+    (:test)
+    function testSaveWritesTheSummaryWithTheTags(logger as Test.Logger) as Boolean {
+        var bench = simpleBench(MatchFormat.ONE_SET);
+        bench.games("MMMMMM");
+        bench.controller.save(new MatchTags([1, 2]));
+        var counts = bench.session.fields[RecordingFields.STATISTICS] as Array<Number>;
+        Test.assertEqual(bench.session.fields[RecordingFields.MATCH_SETUP] as Number,
+                         1 + (2 << 4) + (1 << 10) + (2 << 12));
+        Test.assertEqual(bench.session.fields[RecordingFields.FINAL_SCORE] as String, "6-0");
+        Test.assertEqual(bench.session.numbers(RecordingFields.SET_SCORE), "6,0,0,0");
+        Test.assertEqual(counts[Stat.POINTS_WON * Player.COUNT + Player.ME], 24);
+        return true;
+    }
+
+    (:test)
+    function testEachClosedSetGivesItsLapTheScore(logger as Test.Logger) as Boolean {
+        var bench = simpleBench(MatchFormat.BEST_OF_3);
+        bench.games("MMMMMMOOOOOOMM");
+        Test.assertEqual(joined(bench.session.lapScores), "6,0,0,0,0,6,0,0");
+        bench.controller.end();
+        bench.controller.save(new MatchTags(null));
+        Test.assertEqual(bench.session.numbers(RecordingFields.SET_SCORE), "2,0,0,0");
+        Test.assertEqual(bench.session.fields[RecordingFields.FINAL_SCORE] as String, "6-0 0-6 2-0");
+        return true;
+    }
+
+    (:test)
+    function testClosingTheAppWritesTheSummaryWithoutTags(logger as Test.Logger) as Boolean {
+        var bench = simpleBench(MatchFormat.BEST_OF_3);
+        bench.games("MMO");
+        bench.controller.suspend();
+        Test.assertEqual(bench.session.fields[RecordingFields.MATCH_SETUP] as Number, 1);
+        Test.assertEqual(bench.session.fields[RecordingFields.FINAL_SCORE] as String, "2-1");
+        Test.assertEqual(bench.session.numbers(RecordingFields.SET_SCORE), "2,1,0,0");
+        return true;
+    }
+
+    (:test)
+    function testControllerHandsTheReportItsNumbers(logger as Test.Logger) as Boolean {
+        var bench = simpleBench(MatchFormat.BEST_OF_3);
+        bench.games("MO");
+        Test.assertEqual(bench.controller.statistics().count(Stat.POINTS_WON, Player.OPPONENT), 4);
+        Test.assert(bench.controller.sensors() == bench.sensors);
         return true;
     }
 
@@ -218,7 +274,7 @@ module MatchRecordingTests {
         var next = simpleBench(MatchFormat.ONE_SET);
         var stored = new MatchStore(bench.memory).load() as Array;
         next.controller = next.controllerOn(
-            new MatchEngine(bench.engine.config(), new PointLog(stored[1] as Array<Number>)), false);
+            new MatchEngine(bench.engine.config(), new PointLog(stored[1] as Array<Number>)), next.setupOf(MatchFormat.ONE_SET, false));
         Test.assert(next.controller.isOver());
         Test.assert(!next.controller.isPaused());
         return true;

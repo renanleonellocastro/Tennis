@@ -176,7 +176,14 @@ def test_the_document_says_how_complete_and_consistent_the_log_is(tmp_path: Path
         "missing_sequences": [],
     }
     assert document["integrity"] == {"score_mismatches": [], "statistics_match": True, "set_scores_match": True}
-    assert document["watch_summary"] == {"final_score": "7-6(7-0) 6-0"}
+    summary = document["watch_summary"]
+    assert summary["final_score"] == "7-6(7-0) 6-0"
+    assert summary["statistics"]["me"].items() <= document["match"]["statistics"]["me"].items()
+    assert summary["statistics"]["opponent"].items() <= document["match"]["statistics"]["opponent"].items()
+    assert summary["set_scores"] == [
+        {"games": [7, 6], "tie_break_points": [7, 0]},
+        {"games": [6, 0], "tie_break_points": [0, 0]},
+    ]
 
 
 def test_the_csv_has_one_row_for_each_entry(tmp_path: Path) -> None:
@@ -252,7 +259,7 @@ def test_a_match_that_was_stopped_early_keeps_what_was_played(tmp_path: Path) ->
     assert (match["finished"], match["winner"], match["sets"]) == (False, None, [])
     assert match["score"] == {"sets": [], "current_games": [1, 0], "current_points": ["30", "0"], "text": "1-0"}
     assert document["integrity"] == {"score_mismatches": [], "statistics_match": None, "set_scores_match": None}
-    assert document["watch_summary"] == {"final_score": None}
+    assert document["watch_summary"] == {"final_score": None, "statistics": None, "set_scores": []}
     assert (document["activity"]["steps"], document["activity"]["distance_m"]) == (None, 512.5)
     assert (document["activity"]["has_gps"], document["heat_map"]) == (False, None)
 

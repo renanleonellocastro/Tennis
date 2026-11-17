@@ -1,3 +1,4 @@
+import Toybox.FitContributor;
 import Toybox.Lang;
 import Toybox.Test;
 
@@ -137,12 +138,12 @@ module RecordingTests {
         var recorder = recorderOn(session, sensors, new FakeLocator());
         sensors.walk(0, 0);
         recorder.start(0, false);
-        recorder.closeSets(0, false);
+        recorder.closeSets(0, false, [6, 4, 0, 0]);
         sensors.walk(60, 5000);
-        recorder.closeSets(1, false);
-        recorder.closeSets(1, false);
+        recorder.closeSets(1, false, [6, 4, 0, 0]);
+        recorder.closeSets(1, false, [6, 4, 0, 0]);
         sensors.walk(40, 3000);
-        recorder.closeSets(2, true);
+        recorder.closeSets(2, true, [6, 4, 0, 0]);
         Test.assertEqual(session.calls, "sl");
         Test.assertEqual(session.laps[0][0], 60);
         Test.assertEqual(session.laps[0][1], 50);
@@ -155,9 +156,9 @@ module RecordingTests {
         var session = new FakeSession();
         var recorder = recorderOn(session, new FakeSensors(), new FakeLocator());
         recorder.start(1, false);
-        recorder.closeSets(1, false);
+        recorder.closeSets(1, false, [6, 4, 0, 0]);
         Test.assertEqual(session.calls, "s");
-        recorder.closeSets(2, false);
+        recorder.closeSets(2, false, [6, 4, 0, 0]);
         Test.assertEqual(session.calls, "sl");
         return true;
     }
@@ -167,9 +168,9 @@ module RecordingTests {
         var session = new FakeSession();
         var recorder = recorderOn(session, new FakeSensors(), new FakeLocator());
         recorder.start(0, false);
-        recorder.closeSets(1, false);
-        recorder.closeSets(0, false);
-        recorder.closeSets(1, false);
+        recorder.closeSets(1, false, [6, 4, 0, 0]);
+        recorder.closeSets(0, false, [6, 4, 0, 0]);
+        recorder.closeSets(1, false, [6, 4, 0, 0]);
         Test.assertEqual(session.calls, "sl");
         return true;
     }
@@ -213,7 +214,8 @@ module RecordingTests {
 
     (:test)
     function testFieldTableUsesTheIdsSharedWithTheConverter(logger as Test.Logger) as Boolean {
-        var names = {5 => "steps", 6 => "distance", 8 => "set_steps", 9 => "set_distance"};
+        var names = {2 => "match_setup", 3 => "final_score", 4 => "statistics", 5 => "steps", 6 => "distance",
+                     7 => "set_score", 8 => "set_steps", 9 => "set_distance"};
         Test.assertEqual(RecordingFields.TABLE.size(), names.size());
         for (var i = 0; i < RecordingFields.TABLE.size(); i++) {
             var row = RecordingFields.TABLE[i] as Array;
@@ -222,12 +224,49 @@ module RecordingTests {
         return true;
     }
 
+    (:test)
+    function testFieldsStartEmptyInTheShapeOfTheirType(logger as Test.Logger) as Boolean {
+        Test.assertEqual(RecordingFields.emptyValue(FitContributor.DATA_TYPE_STRING, 32) as String, "");
+        Test.assertEqual(RecordingFields.emptyValue(FitContributor.DATA_TYPE_UINT32, 1) as Number, 0);
+        Test.assertEqual(joinedNumbers(RecordingFields.emptyValue(FitContributor.DATA_TYPE_UINT8, 4) as Array<Number>),
+                         "0,0,0,0");
+        Test.assertEqual(RecordingFields.zeros(30).size(), 30);
+        return true;
+    }
+
+    (:test)
+    function testRecorderGivesTheClosingLapTheScoreOfItsSet(logger as Test.Logger) as Boolean {
+        var session = new FakeSession();
+        var recorder = recorderOn(session, new FakeSensors(), new FakeLocator());
+        recorder.start(0, false);
+        recorder.closeSets(1, false, [6, 4, 0, 0]);
+        recorder.closeSets(1, false, [1, 1, 1, 1]);
+        recorder.closeSets(2, false, [6, 7, 5, 7]);
+        Test.assertEqual(joined(session.lapScores), "6,4,0,0,6,7,5,7");
+        return true;
+    }
+
+    (:test)
+    function testRecorderWritesTheSummaryFields(logger as Test.Logger) as Boolean {
+        var session = new FakeSession();
+        var sensors = new FakeSensors();
+        var recorder = recorderOn(session, sensors, new FakeLocator());
+        recorder.writeSummary([33, "6-4 2-1", [1, 2, 3], [2, 1, 0, 0]]);
+        Test.assertEqual(session.fields[RecordingFields.MATCH_SETUP] as Number, 33);
+        Test.assertEqual(session.fields[RecordingFields.FINAL_SCORE] as String, "6-4 2-1");
+        Test.assertEqual(session.numbers(RecordingFields.STATISTICS), "1,2,3");
+        Test.assertEqual(session.numbers(RecordingFields.SET_SCORE), "2,1,0,0");
+        Test.assert(recorder.sensors() == sensors);
+        return true;
+    }
+
     // The real edges, on the watch the tests run on.
 
     (:test)
     function testWatchSensorsAnswerWithANumberOrNothing(logger as Test.Logger) as Boolean {
         var sensors = new WatchSensors();
-        var readings = [sensors.heartRate(), sensors.steps(), sensors.distanceCm()];
+        var readings = [sensors.heartRate(), sensors.steps(), sensors.distanceCm(), sensors.averageHeartRate(),
+                        sensors.maxHeartRate(), sensors.calories()];
         for (var i = 0; i < readings.size(); i++) {
             Test.assert(readings[i] == null || readings[i] instanceof Lang.Number);
         }

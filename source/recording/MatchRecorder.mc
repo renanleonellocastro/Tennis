@@ -58,17 +58,27 @@ class MatchRecorder {
         _session.setField(RecordingFields.SET_DISTANCE, _motion.lapMeters());
     }
 
-    // Opens the lap of the next set once a set is closed. A lap cannot be
-    // taken back, so a set that is undone and played again keeps its first
-    // lap.
-    function closeSets(finishedSets as Number, isFinished as Boolean) as Void {
+    // Opens the lap of the next set once a set is closed, after giving the
+    // closing lap the score of its set. A lap cannot be taken back, so a
+    // set that is undone and played again keeps its first lap.
+    function closeSets(finishedSets as Number, isFinished as Boolean, closedScore as Array<Number>) as Void {
         if (lapsDue(finishedSets, isFinished) > _laps) {
             sample();
+            _session.setField(RecordingFields.SET_SCORE, closedScore);
             _session.addLap();
             _motion.closeLap();
             _laps++;
             sample();
         }
+    }
+
+    // What the file says about the match as a whole and about the set of
+    // the lap that is open: [setup word, score text, statistics, set score].
+    function writeSummary(summary as Array) as Void {
+        _session.setField(RecordingFields.MATCH_SETUP, summary[0] as Number);
+        _session.setField(RecordingFields.FINAL_SCORE, summary[1] as String);
+        _session.setField(RecordingFields.STATISTICS, summary[2] as Array<Number>);
+        _session.setField(RecordingFields.SET_SCORE, summary[3] as Array<Number>);
     }
 
     function save() as Void {
@@ -88,5 +98,9 @@ class MatchRecorder {
 
     function heartRate() as Number? {
         return _sensors.heartRate();
+    }
+
+    function sensors() as BodySensors {
+        return _sensors;
     }
 }

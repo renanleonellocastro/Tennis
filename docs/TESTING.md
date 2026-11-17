@@ -57,16 +57,28 @@ passes only when it reads `PASSED` and no test failed or errored.
 * `ScoreFixerTest`: undo of a whole game and awarding a game.
 * `EndingChoicesTest`: the point ending list for each winner and server.
 * `MatchFlowTest`: the rows of the match, final and resume menus and the
-  methods they run, the setup menu with and without the GPS row, the
-  discard confirmation, and a short real activity recorded and discarded.
+  methods they run, the setup menu with and without the GPS row, the save
+  menu with its tags, saving with tags, the report pages of a match and the
+  keys that turn them, the discard confirmation, and a short real activity
+  recorded and discarded.
+* `MatchTagsTest`: the surface and kind choices, their codes, texts in
+  every language and how they are remembered.
+* `MatchSummaryTest`: the setup word with its tags, the score of a closed
+  and of an open set, the score text and its cut to the room of the field.
+* `ReportTest`: every page of the report for both players (score, serve,
+  point endings, pressure, time, body), the missing value mark, the pager,
+  the layout on the three screen shapes and the length of the row labels in
+  every language.
 * `RecordingTest`: steps and distance counted from the first reading, over
   a pause, a missing reading and midnight, per lap; the recorder starting,
-  pausing, opening laps, saving and discarding; the field ids; the real
+  pausing, opening laps with the score of their set, writing the summary
+  fields, saving and discarding; the field ids; the real
   sensors, GPS and storage of the watch the suite runs on.
 * `MatchStoreTest`: the stored match, one value per set, corrections that
   go back over a set, loading and going on, clearing, unknown headers.
 * `MatchRecordingTest`: the controller recording a match: heart rate in the
-  entries, pause, laps per set, save, discard, the app closing, and a
+  entries, pause, laps per set, the summary written when the match opens,
+  when it is saved with tags and when the app closes, discard, and a
   resumed match with its score, clock and laps.
 
 The recording tests use fakes for the session, sensors, GPS and storage
@@ -94,9 +106,12 @@ A saved match appears as a FIT file in the simulator folder
 `$TMPDIR/com.garmin.connectiq/GARMIN/Activities/`. Any FIT reader shows the
 sport (tennis), one lap per set and the developer fields of
 `docs/RECORDING.md`. This was done once for M4 with a throwaway copy of the
-app that played a scripted match by itself; the result is in
-`docs/RECORDING.md`. A session discarded by the test suite can leave an
-empty lap in the next file the simulator saves; that is a simulator effect.
+app that played a scripted match by itself, and again for M5, when the
+saved file was also converted with `uv run tennis-export` to check the
+summary fields; the results are in `docs/RECORDING.md`. A session
+discarded by the test suite can leave empty or stale laps in the next file
+the simulator saves; that is a simulator effect, so save the file to check
+in a run that follows another run of the app, not the test suite.
 
 ## Watch pass (before each release)
 
@@ -126,8 +141,15 @@ Sideload: `make build DEVICE=fr55`, then copy `bin/Tennis-fr55.prg` to
       match, START returns to the menu.
 * [ ] The heart rate shows after the red dot next to the clock, and the row
       holds only the clock while there is no reading.
-* [ ] On the final score screen START offers Save and Discard; Discard asks
-      first; both end on a short message and return to the menu.
+* [ ] On the final score screen START offers Save, Statistics and Discard;
+      Discard asks first; Save and Discard end on a short message and
+      return to the menu.
+* [ ] Statistics, DOWN or a swipe up on the final score screen opens the
+      report; UP and DOWN or a swipe turn its pages, BACK returns to the
+      final score. Every page fits the screen, with heart rate and calories
+      on the last one.
+* [ ] Save asks for the surface and the kind of match, opens on the Save
+      row, and the next match offers the same choices again.
 * [ ] A saved match is in Garmin Connect as Tennis with one lap per set,
       heart rate, calories, and the Steps and Distance fields in the summary
       and in each lap. Compare the steps with the daily step count before

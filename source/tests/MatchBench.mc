@@ -32,12 +32,17 @@ class MatchBench {
     function initialize(format as Number, isDetailed as Boolean) {
         engine = new MatchEngine(new MatchConfig(format, false, Player.ME), new PointLog([] as Array<Number>));
         store = new MatchStore(memory);
-        controller = controllerOn(engine, isDetailed);
+        controller = controllerOn(engine, setupOf(format, isDetailed));
+    }
+
+    // The setup of a match I serve first, with advantage and without GPS.
+    function setupOf(format as Number, isDetailed as Boolean) as MatchSetup {
+        return new MatchSetup([format, 0, isDetailed ? 1 : 0, Player.ME, 0]);
     }
 
     // A controller on the fakes of this bench, as the app builds one.
-    function controllerOn(matchEngine as MatchEngine, isDetailed as Boolean) as MatchController {
-        return new MatchController(matchEngine, isDetailed, time,
+    function controllerOn(matchEngine as MatchEngine, setup as MatchSetup) as MatchController {
+        return new MatchController(matchEngine, setup, time,
                                    new MatchRecorder(session, sensors, locator), store);
     }
 

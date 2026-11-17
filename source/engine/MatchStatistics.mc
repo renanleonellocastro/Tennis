@@ -89,6 +89,12 @@ class MatchStatistics {
         return _counts[slot(stat, player)];
     }
 
+    // Every counter in the order the activity file keeps them: statistic by
+    // statistic, me and then the opponent.
+    function toArray() as Array<Number> {
+        return _counts;
+    }
+
     // Rounded to a whole percent; zero before the player has served.
     function firstServePercent(player as Number) as Number {
         var served = count(Stat.SERVICE_POINTS, player);

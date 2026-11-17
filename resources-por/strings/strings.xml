@@ -66,10 +66,51 @@
     <string id="FinalYouLost">Você perdeu</string>
     <string id="FinalMatchEnded">Partida encerrada</string>
     <string id="FinalSave">Salvar</string>
+    <string id="FinalReport">Estatísticas</string>
     <string id="FinalDiscard">Descartar</string>
     <string id="DiscardQ">Descartar a atividade?</string>
     <string id="SavedMsg">Salvo!</string>
     <string id="DiscardedMsg">Descartado</string>
+
+    <!-- Tags of a saved match -->
+    <string id="TagSurface">Piso</string>
+    <string id="TagKind">Tipo</string>
+    <string id="TagNotSet">Não definido</string>
+    <string id="SurfaceClay">Saibro</string>
+    <string id="SurfaceHard">Dura</string>
+    <string id="SurfaceGrass">Grama</string>
+    <string id="KindMatch">Partida</string>
+    <string id="KindFriendly">Amistoso</string>
+
+    <!-- Report -->
+    <string id="ReportScore">PLACAR</string>
+    <string id="ReportSet">Set</string>
+    <string id="ReportPoints">Pontos</string>
+    <string id="ReportServe">SAQUE</string>
+    <string id="ReportFirstIn">1º saque</string>
+    <string id="ReportFirstWon">Ganhos 1º</string>
+    <string id="ReportSecondWon">Ganhos 2º</string>
+    <string id="ReportDoubleFaults">Dup. faltas</string>
+    <string id="ReportEndings">PONTOS</string>
+    <string id="ReportAces">Aces</string>
+    <string id="ReportWinners">Winners</string>
+    <string id="ReportNetErrors">Erros rede</string>
+    <string id="ReportOutErrors">Erros fora</string>
+    <string id="ReportPressure">PRESSÃO</string>
+    <string id="ReportBreaks">Quebras</string>
+    <string id="ReportSaved">Salvos</string>
+    <string id="ReportHolds">Mantidos</string>
+    <string id="ReportBestRun">Sequência</string>
+    <string id="ReportTime">TEMPO</string>
+    <string id="ReportMatchTime">Partida</string>
+    <string id="ReportAvgGame">Game médio</string>
+    <string id="ReportLongGame">Game longo</string>
+    <string id="ReportPerPoint">Por ponto</string>
+    <string id="ReportBody">CORPO</string>
+    <string id="ReportAvgHr">FC média</string>
+    <string id="ReportMaxHr">FC máx.</string>
+    <string id="ReportKeyHr">FC decisiva</string>
+    <string id="ReportCalories">Calorias</string>
 
     <!-- Resume a match the app closed on -->
     <string id="ResumeTitle">Partida aberta</string>
