@@ -222,6 +222,16 @@ def test_faults_and_double_faults_have_their_own_kind_of_row(tmp_path: Path) -> 
     assert (rows[1]["ending"], rows[1]["heart_rate"]) == ("ace", "141")
 
 
+def test_ratios_with_nothing_to_divide_are_null_and_not_zero(tmp_path: Path) -> None:
+    builder = FitBuilder().records(WatchLog().add(1).record_values()).session(100, match_setup=pack_setup())
+
+    statistics = exported(tmp_path, builder.write(tmp_path / "one_point.fit"))[0]["match"]["statistics"]
+
+    assert (statistics["me"]["first_serve_percent"], statistics["opponent"]["first_serve_percent"]) == (100, None)
+    assert statistics["average_seconds_between_points"] is None
+    assert statistics["average_deciding_heart_rate"] is None
+
+
 def test_a_match_that_was_stopped_early_keeps_what_was_played(tmp_path: Path) -> None:
     log = WatchLog(config(ONE_SET, no_advantage=True, first_server=1)).play(HOLD + "mm")
     setup = pack_setup(ONE_SET, no_advantage=True, detailed=False, first_server=1, surface=3, kind=2)

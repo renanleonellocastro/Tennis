@@ -270,7 +270,8 @@ line.
 ### `points.csv`
 
 One row for each replayed entry of the point log, in the order played. The
-first line names the columns. Empty cells mean "does not apply".
+first line names the columns. Empty cells mean "does not apply" or "not
+known"; a cell is never filled with 0 to stand for a missing value.
 
 | Column | Meaning |
 |--------|---------|
@@ -369,7 +370,7 @@ fifteen counts named in Part 1 plus these derived values:
 
 | Key | Meaning |
 |-----|---------|
-| `first_serve_percent` | First serves in, as a whole percent of service points, 0 with no service points |
+| `first_serve_percent` | First serves in, as a whole percent of service points. `null` with no service points |
 | `second_serve_points` | Service points played on a second serve |
 | `return_games_played` | Service games of the other player |
 | `return_games_won` | Breaks of serve |
@@ -380,8 +381,14 @@ and two values for the match as a whole:
 
 | Key | Meaning |
 |-----|---------|
-| `average_seconds_between_points` | Time from the first point to the last, divided by the number of points minus one, one decimal. 0 with fewer than two points |
+| `average_seconds_between_points` | Time from the first point to the last, divided by the number of points minus one, one decimal. `null` with fewer than two points |
 | `average_deciding_heart_rate` | Mean heart rate on break and set points that carried a reading, or null |
+
+A ratio or an average with nothing to divide is `null`, never 0: a first
+serve percent of 0 means every first serve was a fault, and `null` means the
+player did not serve. The watch screen shows 0 in both cases; the export
+does not. The same rule holds for the CSV, where the value would be an
+empty cell (`points.csv` has no ratio column today).
 
 `point_log`:
 

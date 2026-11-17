@@ -118,9 +118,14 @@ def statistics_document(statistics: MatchStatistics) -> Document:
     return {
         "me": player_statistics(statistics, ME),
         "opponent": player_statistics(statistics, OPPONENT),
-        "average_seconds_between_points": round(statistics.average_seconds_between_points(), 1),
+        "average_seconds_between_points": one_decimal(statistics.average_seconds_between_points()),
         "average_deciding_heart_rate": statistics.average_deciding_heart_rate(),
     }
+
+
+def one_decimal(value: float | None) -> float | None:
+    """A ratio with nothing to divide stays unknown instead of turning into zero."""
+    return None if value is None else round(value, 1)
 
 
 def player_statistics(statistics: MatchStatistics, player: int) -> Document:
