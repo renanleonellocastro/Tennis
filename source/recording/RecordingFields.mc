@@ -14,11 +14,15 @@ module RecordingFields {
     const SET_SCORE = 7;
     const SET_STEPS = 8;
     const SET_DISTANCE = 9;
+    // Practice: the hits and misses of a block, on its lap.
+    const BLOCK_HITS = 10;
+    const BLOCK_MISSES = 11;
 
     const NO_UNIT = "";
     const COUNTS_UNIT = "counts";
     const STEPS_UNIT = "steps";
     const METERS_UNIT = "m";
+    const SHOTS_UNIT = "shots";
 
     // The bytes of the score text, its closing zero byte included.
     const SCORE_BYTES = 32;
@@ -35,7 +39,9 @@ module RecordingFields {
         [DISTANCE, "distance", false, METERS_UNIT, FitContributor.DATA_TYPE_UINT32, SINGLE],
         [SET_SCORE, "set_score", true, NO_UNIT, FitContributor.DATA_TYPE_UINT8, SET_SCORE_COUNT],
         [SET_STEPS, "set_steps", true, STEPS_UNIT, FitContributor.DATA_TYPE_UINT32, SINGLE],
-        [SET_DISTANCE, "set_distance", true, METERS_UNIT, FitContributor.DATA_TYPE_UINT32, SINGLE]
+        [SET_DISTANCE, "set_distance", true, METERS_UNIT, FitContributor.DATA_TYPE_UINT32, SINGLE],
+        [BLOCK_HITS, "block_hits", true, SHOTS_UNIT, FitContributor.DATA_TYPE_UINT32, SINGLE],
+        [BLOCK_MISSES, "block_misses", true, SHOTS_UNIT, FitContributor.DATA_TYPE_UINT32, SINGLE]
     ];
 
     // What a field holds before the match gives it a value: zero, zeros or

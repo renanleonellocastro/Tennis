@@ -9,4 +9,8 @@
               dataLabel="@Strings.FitStepsLabel" unitLabel="@Strings.FitStepsUnit"/>
     <fitField id="9" displayInActivityLaps="true" sortOrder="3" precision="0"
               dataLabel="@Strings.FitDistanceLabel" unitLabel="@Strings.FitMetersUnit"/>
+    <fitField id="10" displayInActivityLaps="true" sortOrder="4" precision="0"
+              dataLabel="@Strings.FitHitsLabel" unitLabel="@Strings.FitShotsUnit"/>
+    <fitField id="11" displayInActivityLaps="true" sortOrder="5" precision="0"
+              dataLabel="@Strings.FitMissesLabel" unitLabel="@Strings.FitShotsUnit"/>
 </fitContributions>
