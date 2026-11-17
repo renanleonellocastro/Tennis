@@ -1,14 +1,23 @@
 [project]
 name = "tennis-tools"
 version = "0"
-description = "Quality tooling for the Tennis repository"
+description = "Quality tooling and the data export converter of the Tennis repository"
 requires-python = ">=3.12"
+# garmin-fit-sdk is pinned exactly: the reader depends on how this version names developer fields.
+dependencies = ["garmin-fit-sdk==21.221.0", "pillow>=13,<14"]
+
+[project.scripts]
+tennis-export = "tennis_export.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["tools/tennis_export"]
 
 [dependency-groups]
 dev = ["pytest>=8.3", "pytest-cov>=5.0", "ruff>=0.6", "mypy>=1.11"]
-
-[tool.uv]
-package = false
 
 [tool.ruff]
 line-length = 120
@@ -27,4 +36,7 @@ known-first-party = [
   "function_length_model",
   "function_length_monkeyc",
   "function_length_python",
+  "tennis_export",
+  "fit_builder",
+  "match_script",
 ]
