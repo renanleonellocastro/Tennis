@@ -10,6 +10,7 @@ API audit, and a manual pass on a real watch for hardware behavior.
 | Resources check | XML validity, string catalogs in sync, generated string tables up to date | `make resources-check` | `make check` and CI |
 | Device API audit | Every Toybox symbol used against the API database of every target device | `make audit` | `make check` and CI |
 | Compile matrix | Type check level 2 for one device per screen shape; all 80 devices when packaging | `make build-shapes`, `make package` | `make check` and CI |
+| All devices build | Type check level 2 for each of the 80 devices on its own, one result per device (about a minute and a half) | `make build-all` | Manual, before each release |
 | Tool tests | The Python tools at 100% line and branch coverage | `make test-tools` | `make check` and CI |
 | Watch pass | Hardware behavior that cannot be simulated | Real watch | Manual, before each release |
 
@@ -129,6 +130,8 @@ the simulator saves; that is a simulator effect, so save the file to check
 in a run that follows another run of the app, not the test suite.
 
 ## Watch pass (before each release)
+
+First run `make build-all`: every device in `manifest.xml` must compile.
 
 Sideload: `make build DEVICE=fr55`, then copy `bin/Tennis-fr55.prg` to
 `GARMIN/APPS/` over USB.

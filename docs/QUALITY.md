@@ -37,6 +37,8 @@ Tests keep covering everything testable (see [TESTING.md](TESTING.md)); the tool
 
 The simulator suite needs a running simulator, so it stays a separate step: `make sim`, then `make test`. CI runs the same gates.
 
+`make build-all` compiles the app for every device in `manifest.xml` (80 today) at the same type check level, each device in its own folder under `bin/all/`. It prints one `PASS` or `FAIL` line per device with the compiler output of each failure, and exits with an error when any device fails. It takes about a minute and a half on a laptop (`BUILD_ALL_OPTIONS="--jobs 4"` sets how many compile at once; device ids there limit the run), so it is not part of `make check` or CI: run it before each release and after any change to `manifest.xml`.
+
 `make function-length` prints the full function length report, longest first, without failing.
 
 The checker lives in `tools/check_function_length.py`, with one measurer per language (`tools/function_length_python.py` through the `ast` module and `tools/function_length_monkeyc.py`, a string and comment aware brace scanner that qualifies names by module and class). The settings (limit, measured folders, languages and exclusions) live in `tools/function_length.json`. The tools run through `uv`, which installs Python 3.12 and the development dependencies from `pyproject.toml` on first use.
