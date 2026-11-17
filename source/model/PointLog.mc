@@ -15,8 +15,9 @@ class PointLog {
         _entries.add(entry);
     }
 
-    function removeLast() as Void {
-        _entries = _entries.slice(0, _entries.size() - 1);
+    // Keeps the first size entries and drops the rest.
+    function truncate(size as Number) as Void {
+        _entries = _entries.slice(0, size);
     }
 
     function size() as Number {

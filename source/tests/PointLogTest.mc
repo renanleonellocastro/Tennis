@@ -67,7 +67,7 @@ function testEntryIsAPlainNonNegativeNumber(logger as Test.Logger) as Boolean {
 }
 
 (:test)
-function testPointLogAppendsAndRemovesTheLastEntry(logger as Test.Logger) as Boolean {
+function testPointLogAppendsAndTruncates(logger as Test.Logger) as Boolean {
     var log = new PointLog([] as Array<Number>);
     Test.assertEqual(log.size(), 0);
     log.append(11);
@@ -75,7 +75,8 @@ function testPointLogAppendsAndRemovesTheLastEntry(logger as Test.Logger) as Boo
     Test.assertEqual(log.size(), 2);
     Test.assertEqual(log.at(0), 11);
     Test.assertEqual(log.at(1), 22);
-    log.removeLast();
+    log.append(33);
+    log.truncate(1);
     Test.assertEqual(log.size(), 1);
     Test.assertEqual(log.toArray()[0], 11);
     return true;

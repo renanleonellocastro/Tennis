@@ -42,10 +42,16 @@ class MatchEngine {
 
     // Removes the last entry. False when the log is empty.
     function undo() as Boolean {
-        if (_log.size() == 0) {
+        return truncate(_log.size() - 1);
+    }
+
+    // Cuts the log back to its first size entries and replays it once. False
+    // when that would remove nothing.
+    function truncate(size as Number) as Boolean {
+        if (size < 0 || size >= _log.size()) {
             return false;
         }
-        _log.removeLast();
+        _log.truncate(size);
         _state = MatchReplay.state(_config, _log);
         return true;
     }
@@ -56,6 +62,10 @@ class MatchEngine {
 
     function statistics() as MatchStatistics {
         return MatchReplay.statistics(_config, _log);
+    }
+
+    function config() as MatchConfig {
+        return _config;
     }
 
     function log() as PointLog {
