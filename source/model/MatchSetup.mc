@@ -1,9 +1,8 @@
 import Toybox.Lang;
 
 // The choices of the setup screen: preset, deuce scoring, detail level, who
-// serves first and the GPS. Each field holds the index of one option, so a new
-// option is one more key in its row and no new code.
-class MatchSetup {
+// serves first and the GPS.
+class MatchSetup extends OptionList {
     static const FORMAT = 0;
     static const NO_ADVANTAGE = 1;
     static const DETAIL = 2;
@@ -11,62 +10,20 @@ class MatchSetup {
     static const GPS = 4;
     static const FIELD_COUNT = 5;
 
-    hidden const LABEL_KEYS = ["SetupFormat", "SetupNoAd", "SetupDetail", "SetupFirstServe", "SetupGps"];
     // Rows follow the field ids; the options of each row follow the values
     // the engine uses (MatchFormat, off then on, simple then detailed, Player,
     // off then on).
-    hidden const VALUE_KEYS = [
-        ["FormatBestOf3", "FormatMatchTieBreak", "FormatOneSet", "FormatProSet", "FormatTieBreakOnly"],
-        ["ValueOff", "ValueOn"],
-        ["DetailSimple", "DetailDetailed"],
-        ["PlayerMe", "PlayerOpponent"],
-        ["ValueOff", "ValueOn"]
-    ];
-
-    hidden var _values as Array<Number>;
-
-    // Takes what storage returned. Anything that is not a full list of valid
-    // options falls back to the defaults.
     function initialize(stored as Object?) {
-        _values = isValid(stored) ? stored as Array<Number> : [0, 0, 0, 0, 0] as Array<Number>;
-    }
-
-    hidden function isValid(stored as Object?) as Boolean {
-        if (!(stored instanceof Lang.Array) || stored.size() != FIELD_COUNT) {
-            return false;
-        }
-        for (var field = 0; field < FIELD_COUNT; field++) {
-            if (!isOption(field, stored[field] as Object?)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    hidden function isOption(field as Number, value as Object?) as Boolean {
-        return value instanceof Lang.Number && value >= 0 && value < optionCount(field);
-    }
-
-    function optionCount(field as Number) as Number {
-        return (VALUE_KEYS[field] as Array<String>).size();
-    }
-
-    // Moves a field to its next option, wrapping to the first one.
-    function cycle(field as Number) as Void {
-        _values[field] = (_values[field] + 1) % optionCount(field);
-    }
-
-    function labelKey(field as Number) as String {
-        return LABEL_KEYS[field] as String;
-    }
-
-    function valueKey(field as Number) as String {
-        return (VALUE_KEYS[field] as Array<String>)[_values[field]];
-    }
-
-    // The value to put in storage.
-    function toArray() as Array<Number> {
-        return _values;
+        OptionList.initialize(
+            ["SetupFormat", "SetupNoAd", "SetupDetail", "SetupFirstServe", "SetupGps"] as Array<String>,
+            [
+                ["FormatBestOf3", "FormatMatchTieBreak", "FormatOneSet", "FormatProSet", "FormatTieBreakOnly"],
+                ["ValueOff", "ValueOn"],
+                ["DetailSimple", "DetailDetailed"],
+                ["PlayerMe", "PlayerOpponent"],
+                ["ValueOff", "ValueOn"]
+            ] as Array< Array<String> >,
+            stored);
     }
 
     // The rows of the setup screen. A watch without GPS has no GPS row.

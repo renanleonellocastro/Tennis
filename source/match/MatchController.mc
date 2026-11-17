@@ -20,7 +20,7 @@ class MatchController {
     hidden const HANDLERS = [:ignore, :pointForMe, :pointForOpponent, :fault, :undo, :openMenu];
 
     hidden var _engine as MatchEngine;
-    hidden var _isDetailed as Boolean;
+    hidden var _setup as MatchSetup;
     hidden var _time as TimeSource;
     hidden var _clock as MatchClock;
     hidden var _notice as MatchNotice = new MatchNotice();
@@ -33,10 +33,10 @@ class MatchController {
 
     // An engine that already has entries resumes that match: the clock
     // goes on from the time of the last entry.
-    function initialize(engine as MatchEngine, isDetailed as Boolean, time as TimeSource,
+    function initialize(engine as MatchEngine, setup as MatchSetup, time as TimeSource,
                         recorder as MatchRecorder, store as MatchStore) {
         _engine = engine;
-        _isDetailed = isDetailed;
+        _setup = setup;
         _time = time;
         _recorder = recorder;
         _store = store;
@@ -48,6 +48,7 @@ class MatchController {
         var log = _engine.log();
         _clock.advance(log.size() == 0 ? 0 : PointEntry.time(log.at(log.size() - 1)));
         _recorder.start(state().finishedSets(), state().isFinished());
+        writeSummary(new MatchTags(null));
         if (state().isFinished()) {
             stopClock();
         }
@@ -66,7 +67,14 @@ class MatchController {
     // Stores the log and opens the lap of a new set.
     hidden function persist() as Void {
         _store.sync(_engine.log().toArray(), state().finishedSets());
-        _recorder.closeSets(state().finishedSets(), state().isFinished());
+        _recorder.closeSets(state().finishedSets(), state().isFinished(), MatchSummary.closedSetScore(state()));
+    }
+
+    // Brings the summary fields of the activity file up to date. They are
+    // written when the match opens, so a file is a match of this app however
+    // it ends, and again right before every save.
+    hidden function writeSummary(tags as MatchTags) as Void {
+        _recorder.writeSummary(MatchSummary.fields(_setup.toArray(), tags.toArray(), _engine));
     }
 
     // Runs one MatchAction and returns the Reaction flags.
@@ -91,7 +99,7 @@ class MatchController {
         if (!isLive()) {
             return Reaction.NONE;
         }
-        if (_isDetailed) {
+        if (isDetailed()) {
             _pendingWinner = winner;
             return Reaction.ASK_ENDING;
         }
@@ -223,9 +231,11 @@ class MatchController {
 
     // Save, discard and the app closing.
 
-    // Keeps the activity and forgets the stored match.
-    function save() as Void {
+    // Keeps the activity, with the tags the player gave it, and forgets the
+    // stored match.
+    function save(tags as MatchTags) as Void {
         close("SavedMsg");
+        writeSummary(tags);
         _recorder.save();
     }
 
@@ -245,11 +255,12 @@ class MatchController {
     }
 
     // The app is closing with the match still open. What was recorded so
-    // far is saved, and a match that is not over stays stored to resume.
-    // The watch may report the closing more than once.
+    // far is saved without tags, and a match that is not over stays stored
+    // to resume. The watch may report the closing more than once.
     function suspend() as Void {
         if (_farewellKey == null && !_isSuspended) {
             _isSuspended = true;
+            writeSummary(new MatchTags(null));
             _recorder.save();
             if (isOver()) {
                 _store.clear();
@@ -277,6 +288,19 @@ class MatchController {
     }
 
     // Readers for the screen.
+
+    function isDetailed() as Boolean {
+        return _setup.isDetailed();
+    }
+
+    // The numbers of the report, counted from the log when asked for.
+    function statistics() as MatchStatistics {
+        return _engine.statistics();
+    }
+
+    function sensors() as BodySensors {
+        return _recorder.sensors();
+    }
 
     function state() as MatchState {
         return _engine.state();

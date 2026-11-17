@@ -19,10 +19,6 @@ module MatchStoreTests {
         return joinedNumbers(stored[1] as Array<Number>);
     }
 
-    function joinedNumbers(values as Array<Number>) as String {
-        return MatchSetupTests.joinedNumbers(values);
-    }
-
     function keys(memory as MemoryStore) as Number {
         return memory.values.size();
     }

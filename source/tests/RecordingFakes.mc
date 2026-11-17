@@ -6,9 +6,11 @@ import Toybox.Lang;
 // Writes down every call as one letter, and the last value of each field.
 class FakeSession {
     var calls as String = "";
-    var fields as Dictionary<Number, Number> = {} as Dictionary<Number, Number>;
+    var fields as Dictionary<Number, FieldValue> = {} as Dictionary<Number, FieldValue>;
     // The lap fields as they were when each lap closed: [steps, meters].
     var laps as Array< Array<Number> > = [] as Array< Array<Number> >;
+    // The set score each lap closed with, as text: "6,4,0,0".
+    var lapScores as Array<String> = [] as Array<String>;
 
     function start() as Void {
         calls += "s";
@@ -21,6 +23,7 @@ class FakeSession {
     function addLap() as Void {
         calls += "l";
         laps.add([fields[RecordingFields.SET_STEPS], fields[RecordingFields.SET_DISTANCE]] as Array<Number>);
+        lapScores.add(numbers(RecordingFields.SET_SCORE));
     }
 
     function save() as Void {
@@ -31,8 +34,14 @@ class FakeSession {
         calls += "D";
     }
 
-    function setField(id as Number, value as Number) as Void {
+    function setField(id as Number, value as FieldValue) as Void {
         fields.put(id, value);
+    }
+
+    // An array field as text, or "" when it was never written.
+    function numbers(id as Number) as String {
+        var value = fields.get(id);
+        return value instanceof Lang.Array ? joinedNumbers(value as Array<Number>) : "";
     }
 }
 
@@ -40,6 +49,9 @@ class FakeSensors {
     var beats as Number? = null;
     var stepCount as Number? = null;
     var centimeters as Number? = null;
+    var averageBeats as Number? = null;
+    var maxBeats as Number? = null;
+    var kilocalories as Number? = null;
 
     function heartRate() as Number? {
         return beats;
@@ -51,6 +63,18 @@ class FakeSensors {
 
     function distanceCm() as Number? {
         return centimeters;
+    }
+
+    function averageHeartRate() as Number? {
+        return averageBeats;
+    }
+
+    function maxHeartRate() as Number? {
+        return maxBeats;
+    }
+
+    function calories() as Number? {
+        return kilocalories;
     }
 
     function walk(newSteps as Number, newCentimeters as Number) as Void {
@@ -88,4 +112,12 @@ class MemoryStore {
     function remove(key as String) as Void {
         values.remove(key);
     }
+}
+
+function joinedNumbers(values as Array<Number>) as String {
+    var text = "";
+    for (var i = 0; i < values.size(); i++) {
+        text += (i == 0 ? "" : ",") + values[i];
+    }
+    return text;
 }

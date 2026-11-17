@@ -15,6 +15,21 @@ class WatchSensors {
         return info.currentHeartRate;
     }
 
+    function averageHeartRate() as Number? {
+        var info = Activity.getActivityInfo() as Activity.Info?;
+        return info == null ? null : info.averageHeartRate;
+    }
+
+    function maxHeartRate() as Number? {
+        var info = Activity.getActivityInfo() as Activity.Info?;
+        return info == null ? null : info.maxHeartRate;
+    }
+
+    function calories() as Number? {
+        var info = Activity.getActivityInfo() as Activity.Info?;
+        return info == null ? null : info.calories;
+    }
+
     function steps() as Number? {
         return ActivityMonitor.getInfo().steps;
     }

@@ -3,6 +3,8 @@ import Toybox.ActivityRecording;
 import Toybox.FitContributor;
 import Toybox.Lang;
 
+typedef FieldOptions as { :mesgType as Number, :units as String, :count as Number };
+
 // The tennis activity of the watch with the developer fields of
 // RecordingFields. Heart rate, calories and the GPS track are recorded by
 // the watch itself.
@@ -20,11 +22,20 @@ class FitSession {
     }
 
     hidden function createField(row as Array) as Void {
-        var type = row[2] as Boolean ? FitContributor.MESG_TYPE_LAP : FitContributor.MESG_TYPE_SESSION;
-        var field = _session.createField(row[1] as String, row[0] as Number, FitContributor.DATA_TYPE_UINT32,
-                                         {:mesgType => type, :units => row[3] as String});
-        field.setData(0);
+        var type = row[4] as FitContributor.DataType;
+        var count = row[5] as Number;
+        var field = _session.createField(row[1] as String, row[0] as Number, type, options(row, count));
+        field.setData(RecordingFields.emptyValue(type, count));
         _fields.put(row[0] as Number, field);
+    }
+
+    // A field of one value takes no count.
+    hidden function options(row as Array, count as Number) as FieldOptions {
+        var mesgType = row[2] as Boolean ? FitContributor.MESG_TYPE_LAP : FitContributor.MESG_TYPE_SESSION;
+        if (count == RecordingFields.SINGLE) {
+            return {:mesgType => mesgType, :units => row[3] as String};
+        }
+        return {:mesgType => mesgType, :units => row[3] as String, :count => count};
     }
 
     function start() as Void {
@@ -47,7 +58,7 @@ class FitSession {
         _session.discard();
     }
 
-    function setField(id as Number, value as Number) as Void {
+    function setField(id as Number, value as FieldValue) as Void {
         (_fields[id] as FitContributor.Field).setData(value);
     }
 }
