@@ -91,12 +91,13 @@ module MatchFlow {
         }
         var store = new MatchStore(new AppStorage());
         store.begin(setup.toArray());
-        open(setup, [] as Array<Number>, store);
+        open(setup, [] as Array<Number>, [] as Array< Array<Number> >, store);
     }
 
     // Shows the match that the log adds up to, recording from now on.
-    function open(setup as MatchSetup, entries as Array<Number>, store as MatchStore) as Void {
-        var engine = new MatchEngine(setup.config(), new PointLog(entries));
+    function open(setup as MatchSetup, entries as Array<Number>, marks as Array< Array<Number> >,
+                  store as MatchStore) as Void {
+        var engine = new MatchEngine(setup.config(), new PointLog(entries), marks);
         var controller = new MatchController(engine, setup, new SystemTime(),
                                              deviceRecorder(setup), store);
         active = controller;
@@ -119,7 +120,8 @@ module MatchFlow {
         }
     }
 
-    // The score comes back from the stored log; the activity is a new one.
+    // The score comes back from the stored log and marks; the activity is a
+    // new one.
     function resume(store as MatchStore) as Void {
         var stored = store.load();
         if (stored == null) {
@@ -127,7 +129,8 @@ module MatchFlow {
         } else if (!MatchInput.profileOfDevice().canScore()) {
             showTouchNeeded();
         } else {
-            open(new MatchSetup(stored[0] as Object?), stored[1] as Array<Number>, store);
+            open(new MatchSetup(stored[0] as Object?), stored[1] as Array<Number>, stored[2] as Array< Array<Number> >,
+                 store);
         }
     }
 

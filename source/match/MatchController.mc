@@ -75,7 +75,7 @@ class MatchController {
 
     // Stores the log and opens the lap of a new set.
     hidden function persist() as Void {
-        _store.sync(_engine.log().toArray(), state().finishedSets());
+        _store.sync(_engine.log().toArray(), state().finishedSets(), _engine.marks());
         _recorder.closeSets(state().finishedSets(), state().isFinished(), MatchSummary.closedSetScore(state()));
     }
 

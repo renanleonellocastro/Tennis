@@ -16,8 +16,9 @@ function testNewMatchHasEmptyStatistics(logger as Test.Logger) as Boolean {
         assertCounts(statistics, stat, 0, 0);
     }
     Test.assertEqual(statistics.firstServePercent(Player.ME), 0);
-    Test.assertEqual(statistics.gameDurations().size(), 0);
-    Test.assertEqual(statistics.setDurations().size(), 0);
+    Test.assertEqual(statistics.gameCount(), 0);
+    Test.assertEqual(statistics.averageGameSeconds(), 0);
+    Test.assertEqual(statistics.longestGameSeconds(), 0);
     Test.assertEqual(statistics.averageSecondsBetweenPoints(), 0.0);
     Test.assert(statistics.averageDecidingHeartRate() == null);
     return true;
@@ -140,7 +141,7 @@ function testTieBreakIsNotAServiceGame(logger as Test.Logger) as Boolean {
     assertCounts(statistics, Stat.SERVICE_GAMES_PLAYED, 6, 6);
     assertCounts(statistics, Stat.SERVICE_GAMES_WON, 6, 6);
     assertCounts(statistics, Stat.SERVICE_POINTS, 27, 28);
-    Test.assertEqual(statistics.gameDurations().size(), 13);
+    Test.assertEqual(statistics.gameCount(), 13);
     return true;
 }
 
@@ -225,44 +226,62 @@ function testLongestRunSpansGamesAndIgnoresFirstFaults(logger as Test.Logger) as
 }
 
 (:test)
-function testGameAndSetDurationsFollowTheMatchClock(logger as Test.Logger) as Boolean {
+function testGameTimesFollowTheMatchClock(logger as Test.Logger) as Boolean {
     var match = newMatch(MatchFormat.BEST_OF_3);
     match.games("M");
     match.play("OMOOFO");
     var statistics = match.statistics();
-    Test.assertEqual(statistics.gameDurations().size(), 2);
-    Test.assertEqual(statistics.gameDurations()[0], 40);
-    Test.assertEqual(statistics.gameDurations()[1], 60);
-    Test.assertEqual(statistics.setDurations().size(), 0);
+    Test.assertEqual(statistics.gameCount(), 2);
+    Test.assertEqual(statistics.averageGameSeconds(), 50);
+    Test.assertEqual(statistics.longestGameSeconds(), 60);
     return true;
 }
 
 (:test)
-function testSetDurationsOfEveryFinishedSet(logger as Test.Logger) as Boolean {
+function testGameTimesGoOnOverTheSets(logger as Test.Logger) as Boolean {
     var match = newMatch(MatchFormat.BEST_OF_3);
     match.games("MMMMMM");
     match.games("OOOOO");
-    var statistics = match.statistics();
-    Test.assertEqual(statistics.setDurations().size(), 1);
-    Test.assertEqual(statistics.setDurations()[0], 240);
     match.play("MMMOOOMOMOOO");
-    statistics = match.statistics();
-    Test.assertEqual(statistics.setDurations().size(), 2);
-    Test.assertEqual(statistics.setDurations()[1], 320);
-    Test.assertEqual(statistics.gameDurations().size(), 12);
-    Test.assertEqual(statistics.gameDurations()[11], 120);
+    var statistics = match.statistics();
+    Test.assertEqual(statistics.gameCount(), 12);
+    Test.assertEqual(statistics.longestGameSeconds(), 120);
+    Test.assertEqual(statistics.averageGameSeconds(), 47);
     return true;
 }
 
 (:test)
-function testTieBreakOnlyMatchHasOneGameAndOneSetDuration(logger as Test.Logger) as Boolean {
+function testAverageGameTimeIsRounded(logger as Test.Logger) as Boolean {
+    var statistics = new MatchStatistics(Stat.zeros());
+    statistics.closeGame(30);
+    statistics.closeGame(35);
+    Test.assertEqual(statistics.averageGameSeconds(), 18);
+    Test.assertEqual(statistics.longestGameSeconds(), 30);
+    return true;
+}
+
+(:test)
+function testTieBreakOnlyMatchHasOneGame(logger as Test.Logger) as Boolean {
     var match = newMatch(MatchFormat.TIE_BREAK_ONLY);
     match.play("MMMMMMM");
     var statistics = match.statistics();
-    Test.assertEqual(statistics.gameDurations().size(), 1);
-    Test.assertEqual(statistics.gameDurations()[0], 70);
-    Test.assertEqual(statistics.setDurations()[0], 70);
+    Test.assertEqual(statistics.gameCount(), 1);
+    Test.assertEqual(statistics.longestGameSeconds(), 70);
     assertCounts(statistics, Stat.SERVICE_GAMES_PLAYED, 0, 0);
+    return true;
+}
+
+(:test)
+function testSnapshotIsACopyOfEveryValue(logger as Test.Logger) as Boolean {
+    var match = newMatch(MatchFormat.BEST_OF_3);
+    match.play("MMOFFM");
+    var snapshot = match.statistics().snapshot();
+    Test.assertEqual(snapshot.size(), Stat.SIZE);
+    match.play("M");
+    var earlier = new MatchStatistics(snapshot);
+    assertCounts(earlier, Stat.POINTS_WON, 3, 2);
+    assertCounts(match.statistics(), Stat.POINTS_WON, 4, 2);
+    Test.assertEqual(match.statistics().toArray().size(), Stat.COUNT * Player.COUNT);
     return true;
 }
 
@@ -329,6 +348,6 @@ function testStatisticsFollowUndo(logger as Test.Logger) as Boolean {
     assertCounts(statistics, Stat.ACES, 1, 0);
     assertCounts(statistics, Stat.POINTS_WON, 1, 0);
     assertCounts(statistics, Stat.SERVICE_GAMES_PLAYED, 0, 0);
-    Test.assertEqual(statistics.gameDurations().size(), 0);
+    Test.assertEqual(statistics.gameCount(), 0);
     return true;
 }

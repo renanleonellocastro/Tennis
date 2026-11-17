@@ -229,7 +229,7 @@ function testResumeFromAStoredLogRebuildsTheMatch(logger as Test.Logger) as Bool
     match.play("MOOF");
     var stored = match.engine.log().toArray().slice(0, null);
     var config = new MatchConfig(MatchFormat.BEST_OF_3, true, Player.OPPONENT);
-    var resumed = new MatchEngine(config, new PointLog(stored)).state();
+    var resumed = new MatchEngine(config, new PointLog(stored), []).state();
     Test.assertEqual(resumed.sets(Player.ME), 1);
     Test.assertEqual(resumed.games(Player.ME), 1);
     Test.assertEqual(resumed.games(Player.OPPONENT), 2);
@@ -248,7 +248,7 @@ function testEntriesPastTheEndOfAStoredLogAreIgnored(logger as Test.Logger) as B
     stored.add(PointEntry.point(Player.OPPONENT, Ending.NONE, 500, null));
     stored.add(PointEntry.fault(510, null));
     var config = new MatchConfig(MatchFormat.TIE_BREAK_ONLY, false, Player.ME);
-    var resumed = new MatchEngine(config, new PointLog(stored));
+    var resumed = new MatchEngine(config, new PointLog(stored), []);
     Test.assert(resumed.state().isFinished());
     Test.assertEqual(resumed.state().winner(), Player.ME);
     Test.assertEqual(resumed.statistics().count(Stat.POINTS_WON, Player.OPPONENT), 0);

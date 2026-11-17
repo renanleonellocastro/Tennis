@@ -150,11 +150,10 @@ class ReportPresenter {
     // Times.
 
     hidden function timeRows(clockSeconds as Number) as Array<Array> {
-        var games = _statistics.gameDurations();
         return [
             [Strings.t("ReportMatchTime"), MatchPresenter.clockText(clockSeconds)],
-            [Strings.t("ReportAvgGame"), secondsText(average(games))],
-            [Strings.t("ReportLongGame"), secondsText(longest(games))],
+            [Strings.t("ReportAvgGame"), secondsText(_statistics.averageGameSeconds())],
+            [Strings.t("ReportLongGame"), secondsText(_statistics.longestGameSeconds())],
             [Strings.t("ReportPerPoint"), secondsText(Math.round(_statistics.averageSecondsBetweenPoints()).toNumber())]
         ] as Array<Array>;
     }
@@ -162,22 +161,6 @@ class ReportPresenter {
     // Zero seconds means there was nothing to measure.
     hidden function secondsText(seconds as Number) as String {
         return seconds == 0 ? MISSING : MatchPresenter.clockText(seconds);
-    }
-
-    hidden function average(values as Array<Number>) as Number {
-        var sum = 0;
-        for (var i = 0; i < values.size(); i++) {
-            sum += values[i];
-        }
-        return values.size() == 0 ? 0 : (sum + values.size() / 2) / values.size();
-    }
-
-    hidden function longest(values as Array<Number>) as Number {
-        var best = 0;
-        for (var i = 0; i < values.size(); i++) {
-            best = values[i] > best ? values[i] : best;
-        }
-        return best;
     }
 
     // Heart rate and calories.

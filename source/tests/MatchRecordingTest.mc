@@ -12,7 +12,7 @@ module MatchRecordingTests {
         var stored = next.store.load() as Array;
         next.time.ms = 500000;
         next.session = new FakeSession();
-        next.engine = new MatchEngine(bench.engine.config(), new PointLog(stored[1] as Array<Number>));
+        next.engine = new MatchEngine(bench.engine.config(), new PointLog(stored[1] as Array<Number>), stored[2] as Array< Array<Number> >);
         next.controller = next.controllerOn(next.engine, next.setupOf(MatchFormat.BEST_OF_3, false));
         return next;
     }
@@ -274,7 +274,7 @@ module MatchRecordingTests {
         var next = simpleBench(MatchFormat.ONE_SET);
         var stored = new MatchStore(bench.memory).load() as Array;
         next.controller = next.controllerOn(
-            new MatchEngine(bench.engine.config(), new PointLog(stored[1] as Array<Number>)), next.setupOf(MatchFormat.ONE_SET, false));
+            new MatchEngine(bench.engine.config(), new PointLog(stored[1] as Array<Number>), stored[2] as Array< Array<Number> >), next.setupOf(MatchFormat.ONE_SET, false));
         Test.assert(next.controller.isOver());
         Test.assert(!next.controller.isPaused());
         return true;

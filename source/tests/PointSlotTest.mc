@@ -115,7 +115,7 @@ module PointSlotTests {
     function testStoredLogGivesTheSameSlotsAgain(logger as Test.Logger) as Boolean {
         var match = matchAtSixAll(MatchFormat.BEST_OF_3);
         match.play("MFOFFM");
-        var again = new MatchEngine(match.engine.config(), new PointLog(match.engine.log().toArray()));
+        var again = new MatchEngine(match.engine.config(), new PointLog(match.engine.log().toArray()), []);
         Test.assertEqual(joinedNumbers(again.slots()), joinedNumbers(match.engine.slots()));
         Test.assertEqual(sequences(again.slots()), "54,53,52");
         return true;
@@ -129,7 +129,7 @@ module PointSlotTests {
         match.play("MMMMMMM");
         var entries = match.engine.log().toArray().slice(0, null);
         entries.addAll([entries[0], entries[0], entries[0], entries[0]]);
-        var again = new MatchEngine(match.engine.config(), new PointLog(entries));
+        var again = new MatchEngine(match.engine.config(), new PointLog(entries), []);
         Test.assert(again.state().isFinished());
         Test.assertEqual(again.state().setTieBreakPoints(0, Player.ME), 7);
         Test.assertEqual(joinedNumbers(again.slots()), "0,0,0,0,0,0,0,0,0");

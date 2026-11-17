@@ -61,9 +61,9 @@ module MatchStoreTests {
         var memory = new MemoryStore();
         var store = new MatchStore(memory);
         store.begin(SETUP);
-        store.sync(range(0, 2), 0);
-        store.sync(range(0, 3), 1);
-        store.sync(range(0, 5), 1);
+        store.sync(range(0, 2), 0, []);
+        store.sync(range(0, 3), 1, []);
+        store.sync(range(0, 5), 1, []);
         Test.assertEqual(joinedNumbers(memory.values["set0"] as Array<Number>), "0,1,2");
         Test.assertEqual(joinedNumbers(memory.values["set1"] as Array<Number>), "3,4");
         Test.assertEqual(storedLog(memory), "0,1,2,3,4");
@@ -75,9 +75,9 @@ module MatchStoreTests {
         var memory = new MemoryStore();
         var store = new MatchStore(memory);
         store.begin(SETUP);
-        store.sync(range(0, 3), 1);
+        store.sync(range(0, 3), 1, []);
         memory.values.put("set0", ["kept"]);
-        store.sync(range(0, 4), 1);
+        store.sync(range(0, 4), 1, []);
         Test.assertEqual((memory.values["set0"] as Array)[0] as String, "kept");
         return true;
     }
@@ -87,14 +87,14 @@ module MatchStoreTests {
         var memory = new MemoryStore();
         var store = new MatchStore(memory);
         store.begin(SETUP);
-        store.sync(range(0, 3), 1);
-        store.sync(range(0, 6), 2);
-        store.sync(range(0, 8), 2);
-        store.sync(range(0, 2), 0);
+        store.sync(range(0, 3), 1, []);
+        store.sync(range(0, 6), 2, []);
+        store.sync(range(0, 8), 2, []);
+        store.sync(range(0, 2), 0, []);
         Test.assertEqual(keys(memory), 2);
         Test.assertEqual(storedLog(memory), "0,1");
-        store.sync(range(0, 3), 1);
-        store.sync(range(0, 4), 1);
+        store.sync(range(0, 3), 1, []);
+        store.sync(range(0, 4), 1, []);
         Test.assertEqual(storedLog(memory), "0,1,2,3");
         return true;
     }
@@ -104,10 +104,10 @@ module MatchStoreTests {
         var memory = new MemoryStore();
         var store = new MatchStore(memory);
         store.begin(SETUP);
-        store.sync(range(0, 3), 1);
-        store.sync(range(0, 2), 0);
+        store.sync(range(0, 3), 1, []);
+        store.sync(range(0, 2), 0, []);
         Test.assertEqual(storedLog(memory), "0,1");
-        store.sync(range(0, 0), 0);
+        store.sync(range(0, 0), 0, []);
         Test.assertEqual(storedLog(memory), "");
         return true;
     }
@@ -117,13 +117,13 @@ module MatchStoreTests {
         var memory = new MemoryStore();
         var first = new MatchStore(memory);
         first.begin(SETUP);
-        first.sync(range(0, 3), 1);
-        first.sync(range(0, 5), 1);
+        first.sync(range(0, 3), 1, []);
+        first.sync(range(0, 5), 1, []);
         var second = new MatchStore(memory);
         second.load();
-        second.sync(range(0, 6), 1);
+        second.sync(range(0, 6), 1, []);
         Test.assertEqual(storedLog(memory), "0,1,2,3,4,5");
-        second.sync(range(0, 1), 0);
+        second.sync(range(0, 1), 0, []);
         Test.assertEqual(keys(memory), 2);
         Test.assertEqual(storedLog(memory), "0");
         return true;
@@ -136,13 +136,13 @@ module MatchStoreTests {
         var memory = new MemoryStore();
         var first = new MatchStore(memory);
         first.begin(SETUP);
-        first.sync(range(0, 3), 1);
+        first.sync(range(0, 3), 1, []);
         var second = new MatchStore(memory);
         second.load();
-        second.sync(range(0, 5), 1);
-        second.sync(range(0, 4), 1);
+        second.sync(range(0, 5), 1, []);
+        second.sync(range(0, 4), 1, []);
         Test.assertEqual(storedLog(memory), "0,1,2,3");
-        second.sync(range(0, 6), 1);
+        second.sync(range(0, 6), 1, []);
         Test.assertEqual(storedLog(memory), "0,1,2,3,4,5");
         return true;
     }
@@ -152,9 +152,9 @@ module MatchStoreTests {
         var memory = new MemoryStore();
         var store = new MatchStore(memory);
         store.begin(SETUP);
-        store.sync(range(0, 3), 1);
-        store.sync(range(0, 6), 2);
-        store.sync(range(0, 7), 2);
+        store.sync(range(0, 3), 1, []);
+        store.sync(range(0, 6), 2, []);
+        store.sync(range(0, 7), 2, []);
         store.clear();
         Test.assertEqual(keys(memory), 0);
         Test.assert(!store.hasMatch());
@@ -166,11 +166,11 @@ module MatchStoreTests {
         var memory = new MemoryStore();
         var store = new MatchStore(memory);
         store.begin(SETUP);
-        store.sync(range(0, 3), 1);
-        store.sync(range(0, 5), 1);
+        store.sync(range(0, 3), 1, []);
+        store.sync(range(0, 5), 1, []);
         store.begin([0, 0, 0, 0, 0]);
         Test.assertEqual(storedLog(memory), "");
-        store.sync(range(7, 9), 0);
+        store.sync(range(7, 9), 0, []);
         Test.assertEqual(storedLog(memory), "7,8");
         return true;
     }

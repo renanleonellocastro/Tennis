@@ -11,7 +11,7 @@ class MatchDriver {
 
     function initialize(format as Number, isNoAdvantage as Boolean, firstServer as Number) {
         engine = new MatchEngine(new MatchConfig(format, isNoAdvantage, firstServer),
-                                 new PointLog([] as Array<Number>));
+                                 new PointLog([] as Array<Number>), []);
     }
 
     // One entry per character: 'M' a point for me, 'O' a point for the

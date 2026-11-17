@@ -1,48 +1,66 @@
 import Toybox.Lang;
 
-// Watches a replay and counts. For each entry it notes the situation before
-// the entry is applied (who serves, which serve, what is at stake) and then
-// credits the point the entry produced, if any.
+// Applies entries to the score and counts as it goes. For each entry that
+// ends a point it notes the situation before the entry is applied (who
+// serves, which serve, what is at stake) and then credits the point. A
+// first serve fault only moves the score on, so it costs next to nothing.
 class StatisticsCollector {
-    hidden var _statistics as MatchStatistics = new MatchStatistics();
+    hidden var _statistics as MatchStatistics;
     hidden var _server as Number = Player.NONE;
     hidden var _winner as Number = Player.NONE;
     hidden var _wasSecondServe as Boolean = false;
     hidden var _wasTieBreak as Boolean = false;
     hidden var _wasDecidingPoint as Boolean = false;
     hidden var _breakPointHolder as Number = Player.NONE;
-    hidden var _runPlayer as Number = Player.NONE;
-    hidden var _runLength as Number = 0;
-    // The match clock starts at zero, so the first game and set start there.
-    hidden var _gameStart as Number = 0;
-    hidden var _setStart as Number = 0;
+
+    // Stat.zeros() for a new match, or the values of an earlier moment.
+    function initialize(values as Array<Number>) {
+        _statistics = new MatchStatistics(values);
+    }
 
     function statistics() as MatchStatistics {
         return _statistics;
     }
 
-    // Applies the entry to the state and counts what it did.
-    function record(state as MatchState, entry as Number) as Void {
-        noteSituation(state, entry);
-        var outcome = state.apply(entry);
-        if ((outcome & Outcome.POINT) == 0) {
-            return;
+    // Applies the entry to the state, counts what it did and returns its
+    // Outcome flags.
+    function record(state as MatchState, entry as Number) as Number {
+        var endsPoint = !PointEntry.isFault(entry) || state.isSecondServe();
+        if (endsPoint) {
+            noteSituation(state, entry);
         }
-        recordServe(entry);
-        recordEnding(PointEntry.ending(entry));
-        recordRun();
-        recordBreakPoint();
-        recordDecidingHeartRate(PointEntry.heartRate(entry));
-        recordTimes(outcome, PointEntry.time(entry));
+        var outcome = state.apply(entry);
+        if (endsPoint) {
+            recordPoint(entry, outcome);
+        }
+        return outcome;
     }
 
+    // The heart rate of a deciding point is only kept when there is one, so
+    // the set and match point rules are only asked then.
     hidden function noteSituation(state as MatchState, entry as Number) as Void {
         _server = state.server();
-        _winner = state.pointWinner(entry);
+        var receiver = Player.opponentOf(_server);
+        _winner = PointEntry.isFault(entry) ? receiver : PointEntry.winner(entry);
         _wasSecondServe = state.isSecondServe();
         _wasTieBreak = state.isTieBreak();
-        _wasDecidingPoint = state.isDecidingPoint();
-        _breakPointHolder = state.hasBreakPoint(state.receiver()) ? state.receiver() : Player.NONE;
+        _breakPointHolder = !_wasTieBreak && state.hasGamePoint(receiver) ? receiver : Player.NONE;
+        _wasDecidingPoint = PointEntry.heartRate(entry) != null && (_breakPointHolder != Player.NONE
+            || state.hasSetPoint(Player.ME) || state.hasSetPoint(Player.OPPONENT));
+    }
+
+    hidden function recordPoint(entry as Number, outcome as Number) as Void {
+        recordServe(entry);
+        recordEnding(PointEntry.ending(entry));
+        _statistics.noteRun(_winner);
+        recordBreakPoint();
+        if (_wasDecidingPoint) {
+            _statistics.addDecidingHeartRate(PointEntry.heartRate(entry) as Number);
+        }
+        _statistics.notePointTime(PointEntry.time(entry));
+        if ((outcome & Outcome.GAME) != 0) {
+            recordGame(PointEntry.time(entry));
+        }
     }
 
     hidden function recordServe(entry as Number) as Void {
@@ -69,12 +87,6 @@ class StatisticsCollector {
         _statistics.add(Stat.forEnding(ending), isError ? Player.opponentOf(_winner) : _winner);
     }
 
-    hidden function recordRun() as Void {
-        _runLength = _winner == _runPlayer ? _runLength + 1 : 1;
-        _runPlayer = _winner;
-        _statistics.raiseTo(Stat.LONGEST_RUN, _winner, _runLength);
-    }
-
     hidden function recordBreakPoint() as Void {
         if (_breakPointHolder == Player.NONE) {
             return;
@@ -85,35 +97,13 @@ class StatisticsCollector {
         }
     }
 
-    hidden function recordDecidingHeartRate(heartRate as Number?) as Void {
-        if (_wasDecidingPoint && heartRate != null) {
-            _statistics.addDecidingHeartRate(heartRate);
-        }
-    }
-
-    hidden function recordTimes(outcome as Number, time as Number) as Void {
-        _statistics.notePointTime(time);
-        if ((outcome & Outcome.GAME) != 0) {
-            recordGame(time);
-        }
-        if ((outcome & Outcome.SET) != 0) {
-            _statistics.addSetDuration(time - _setStart);
-            _setStart = time;
-        }
-    }
-
     hidden function recordGame(time as Number) as Void {
-        _statistics.addGameDuration(time - _gameStart);
-        _gameStart = time;
+        _statistics.closeGame(time);
         if (!_wasTieBreak) {
-            recordServiceGame();
-        }
-    }
-
-    hidden function recordServiceGame() as Void {
-        _statistics.add(Stat.SERVICE_GAMES_PLAYED, _server);
-        if (_winner == _server) {
-            _statistics.add(Stat.SERVICE_GAMES_WON, _server);
+            _statistics.add(Stat.SERVICE_GAMES_PLAYED, _server);
+            if (_winner == _server) {
+                _statistics.add(Stat.SERVICE_GAMES_WON, _server);
+            }
         }
     }
 }
