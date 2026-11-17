@@ -137,6 +137,7 @@ module MatchRecordingTests {
         bench.store.begin([0, 0, 0, 0, 0]);
         bench.play("MMO");
         bench.controller.suspend();
+        bench.controller.suspend();
         Test.assertEqual(bench.session.calls, "spS");
         Test.assert(bench.store.hasMatch());
         return true;

@@ -29,6 +29,7 @@ class MatchController {
     hidden var _recorder as MatchRecorder;
     hidden var _store as MatchStore;
     hidden var _farewellKey as String? = null;
+    hidden var _isSuspended as Boolean = false;
 
     // An engine that already has entries resumes that match: the clock
     // goes on from the time of the last entry.
@@ -245,8 +246,10 @@ class MatchController {
 
     // The app is closing with the match still open. What was recorded so
     // far is saved, and a match that is not over stays stored to resume.
+    // The watch may report the closing more than once.
     function suspend() as Void {
-        if (_farewellKey == null) {
+        if (_farewellKey == null && !_isSuspended) {
+            _isSuspended = true;
             _recorder.save();
             if (isOver()) {
                 _store.clear();

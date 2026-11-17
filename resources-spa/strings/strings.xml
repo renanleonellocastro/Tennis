@@ -72,7 +72,7 @@
     <string id="DiscardedMsg">Descartado</string>
 
     <!-- Resume a match the app closed on -->
-    <string id="ResumeTitle">Partido en curso</string>
+    <string id="ResumeTitle">Partido abierto</string>
 
     <!-- Activity file fields -->
     <string id="FitStepsLabel">Pasos</string>
