@@ -27,6 +27,7 @@
     <string id="SetupFirstServe">Primeiro saque</string>
     <string id="PlayerMe">Eu</string>
     <string id="PlayerOpponent">Adversário</string>
+    <string id="SetupGps">GPS</string>
     <string id="SetupStart">Iniciar</string>
     <string id="TouchNeededMsg">Ligue o toque para pontuar</string>
 
@@ -64,4 +65,18 @@
     <string id="FinalYouWon">Você venceu</string>
     <string id="FinalYouLost">Você perdeu</string>
     <string id="FinalMatchEnded">Partida encerrada</string>
+    <string id="FinalSave">Salvar</string>
+    <string id="FinalDiscard">Descartar</string>
+    <string id="DiscardQ">Descartar a atividade?</string>
+    <string id="SavedMsg">Salvo!</string>
+    <string id="DiscardedMsg">Descartado</string>
+
+    <!-- Resume a match the app closed on -->
+    <string id="ResumeTitle">Partida em andamento</string>
+
+    <!-- Activity file fields -->
+    <string id="FitStepsLabel">Passos</string>
+    <string id="FitDistanceLabel">Distância</string>
+    <string id="FitStepsUnit">passos</string>
+    <string id="FitMetersUnit">m</string>
 </strings>
