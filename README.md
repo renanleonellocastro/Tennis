@@ -15,26 +15,58 @@ and calories, and finish with a full statistics report of your game.
 
 ## 🚧 Status
 
-This project is in development. Nothing is released yet. Milestone M0
-(foundation) is done: the app builds, opens on a home screen and shows a
-menu whose entries are not built yet. The list below is the vision that
-guides the first version and it may change while the plan is refined.
+This project is in development. Nothing is released or published yet.
 
-## ✨ Planned features
+* **Built**: the scoring engine with every match format, the match setup,
+  the match screen and its controls, simple and detailed point logging,
+  serve faults, undo and score fixes, activity recording (heart rate,
+  calories, steps, distance, optional GPS, one lap per set), resume of an
+  interrupted match, and the export converter.
+* **In progress**: the report on the watch and the match tags, the point
+  log inside the activity file, and practice mode.
+* **Still to do**: the test pass on real watches, store assets and the
+  release.
 
-* 🎾 **Match and practice modes**: record a full match or a training session.
-* 🔢 **Live score**: the current game score in large digits, with the set
-  score in small digits above it.
-* 🧭 **Serve guidance**: a subtle hint of who serves the next point and from
-  which side of the court (deuce or ad).
-* 🔄 **Court ends**: shows which end each player is on and when to change.
-* 📝 **Point by point log**: mark how each point ended, such as winner, ace,
-  double fault, ball in the net, ball out or opponent error.
-* ❤️ **Activity recording**: heart rate, calories and time saved to
-  Garmin Connect.
-* 📊 **End of match report**: winners, errors, net balls, double faults,
-  first serves missed, points won on serve and more, so you can follow your
-  progress over time.
+The list below is what version 1 is planned to do, as agreed in
+[docs/PLAN.md](docs/PLAN.md). The [user guide](docs/USER_GUIDE.md) marks
+what is not built yet.
+
+## ✨ Features of version 1
+
+* 🎾 **Match and practice modes**: record a full singles match or a
+  training session with hit and miss counters.
+* 🏆 **Five match formats**: best of 3 sets, 2 sets plus a 10 point match
+  tie break, 1 set, pro set to 8 games, or a tie break only, with a switch
+  for no advantage scoring.
+* 🔢 **Live score**: game points in large digits, set score above them,
+  heart rate and match clock below.
+* 🧭 **Serve guidance**: a ball next to the player who serves and a mini
+  court with the side to serve from (deuce or ad) and the end each player
+  is on.
+* 🔄 **Change of ends**: a vibration and a notice when it is time.
+* 📝 **Point by point log**: one press for who won the point (simple) or a
+  second press for how it ended (detailed): winner, ace, error in the net
+  or error out. Serve faults and double faults take one button.
+* ↩️ **Undo and fix**: take back the last entry, or correct the score from
+  the menu.
+* ⏯ **Pause, end and resume**: a match interrupted when the app closes can
+  be resumed.
+* ❤️ **Activity recording**: a Tennis activity in Garmin Connect with heart
+  rate, calories, steps, distance, optional GPS and one lap per set.
+* 📊 **End of match report**: serve, return, point and pressure numbers and
+  times, for both players, on the watch and as fields in Garmin Connect.
+* 📤 **Open data**: every point stored in the activity file, with a free
+  converter to CSV and JSON and an approximate court heat map.
+* ⌚ **80 watch models** and 🌍 **6 languages** (English, Portuguese,
+  Spanish, French, German, Italian), the same reach as Stretches.
+
+## 📖 Documentation
+
+* [User guide](docs/USER_GUIDE.md): how to record a match, the controls on
+  each kind of watch, the report and the export.
+* [Store listing](docs/STORE_LISTING.md): the Connect IQ store texts in the
+  six languages, ready for the day the app is published.
+* [Plan](docs/PLAN.md): the agreed requirements, decisions and milestones.
 
 ## 👨‍👩‍👧 Same family as Stretches
 
@@ -42,11 +74,6 @@ Tennis is built by the same developer as
 [Stretches](https://github.com/renanleonellocastro/Stretches) and shares its
 look and feel: black background, one warm accent color, large readable
 numbers and simple button controls that work on every supported watch.
-
-## 🗺 Plan
-
-The agreed requirements, decisions and milestones live in
-[docs/PLAN.md](docs/PLAN.md).
 
 ## 🛠 Getting started (developers)
 
@@ -63,15 +90,17 @@ make check    # run every local quality gate
 
 Project layout:
 
-* `source/`: the app (entry point, `ui/`, `i18n/`, generated string table
-  and `tests/`)
+* `source/`: the app (entry point, `model/`, `engine/`, `match/`,
+  `recording/`, `ui/`, `i18n/`, generated string table and `tests/`)
 * `resources*/`: launcher icon and the strings of the six languages
 * `scripts/`: string table and icon generators, resources check and device
   API audit
 * `tools/`: function length checker, the `tennis_export` converter and
   their tests
-* `docs/`: [plan](docs/PLAN.md), [quality bar](docs/QUALITY.md),
-  [testing strategy](docs/TESTING.md) and [data format](docs/DATA_FORMAT.md)
+* `docs/`: [plan](docs/PLAN.md), [user guide](docs/USER_GUIDE.md),
+  [store listing](docs/STORE_LISTING.md), [quality bar](docs/QUALITY.md),
+  [testing strategy](docs/TESTING.md), [recording](docs/RECORDING.md) and
+  [data format](docs/DATA_FORMAT.md)
 
 ## 📤 Export your data
 
