@@ -31,6 +31,8 @@ fixing the developer experience is a contribution too.
 | Path | What lives there |
 |---|---|
 | `source/TennisApp.mc` | App entry point |
+| `source/model/` | Match format, players, court sides and the packed point log |
+| `source/engine/` | Scoring engine: state and statistics derived by replaying the point log (no UI code) |
 | `source/ui/` | Views, delegates, menus and the theme |
 | `source/i18n/` | Text lookup by language |
 | `source/generated/` | Generated string table (do not edit) |

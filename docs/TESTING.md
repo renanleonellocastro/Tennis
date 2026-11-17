@@ -30,6 +30,23 @@ passes only when it reads `PASSED` and no test failed or errored.
   so it survives the 64 color MIP palette; the text splitting helpers.
 * `I18nTest`: all six languages have every string key with a value.
 * `MenuKitTest`: the main menu rows and the action each one maps to.
+* `PointLogTest`: packing of a point into one number (result, ending, heart
+  rate, time, with clamping) and the log operations.
+* `MatchScoringTest`: points, games, sets and the end of the match in every
+  format, with and without advantage, including both kinds of tie break.
+* `MatchServeTest`: server rotation, serve side, second serve, ends and when
+  a change of ends is due, inside and outside a tie break.
+* `MatchPressureTest`: game, break, set and match point flags for both
+  players and the deciding point.
+* `MatchEngineTest`: faults and double faults, ace validity, a finished match
+  rejecting entries, undo at every boundary and resume from a stored log.
+* `MatchStatisticsTest`: every statistic for both players, durations and
+  averages.
+
+The engine tests reach every function and both outcomes of every condition
+in `source/model/` and `source/engine/`. This was measured once with a
+throwaway probe over a copy of the sources, since the SDK has no coverage
+report; nothing enforces it, so keep it true when the engine changes.
 
 ## What is not automated
 
