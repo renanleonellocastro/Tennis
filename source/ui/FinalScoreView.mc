@@ -32,7 +32,7 @@ class FinalScoreView extends WatchUi.View {
         Theme.drawBrandArc(dc, Theme.COLOR_ACCENT);
         drawLine(dc, TITLE_Y, Graphics.FONT_SMALL, Theme.COLOR_ACCENT,
                  Strings.t(MatchPresenter.finalTitleKey(state)));
-        drawLine(dc, SETS_Y, Graphics.FONT_MEDIUM, Theme.COLOR_TEXT, MatchPresenter.setsText(state));
+        drawLine(dc, SETS_Y, Graphics.FONT_MEDIUM, Theme.COLOR_TEXT, MatchPresenter.finalSetsText(state));
         drawLine(dc, CLOCK_Y, Graphics.FONT_TINY, Theme.COLOR_TEXT_DIM,
                  MatchPresenter.clockText(_controller.clockSeconds()));
         drawMoreMark(dc);

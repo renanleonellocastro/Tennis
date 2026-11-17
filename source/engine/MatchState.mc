@@ -207,6 +207,11 @@ class MatchState {
         return lead(_points, player) > 0 && points > DEUCE_POINTS ? DISPLAY_ADVANTAGE : DISPLAY_FORTY;
     }
 
+    // Points of the game in progress as a plain count.
+    function points(player as Number) as Number {
+        return _points[player];
+    }
+
     function games(player as Number) as Number {
         return _games[player];
     }

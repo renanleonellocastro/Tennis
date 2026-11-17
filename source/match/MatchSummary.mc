@@ -58,6 +58,14 @@ module MatchSummary {
         return games + "(" + MatchPresenter.pair(score[2], score[3]) + ")";
     }
 
+    // True while a set is being played. A match that stops right after a
+    // set has no open set: its next set has neither a game nor a point.
+    function hasOpenSet(state as MatchState) as Boolean {
+        var played = state.games(Player.ME) + state.games(Player.OPPONENT)
+            + state.points(Player.ME) + state.points(Player.OPPONENT);
+        return !state.isFinished() && (played > 0 || state.finishedSets() == 0);
+    }
+
     // The closed sets as on a scoreboard, then the games of a set that was
     // still open: "7-6(7-5) 6-3".
     function scoreText(state as MatchState) as String {
@@ -65,16 +73,17 @@ module MatchSummary {
         for (var set = 0; set < state.finishedSets(); set++) {
             text += (set == 0 ? "" : SET_GAP) + setText(setScore(state, set));
         }
-        if (!state.isFinished()) {
+        if (hasOpenSet(state)) {
             text += (text.length() == 0 ? "" : SET_GAP) + MatchPresenter.pair(state.games(Player.ME), state.games(Player.OPPONENT));
         }
         return text.substring(0, SCORE_TEXT_MAX) as String;
     }
 
-    // [setup word, score text, statistics, score of the open set], as
-    // MatchRecorder.writeSummary takes them.
+    // [setup word, score text, statistics, score of the open set, size of
+    // the point log], as MatchRecorder.writeSummary takes them.
     function fields(setup as Array<Number>, tags as Array<Number>, engine as MatchEngine) as Array {
         var state = engine.state();
-        return [setupWord(setup, tags), scoreText(state), engine.statistics().toArray(), openSetScore(state)];
+        return [setupWord(setup, tags), scoreText(state), engine.statistics().toArray(), openSetScore(state),
+                engine.log().size()];
     }
 }

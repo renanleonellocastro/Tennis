@@ -60,7 +60,7 @@ class ReportPresenter {
         for (var set = 0; set < _state.finishedSets(); set++) {
             rows.add(setRow(rows.size(), MatchSummary.setScore(_state, set)));
         }
-        if (!_state.isFinished()) {
+        if (MatchSummary.hasOpenSet(_state)) {
             rows.add(setRow(rows.size(), MatchSummary.openSetScore(_state)));
         }
         rows.add([Strings.t("ReportPoints"), count(Stat.POINTS_WON, Player.ME), count(Stat.POINTS_WON, Player.OPPONENT)]);

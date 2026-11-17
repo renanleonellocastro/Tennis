@@ -214,7 +214,7 @@ module RecordingTests {
 
     (:test)
     function testFieldTableUsesTheIdsSharedWithTheConverter(logger as Test.Logger) as Boolean {
-        var names = {2 => "match_setup", 3 => "final_score", 4 => "statistics", 5 => "steps", 6 => "distance",
+        var names = {0 => "point_log", 1 => "log_size", 2 => "match_setup", 3 => "final_score", 4 => "statistics", 5 => "steps", 6 => "distance",
                      7 => "set_score", 8 => "set_steps", 9 => "set_distance",
                      10 => "block_hits", 11 => "block_misses"};
         Test.assertEqual(RecordingFields.TABLE.size(), names.size());
@@ -239,7 +239,7 @@ module RecordingTests {
 
     (:test)
     function testEachKindOfActivityCarriesOnlyItsFields(logger as Test.Logger) as Boolean {
-        Test.assertEqual(idsOfKind(RecordingFields.MATCH), "2,3,4,5,6,7,8,9");
+        Test.assertEqual(idsOfKind(RecordingFields.MATCH), "0,1,2,3,4,5,6,7,8,9");
         Test.assertEqual(idsOfKind(RecordingFields.PRACTICE), "5,6,8,9,10,11");
         return true;
     }
@@ -287,11 +287,12 @@ module RecordingTests {
         var session = new FakeSession();
         var sensors = new FakeSensors();
         var recorder = recorderOn(session, sensors, new FakeLocator());
-        recorder.writeSummary([33, "6-4 2-1", [1, 2, 3], [2, 1, 0, 0]]);
+        recorder.writeSummary([33, "6-4 2-1", [1, 2, 3], [2, 1, 0, 0], 61]);
         Test.assertEqual(session.fields[RecordingFields.MATCH_SETUP] as Number, 33);
         Test.assertEqual(session.fields[RecordingFields.FINAL_SCORE] as String, "6-4 2-1");
         Test.assertEqual(session.numbers(RecordingFields.STATISTICS), "1,2,3");
         Test.assertEqual(session.numbers(RecordingFields.SET_SCORE), "2,1,0,0");
+        Test.assertEqual(session.fields[RecordingFields.LOG_SIZE] as Number, 61);
         Test.assert(recorder.sensors() == sensors);
         return true;
     }

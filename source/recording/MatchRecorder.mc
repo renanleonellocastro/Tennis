@@ -78,9 +78,17 @@ class MatchRecorder {
         sample();
     }
 
+    // The newest entries of the point log (see PointSlot). The watch copies
+    // the field to every record it writes from now on.
+    function writePointLog(slots as Array<Number>) as Void {
+        _session.setField(RecordingFields.POINT_LOG, slots);
+    }
+
     // What the file says about the match as a whole and about the set of
-    // the lap that is open: [setup word, score text, statistics, set score].
+    // the lap that is open: [setup word, score text, statistics, set score,
+    // size of the point log].
     function writeSummary(summary as Array) as Void {
+        _session.setField(RecordingFields.LOG_SIZE, summary[4] as Number);
         _session.setField(RecordingFields.MATCH_SETUP, summary[0] as Number);
         _session.setField(RecordingFields.FINAL_SCORE, summary[1] as String);
         _session.setField(RecordingFields.STATISTICS, summary[2] as Array<Number>);

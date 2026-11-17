@@ -37,7 +37,7 @@ class FitSession {
 
     // A field of one value takes no count.
     hidden function options(row as Array, count as Number) as FieldOptions {
-        var mesgType = row[2] as Boolean ? FitContributor.MESG_TYPE_LAP : FitContributor.MESG_TYPE_SESSION;
+        var mesgType = row[2] as Number;
         if (count == RecordingFields.SINGLE) {
             return {:mesgType => mesgType, :units => row[3] as String};
         }
