@@ -112,7 +112,18 @@ module I18n {
                 "FitStepsLabel" => "Passos",
                 "FitDistanceLabel" => "Distância",
                 "FitStepsUnit" => "passos",
-                "FitMetersUnit" => "m"
+                "FitMetersUnit" => "m",
+                "FitHitsLabel" => "Acertos",
+                "FitMissesLabel" => "Erros",
+                "FitShotsUnit" => "bolas",
+                "PracticeBlock" => "Bloco",
+                "PracticeHit" => "ACERTO",
+                "PracticeMiss" => "ERRO",
+                "PracticeNext" => "PRÓX.",
+                "PracticeMenuEnd" => "Encerrar treino",
+                "EndPracticeQ" => "Encerrar o treino?",
+                "PracticeEnded" => "Treino encerrado",
+                "PracticeTotal" => "Total"
             };
         }
         if (code.equals("spa")) {
@@ -216,7 +227,18 @@ module I18n {
                 "FitStepsLabel" => "Pasos",
                 "FitDistanceLabel" => "Distancia",
                 "FitStepsUnit" => "pasos",
-                "FitMetersUnit" => "m"
+                "FitMetersUnit" => "m",
+                "FitHitsLabel" => "Aciertos",
+                "FitMissesLabel" => "Fallos",
+                "FitShotsUnit" => "bolas",
+                "PracticeBlock" => "Bloque",
+                "PracticeHit" => "ACIERTO",
+                "PracticeMiss" => "FALLO",
+                "PracticeNext" => "SIG.",
+                "PracticeMenuEnd" => "Terminar práctica",
+                "EndPracticeQ" => "¿Terminar la práctica?",
+                "PracticeEnded" => "Práctica terminada",
+                "PracticeTotal" => "Total"
             };
         }
         if (code.equals("fre")) {
@@ -320,7 +342,18 @@ module I18n {
                 "FitStepsLabel" => "Pas",
                 "FitDistanceLabel" => "Distance",
                 "FitStepsUnit" => "pas",
-                "FitMetersUnit" => "m"
+                "FitMetersUnit" => "m",
+                "FitHitsLabel" => "Réussis",
+                "FitMissesLabel" => "Ratés",
+                "FitShotsUnit" => "balles",
+                "PracticeBlock" => "Bloc",
+                "PracticeHit" => "RÉUSSI",
+                "PracticeMiss" => "RATÉ",
+                "PracticeNext" => "SUIV.",
+                "PracticeMenuEnd" => "Terminer la séance",
+                "EndPracticeQ" => "Terminer la séance ?",
+                "PracticeEnded" => "Séance terminée",
+                "PracticeTotal" => "Total"
             };
         }
         if (code.equals("deu")) {
@@ -424,7 +457,18 @@ module I18n {
                 "FitStepsLabel" => "Schritte",
                 "FitDistanceLabel" => "Distanz",
                 "FitStepsUnit" => "Schritte",
-                "FitMetersUnit" => "m"
+                "FitMetersUnit" => "m",
+                "FitHitsLabel" => "Treffer",
+                "FitMissesLabel" => "Fehler",
+                "FitShotsUnit" => "Bälle",
+                "PracticeBlock" => "Block",
+                "PracticeHit" => "TREFFER",
+                "PracticeMiss" => "FEHLER",
+                "PracticeNext" => "WEITER",
+                "PracticeMenuEnd" => "Training beenden",
+                "EndPracticeQ" => "Training beenden?",
+                "PracticeEnded" => "Training beendet",
+                "PracticeTotal" => "Gesamt"
             };
         }
         if (code.equals("ita")) {
@@ -528,7 +572,18 @@ module I18n {
                 "FitStepsLabel" => "Passi",
                 "FitDistanceLabel" => "Distanza",
                 "FitStepsUnit" => "passi",
-                "FitMetersUnit" => "m"
+                "FitMetersUnit" => "m",
+                "FitHitsLabel" => "Centri",
+                "FitMissesLabel" => "Errori",
+                "FitShotsUnit" => "palle",
+                "PracticeBlock" => "Blocco",
+                "PracticeHit" => "CENTRO",
+                "PracticeMiss" => "ERRORE",
+                "PracticeNext" => "AVANTI",
+                "PracticeMenuEnd" => "Termina allenamento",
+                "EndPracticeQ" => "Terminare la sessione?",
+                "PracticeEnded" => "Allenamento terminato",
+                "PracticeTotal" => "Totale"
             };
         }
         return {
@@ -631,7 +686,18 @@ module I18n {
             "FitStepsLabel" => "Steps",
             "FitDistanceLabel" => "Distance",
             "FitStepsUnit" => "steps",
-            "FitMetersUnit" => "m"
+            "FitMetersUnit" => "m",
+            "FitHitsLabel" => "Hits",
+            "FitMissesLabel" => "Misses",
+            "FitShotsUnit" => "shots",
+            "PracticeBlock" => "Block",
+            "PracticeHit" => "HIT",
+            "PracticeMiss" => "MISS",
+            "PracticeNext" => "NEXT",
+            "PracticeMenuEnd" => "End practice",
+            "EndPracticeQ" => "End the practice?",
+            "PracticeEnded" => "Practice ended",
+            "PracticeTotal" => "Total"
         };
     }
 }

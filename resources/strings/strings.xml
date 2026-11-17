@@ -120,4 +120,17 @@
     <string id="FitDistanceLabel">Distance</string>
     <string id="FitStepsUnit">steps</string>
     <string id="FitMetersUnit">m</string>
+    <string id="FitHitsLabel">Hits</string>
+    <string id="FitMissesLabel">Misses</string>
+    <string id="FitShotsUnit">shots</string>
+
+    <!-- Practice -->
+    <string id="PracticeBlock">Block</string>
+    <string id="PracticeHit">HIT</string>
+    <string id="PracticeMiss">MISS</string>
+    <string id="PracticeNext">NEXT</string>
+    <string id="PracticeMenuEnd">End practice</string>
+    <string id="EndPracticeQ">End the practice?</string>
+    <string id="PracticeEnded">Practice ended</string>
+    <string id="PracticeTotal">Total</string>
 </strings>

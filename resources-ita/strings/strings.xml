@@ -120,4 +120,17 @@
     <string id="FitDistanceLabel">Distanza</string>
     <string id="FitStepsUnit">passi</string>
     <string id="FitMetersUnit">m</string>
+    <string id="FitHitsLabel">Centri</string>
+    <string id="FitMissesLabel">Errori</string>
+    <string id="FitShotsUnit">palle</string>
+
+    <!-- Practice -->
+    <string id="PracticeBlock">Blocco</string>
+    <string id="PracticeHit">CENTRO</string>
+    <string id="PracticeMiss">ERRORE</string>
+    <string id="PracticeNext">AVANTI</string>
+    <string id="PracticeMenuEnd">Termina allenamento</string>
+    <string id="EndPracticeQ">Terminare la sessione?</string>
+    <string id="PracticeEnded">Allenamento terminato</string>
+    <string id="PracticeTotal">Totale</string>
 </strings>
