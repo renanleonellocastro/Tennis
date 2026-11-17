@@ -30,8 +30,9 @@ bytes.
 ### Overview
 
 The watch records a normal tennis activity (sport `tennis`) with heart rate
-and, when enabled, GPS. On top of that it adds ten developer fields. The
-limit agreed for the app is twelve, so two ids stay free.
+and, when enabled, GPS. On top of that it adds twelve developer fields: ten
+for a match and two for a practice. The limit agreed for the app is twelve,
+so no id stays free.
 
 | Id | Name | FIT message | Type | Count | Units | Meaning |
 |---:|------|-------------|------|------:|-------|---------|
@@ -45,8 +46,8 @@ limit agreed for the app is twelve, so two ids stay free.
 | 7 | `set_score` | lap (19) | UINT8 | 4 | none | Games and tie break points of the set the lap covers |
 | 8 | `set_steps` | lap (19) | UINT32 | 1 | steps | Steps taken during the set |
 | 9 | `set_distance` | lap (19) | UINT32 | 1 | m | Distance covered during the set |
-
-Ids 10 and 11 are not used.
+| 10 | `block_hits` | lap (19) | UINT32 | 1 | shots | Practice only: hits counted in the block the lap covers |
+| 11 | `block_misses` | lap (19) | UINT32 | 1 | shots | Practice only: misses counted in the block the lap covers |
 
 > **Considered, not built: a match identifier.** A match that is closed and
 > resumed is saved as several activity files, and nothing in them says
@@ -250,6 +251,36 @@ The session fields are written when the match opens (so a file always
 carries `match_setup`), again when the app closes with a match in progress,
 and a last time when the player saves. The tags are chosen on the save
 screen, so a match saved by the app closing has both tags at 0 (not set).
+
+### Practice: one lap for each block (lap message)
+
+A practice is the same tennis activity with free counters instead of a
+score. It has no point log and none of the match session fields (ids 0 to 4
+and 7); it writes `steps`, `distance`, `set_steps` and `set_distance` like a
+match, where the "set" of the two lap fields is the block.
+
+* The watch closes a lap when a block is closed, so lap `n` covers block
+  `n`. Saving closes the lap of the block that was open.
+* `block_hits` and `block_misses`: the hits and misses counted in the block.
+  The success rate is not stored: it is `hits / (hits + misses)`.
+* A block with no entries cannot be closed on the watch, so only the last
+  lap can have 0 and 0. It is the time after the last closed block and is
+  not a block.
+* A closed block is final: undo on the watch only reaches the entries of
+  the open block, so the values of a closed lap never change.
+
+What the converter still needs for a practice (not done, `tools/tennis_export`
+does not read these fields yet):
+
+1. Read `block_hits` and `block_misses` from each lap, by name.
+2. Tell a practice from a match: a practice has no `point_log` and has the
+   two block fields on its laps. A match must not fail when the block
+   fields are missing or zero.
+3. Skip a last lap with 0 hits and 0 misses when listing blocks.
+4. Decide the output: for example a `practice.json` with one row per block
+   (duration from the native lap fields, hits, misses, rate, steps, distance)
+   and the totals.
+5. Add both fields to the FIT builder of the tool tests.
 
 ### Still to be confirmed on the watch
 

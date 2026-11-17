@@ -34,6 +34,7 @@ fixing the developer experience is a contribution too.
 | `source/model/` | Match format, players, court sides and the packed point log |
 | `source/engine/` | Scoring engine: state and statistics derived by replaying the point log (no UI code) |
 | `source/match/` | Match screen decisions with no drawing: setup store, clock, input map, layout numbers, controller, texts, score fixes |
+| `source/practice/` | Practice mode: counters by block, controller, texts, recorder over the match recorder, and its screens and menus (inside the `PracticeFlow` module) |
 | `source/recording/` | The activity: session, laps, steps and distance fields, the stored match, and the small interfaces over the watch sensors, GPS and storage (see `docs/RECORDING.md`) |
 | `source/ui/` | Views, delegates, menus and the theme (drawing and navigation only) |
 | `source/i18n/` | Text lookup by language |

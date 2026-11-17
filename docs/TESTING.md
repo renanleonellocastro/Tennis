@@ -80,6 +80,21 @@ passes only when it reads `PASSED` and no test failed or errored.
   entries, pause, laps per set, the summary written when the match opens,
   when it is saved with tags and when the app closes, discard, and a
   resumed match with its score, clock and laps.
+* `PracticeLogTest`: hits, misses, undo inside the open block only, closing
+  blocks, empty blocks that do not close, totals.
+* `PracticePresenterTest`: success rate rounding, the texts of the practice
+  screen and of the summary rows, and the summary pages.
+* `PracticeControllerTest`: the practice actions behind the match keys and
+  taps, counting, one lap per block with its hits and misses, pause, end,
+  reopen, save, discard, the app closing, and the practice recorder.
+* `PracticeFlowTest`: the rows of the practice and save menus and the
+  methods they run, the confirmations, the summary paging keys, every
+  practice text in every language, and a short real activity recorded and
+  discarded.
+
+The practice suites were written in M7 without the simulator: they compile
+on the three shape devices but had not been run when they were committed.
+The first `make test` after M7 is their first run.
 
 The recording tests use fakes for the session, sensors, GPS and storage
 (`source/tests/RecordingFakes.mc`), so they need no sensor data.
@@ -121,8 +136,20 @@ Sideload: `make build DEVICE=fr55`, then copy `bin/Tennis-fr55.prg` to
 * [ ] The app opens on the home screen: frame ring, brand arc, app name and
       MENU pill, nothing clipped.
 * [ ] START opens the menu with Start match, Practice, Settings and About.
-* [ ] Practice and Settings show the coming soon message and return to the
-      menu by themselves.
+* [ ] Settings shows the coming soon message and returns to the menu by
+      itself.
+* [ ] Practice opens the practice screen: block 1, 0 and 0, clock running.
+      UP adds a hit, DOWN a miss, BACK takes the last entry back, START
+      closes the block with a vibration and opens block 2. An empty block
+      does not close.
+* [ ] Practice on a touch watch: left half is a hit, right half a miss,
+      the two pills at the bottom open the menu and close the block.
+* [ ] Practice menu: pause stops the clock and the counters, resume starts
+      them again; End asks first, then shows the summary with one row per
+      block, the total and the time. More than four blocks turn pages.
+* [ ] Practice summary: START offers Save and Discard, BACK goes on with
+      the practice. A saved practice shows in Garmin Connect with one lap
+      per block and its hits and misses.
 * [ ] Start match opens the setup with the last choices and the start row
       selected; each row cycles its value.
 * [ ] Five button watch: UP scores for me, DOWN for the opponent, START logs
