@@ -117,7 +117,8 @@ def test_the_point_log_is_joined_by_sequence_number_without_repeats(tmp_path: Pa
     }
     assert document["match"]["score"]["text"] == "6-0 6-0"
     assert document["integrity"] == {"score_mismatches": [], "statistics_match": True, "set_scores_match": True}
-    assert document["watch_summary"] == {"final_score": "6-0 6-0"}
+    assert document["watch_summary"]["final_score"] == "6-0 6-0"
+    assert len(document["watch_summary"]["set_scores"]) == 3
 
 
 def test_a_set_split_by_the_resume_adds_up_its_lap_in_each_file(tmp_path: Path) -> None:
