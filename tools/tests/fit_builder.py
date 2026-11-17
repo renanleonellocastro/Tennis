@@ -40,6 +40,8 @@ FIELDS = (
     (7, "set_score", UINT8, LAP),
     (8, "set_steps", UINT32, LAP),
     (9, "set_distance", UINT32, LAP),
+    (10, "block_hits", UINT32, LAP),
+    (11, "block_misses", UINT32, LAP),
 )
 FIELD_NUMBERS = {name: number for number, name, _, _ in FIELDS}
 
@@ -122,10 +124,12 @@ class FitBuilder:
         """A lap that says when it was closed but not when it was opened or how long it lasted."""
         return self._write(LAP, {"timestamp": self._at(seconds)}, developer)
 
-    def session(self, seconds: float, *, total_distance: float | None = None, **developer: Any) -> Self:
+    def session(
+        self, seconds: float, *, total_distance: float | None = None, laps: int | None = None, **developer: Any
+    ) -> Self:
         times = {"timestamp": self._at(seconds), "start_time": self._at(0), "total_elapsed_time": seconds}
         totals = {"total_timer_time": seconds, "total_calories": 300, "total_distance": total_distance}
-        return self._write(SESSION, {**times, **totals, "sport": "tennis"}, developer)
+        return self._write(SESSION, {**times, **totals, "num_laps": laps, "sport": "tennis"}, developer)
 
     def to_bytes(self) -> bytes:
         return self._encoder.close()
