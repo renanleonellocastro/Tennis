@@ -13,17 +13,11 @@ module PracticeFlow {
         hidden const CLOCK_TICK_MS = 1000;
         hidden const HIT_SIDE = Player.ME;
         hidden const MISS_SIDE = Player.OPPONENT;
-        // Largest first; the first one whose widest count fits is used.
-        hidden const COUNT_FONTS = [Graphics.FONT_NUMBER_THAI_HOT, Graphics.FONT_NUMBER_HOT,
-                                    Graphics.FONT_NUMBER_MEDIUM, Graphics.FONT_NUMBER_MILD];
         // The widest count of two and of three digits, indexed by
         // PracticePresenter.digitSlot.
         hidden const WIDEST_COUNTS = ["88", "888"];
-        // Indexed by side.
-        hidden const SIDE_COLORS = [Theme.COLOR_ACCENT, Theme.COLOR_TEXT_DIM];
         hidden const LABEL_KEYS = ["PracticeHit", "PracticeMiss"];
         hidden const CENTERED = Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER;
-        hidden const LEFT = Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER;
 
         hidden var _controller as PracticeController;
         hidden var _layout as MatchLayout;
@@ -39,17 +33,8 @@ module PracticeFlow {
 
         function onLayout(dc as Dc) as Void {
             for (var slot = 0; slot < WIDEST_COUNTS.size(); slot++) {
-                _countFonts[slot] = fittingFont(dc, WIDEST_COUNTS[slot] as String);
+                _countFonts[slot] = MatchDraw.numberFont(dc, _layout, WIDEST_COUNTS[slot] as String);
             }
-        }
-
-        hidden function fittingFont(dc as Dc, widest as String) as Graphics.FontDefinition {
-            var sizes = [] as Array< Array<Number> >;
-            for (var i = 0; i < COUNT_FONTS.size(); i++) {
-                var font = COUNT_FONTS[i] as Graphics.FontDefinition;
-                sizes.add([dc.getTextWidthInPixels(widest, font), dc.getFontHeight(font)] as Array<Number>);
-            }
-            return COUNT_FONTS[_layout.firstFitting(sizes)] as Graphics.FontDefinition;
         }
 
         // The menu and its question change the practice while this screen is
@@ -107,54 +92,15 @@ module PracticeFlow {
                                  font as Graphics.FontDefinition) as Void {
             dc.setColor(Theme.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
             dc.drawText(_layout.playerX(side), _layout.pointsY(), font, count.toString(), CENTERED);
-            dc.setColor(SIDE_COLORS[side] as Number, Graphics.COLOR_TRANSPARENT);
+            dc.setColor(MatchDraw.SIDE_COLORS[side] as Number, Graphics.COLOR_TRANSPARENT);
             dc.drawText(_layout.playerX(side), _layout.labelsY(), Graphics.FONT_XTINY,
                         Strings.t(LABEL_KEYS[side] as String), CENTERED);
         }
 
         hidden function drawFooter(dc as Dc) as Void {
-            drawClock(dc);
-            if (_layout.hasTouchControls()) {
-                drawTouchControls(dc);
-            }
-            if (_layout.hasKeyHints()) {
-                drawKeyHint(dc, HIT_SIDE);
-                drawKeyHint(dc, MISS_SIDE);
-            }
-        }
-
-        // The clock and, when the watch reads one, the heart rate after a dot.
-        hidden function drawClock(dc as Dc) as Void {
-            var clock = MatchPresenter.clockText(_controller.clockSeconds());
-            var beats = MatchPresenter.heartRateText(_controller.heartRate());
-            var xs = _layout.footerXs(dc.getTextWidthInPixels(clock, Graphics.FONT_TINY),
-                                      dc.getTextWidthInPixels(beats, Graphics.FONT_TINY));
-            dc.setColor(_controller.isPaused() ? Theme.COLOR_TEXT_DIM : Theme.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(xs[0], _layout.clockY(), Graphics.FONT_TINY, clock, LEFT);
-            if (beats.length() > 0) {
-                dc.drawText(xs[2], _layout.clockY(), Graphics.FONT_TINY, beats, LEFT);
-                dc.setColor(Theme.COLOR_DANGER, Graphics.COLOR_TRANSPARENT);
-                dc.fillCircle(xs[1], _layout.clockY(), _layout.heartDotRadius());
-            }
-        }
-
-        // The menu and the block closing, for the watches without their keys.
-        hidden function drawTouchControls(dc as Dc) as Void {
-            Theme.drawPill(dc, _layout.menuControlX(), _layout.controlsY(), Strings.t("HomeHint"),
-                           Graphics.FONT_XTINY, Theme.COLOR_TEXT_DIM);
-            Theme.drawPill(dc, _layout.faultControlX(), _layout.controlsY(), Strings.t("PracticeNext"),
-                           Graphics.FONT_XTINY, Theme.COLOR_TEXT_DIM);
-        }
-
-        // A short arc on the screen edge next to the key of a side, in the
-        // color of the label of that side.
-        hidden function drawKeyHint(dc as Dc, side as Number) as Void {
-            var degrees = _layout.keyHintDegrees(side);
-            dc.setPenWidth(Theme.ARC_PEN);
-            dc.setColor(SIDE_COLORS[side] as Number, Graphics.COLOR_TRANSPARENT);
-            dc.drawArc(_layout.centerX(), dc.getHeight() / 2, Theme.frameRadius(dc),
-                       Graphics.ARC_COUNTER_CLOCKWISE, degrees[0], degrees[1]);
-            dc.setPenWidth(1);
+            MatchDraw.draw(dc, _layout,
+                             [_controller.clockSeconds(), _controller.heartRate(), _controller.isPaused()],
+                             "PracticeNext");
         }
     }
 
