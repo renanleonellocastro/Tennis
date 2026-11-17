@@ -12,11 +12,16 @@ class TennisApp extends Application.AppBase {
         return [new HomeView(), new HomeDelegate()];
     }
 
-    // A match that is still open keeps what it recorded (see RECORDING.md).
+    // A match or a practice that is still open keeps what it recorded (see
+    // RECORDING.md).
     function onStop(state as Dictionary?) as Void {
         var match = MatchFlow.active;
         if (match != null) {
             match.suspend();
+        }
+        var practice = PracticeFlow.active;
+        if (practice != null) {
+            practice.suspend();
         }
     }
 }
