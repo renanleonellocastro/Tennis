@@ -129,8 +129,7 @@
     <string id="PracticeHit">TREFFER</string>
     <string id="PracticeMiss">FEHLER</string>
     <string id="PracticeNext">WEITER</string>
-    <string id="PracticeMenuEnd">Training beenden</string>
+    <string id="PracticeMenuEnd">Beenden</string>
     <string id="EndPracticeQ">Training beenden?</string>
-    <string id="PracticeEnded">Training beendet</string>
     <string id="PracticeTotal">Gesamt</string>
 </strings>

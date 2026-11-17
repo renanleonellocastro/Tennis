@@ -129,8 +129,7 @@
     <string id="PracticeHit">ACIERTO</string>
     <string id="PracticeMiss">FALLO</string>
     <string id="PracticeNext">SIG.</string>
-    <string id="PracticeMenuEnd">Terminar práctica</string>
+    <string id="PracticeMenuEnd">Terminar</string>
     <string id="EndPracticeQ">¿Terminar la práctica?</string>
-    <string id="PracticeEnded">Práctica terminada</string>
     <string id="PracticeTotal">Total</string>
 </strings>

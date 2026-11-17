@@ -75,7 +75,7 @@ module PracticeFlow {
 
     function showEndConfirmation(controller as PracticeController) as Void {
         WatchUi.switchToView(new WatchUi.Confirmation(Strings.t("EndPracticeQ")),
-                             new EndPracticeConfirmDelegate(controller), WatchUi.SLIDE_IMMEDIATE);
+                             new PracticeConfirmDelegate(controller.method(:end)), WatchUi.SLIDE_IMMEDIATE);
     }
 
     // Replaces the practice screen, which must be the one on top.
@@ -90,13 +90,13 @@ module PracticeFlow {
     // Summary: save or discard.
 
     function pushSaveMenu(controller as PracticeController) as Void {
-        WatchUi.pushView(MatchFlow.menuOf("PracticeEnded", saveMenuRows()), new PracticeSaveMenuDelegate(controller),
+        WatchUi.pushView(MatchFlow.menuOf("MenuPractice", saveMenuRows()), new PracticeSaveMenuDelegate(controller),
                          WatchUi.SLIDE_UP);
     }
 
     function showDiscardConfirmation(controller as PracticeController) as Void {
         WatchUi.switchToView(new WatchUi.Confirmation(Strings.t("DiscardQ")),
-                             new PracticeDiscardConfirmDelegate(controller), WatchUi.SLIDE_IMMEDIATE);
+                             new PracticeConfirmDelegate(controller.method(:discard)), WatchUi.SLIDE_IMMEDIATE);
     }
 
     // Replaces the summary, which must be the one on top, once the practice

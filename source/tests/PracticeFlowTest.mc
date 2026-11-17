@@ -38,7 +38,7 @@ module PracticeTests {
     (:test)
     function testEveryPracticeTextExistsInEveryLanguage(logger as Test.Logger) as Boolean {
         var keys = ["MenuPractice", "PracticeBlock", "PracticeHit", "PracticeMiss", "PracticeNext",
-                    "PracticeTotal", "PracticeEnded", "EndPracticeQ", "DiscardQ", "Paused", "HomeHint",
+                    "PracticeTotal", "EndPracticeQ", "DiscardQ", "Paused", "HomeHint",
                     "TouchNeededMsg", "SavedMsg", "DiscardedMsg", "FitHitsLabel", "FitMissesLabel", "FitShotsUnit"];
         for (var i = 0; i < keys.size(); i++) {
             assertKeyInEveryLanguage(keys[i]);
@@ -58,7 +58,7 @@ module PracticeTests {
     (:test)
     function testEndConfirmationEndsOnlyOnYes(logger as Test.Logger) as Boolean {
         var controller = new PracticeBench().controller;
-        var confirm = new PracticeFlow.EndPracticeConfirmDelegate(controller);
+        var confirm = new PracticeFlow.PracticeConfirmDelegate(controller.method(:end));
         Test.assert(confirm.onResponse(WatchUi.CONFIRM_NO));
         Test.assert(!controller.isOver());
         Test.assert(confirm.onResponse(WatchUi.CONFIRM_YES));
@@ -69,7 +69,7 @@ module PracticeTests {
     (:test)
     function testDiscardConfirmationDiscardsOnlyOnYes(logger as Test.Logger) as Boolean {
         var bench = new PracticeBench();
-        var confirm = new PracticeFlow.PracticeDiscardConfirmDelegate(bench.controller);
+        var confirm = new PracticeFlow.PracticeConfirmDelegate(bench.controller.method(:discard));
         Test.assert(confirm.onResponse(WatchUi.CONFIRM_NO));
         Test.assert(bench.controller.farewellKey() == null);
         Test.assert(confirm.onResponse(WatchUi.CONFIRM_YES));

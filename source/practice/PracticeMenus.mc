@@ -32,19 +32,21 @@ module PracticeFlow {
         }
     }
 
-    // The confirmation closes itself after the answer and the practice screen
-    // shows again, which is where an ended practice moves to the summary.
-    class EndPracticeConfirmDelegate extends WatchUi.ConfirmationDelegate {
-        hidden var _controller as PracticeController;
+    // Runs an action of the practice when the answer is yes. The confirmation
+    // closes itself after the answer and the screen underneath shows again:
+    // the practice screen moves an ended practice to the summary and the
+    // summary leaves a discarded one.
+    class PracticeConfirmDelegate extends WatchUi.ConfirmationDelegate {
+        hidden var _action as Method() as Void;
 
-        function initialize(controller as PracticeController) {
+        function initialize(action as Method() as Void) {
             ConfirmationDelegate.initialize();
-            _controller = controller;
+            _action = action;
         }
 
         function onResponse(response as WatchUi.Confirm) as Boolean {
             if (response == WatchUi.CONFIRM_YES) {
-                _controller.end();
+                _action.invoke();
             }
             return true;
         }
@@ -75,22 +77,6 @@ module PracticeFlow {
 
         function onBack() as Void {
             WatchUi.popView(WatchUi.SLIDE_DOWN);
-        }
-    }
-
-    class PracticeDiscardConfirmDelegate extends WatchUi.ConfirmationDelegate {
-        hidden var _controller as PracticeController;
-
-        function initialize(controller as PracticeController) {
-            ConfirmationDelegate.initialize();
-            _controller = controller;
-        }
-
-        function onResponse(response as WatchUi.Confirm) as Boolean {
-            if (response == WatchUi.CONFIRM_YES) {
-                _controller.discard();
-            }
-            return true;
         }
     }
 }

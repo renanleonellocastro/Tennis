@@ -129,8 +129,7 @@
     <string id="PracticeHit">RÉUSSI</string>
     <string id="PracticeMiss">RATÉ</string>
     <string id="PracticeNext">SUIV.</string>
-    <string id="PracticeMenuEnd">Terminer la séance</string>
+    <string id="PracticeMenuEnd">Terminer</string>
     <string id="EndPracticeQ">Terminer la séance ?</string>
-    <string id="PracticeEnded">Séance terminée</string>
     <string id="PracticeTotal">Total</string>
 </strings>

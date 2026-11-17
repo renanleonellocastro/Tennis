@@ -129,8 +129,7 @@
     <string id="PracticeHit">ACERTO</string>
     <string id="PracticeMiss">ERRO</string>
     <string id="PracticeNext">PRÓX.</string>
-    <string id="PracticeMenuEnd">Encerrar treino</string>
+    <string id="PracticeMenuEnd">Encerrar</string>
     <string id="EndPracticeQ">Encerrar o treino?</string>
-    <string id="PracticeEnded">Treino encerrado</string>
     <string id="PracticeTotal">Total</string>
 </strings>

@@ -129,8 +129,7 @@
     <string id="PracticeHit">CENTRO</string>
     <string id="PracticeMiss">ERRORE</string>
     <string id="PracticeNext">AVANTI</string>
-    <string id="PracticeMenuEnd">Termina allenamento</string>
+    <string id="PracticeMenuEnd">Termina</string>
     <string id="EndPracticeQ">Terminare la sessione?</string>
-    <string id="PracticeEnded">Allenamento terminato</string>
     <string id="PracticeTotal">Totale</string>
 </strings>
