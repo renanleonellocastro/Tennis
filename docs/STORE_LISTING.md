@@ -507,9 +507,8 @@ app ends up different.
 4. **Point log in the activity file (M6 watch side, in progress).** The
    whole "Your data is yours" section and the FitContributor line depend on
    it. Today the converter is proven only against files built by its tests.
-5. **Practice mode (M7, in progress).** Counters, blocks and the success
-   rate per block are described from the plan. The menu entry shows
-   "Coming soon" today.
+5. **Practice mode on a real watch.** Counters, blocks and the success
+   rate per block work on the simulator; nothing ran on a real watch.
 6. **Controls on real watches.** Hold UP for the menu, taps on touch
    screens, the MENU and FAULT buttons on watches without UP and DOWN
    buttons, and the vibration at the change of ends need the watch pass of

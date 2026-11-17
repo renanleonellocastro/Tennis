@@ -81,10 +81,10 @@ and adds only the two block fields.
 * A practice is not kept in storage and cannot be resumed. When the app
   closes with a practice open, or on its summary without a choice, the
   activity recorded so far is saved.
-* The match fields are never set during a practice and the block fields
-  are never set during a match. Every field of the table is still created
-  for both, so whether an unset field shows up empty in Garmin Connect is
-  to be checked on a real file.
+* Each kind of activity creates only its own fields: a practice has the
+  movement fields and the two block fields, a match has the movement
+  fields and the match fields. A simulator practice file was read back and
+  carries no match field.
 
 ## Storage keys
 

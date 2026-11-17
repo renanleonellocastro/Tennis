@@ -7,7 +7,7 @@ API audit, and a manual pass on a real watch for hardware behavior.
 | Layer | What | Runs where | Gate |
 |---|---|---|---|
 | Unit tests | Run No Evil suite (`source/tests/`) on the simulator | `make test` | Local before every commit; best effort on CI |
-| Resources check | XML validity, string catalogs in sync, generated string table up to date | `make resources-check` | `make check` and CI |
+| Resources check | XML validity, string catalogs in sync, generated string tables up to date | `make resources-check` | `make check` and CI |
 | Device API audit | Every Toybox symbol used against the API database of every target device | `make audit` | `make check` and CI |
 | Compile matrix | Type check level 2 for one device per screen shape; all 80 devices when packaging | `make build-shapes`, `make package` | `make check` and CI |
 | Tool tests | The Python tools at 100% line and branch coverage | `make test-tools` | `make check` and CI |
@@ -72,7 +72,8 @@ passes only when it reads `PASSED` and no test failed or errored.
 * `RecordingTest`: steps and distance counted from the first reading, over
   a pause, a missing reading and midnight, per lap; the recorder starting,
   pausing, opening laps with the score of their set, writing the summary
-  fields, saving and discarding; the field ids; the real
+  fields, saving and discarding; the field ids and which fields a match and a
+  practice each create; the real
   sensors, GPS and storage of the watch the suite runs on.
 * `MatchStoreTest`: the stored match, one value per set, corrections that
   go back over a set, loading and going on, clearing, unknown headers.
@@ -92,9 +93,8 @@ passes only when it reads `PASSED` and no test failed or errored.
   practice text in every language, and a short real activity recorded and
   discarded.
 
-The practice suites were written in M7 without the simulator: they compile
-on the three shape devices but had not been run when they were committed.
-The first `make test` after M7 is their first run.
+The practice suites run with the rest in `make test` (388 tests on the
+Forerunner 55 at the end of M7).
 
 The recording tests use fakes for the session, sensors, GPS and storage
 (`source/tests/RecordingFakes.mc`), so they need no sensor data.

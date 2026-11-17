@@ -38,7 +38,8 @@ fixing the developer experience is a contribution too.
 | `source/recording/` | The activity: session, laps, steps and distance fields, the stored match, and the small interfaces over the watch sensors, GPS and storage (see `docs/RECORDING.md`) |
 | `source/ui/` | Views, delegates, menus and the theme (drawing and navigation only) |
 | `source/i18n/` | Text lookup by language |
-| `source/generated/` | Generated string table (do not edit) |
+| `source/generated/` | Generated index of the string tables (do not edit) |
+| `resources/texts/` | Generated string tables, one JSON resource for each language (do not edit) |
 | `source/tests/` | Unit tests (`(:test)` functions, Run No Evil). New test files go inside a module, because the global scope holds at most 253 members |
 | `resources*/` | Launcher icon and the strings of each language |
 | `scripts/` | String table and icon generators, resources check, device API audit |
@@ -48,7 +49,8 @@ fixing the developer experience is a contribution too.
 
 1. Edit `resources/strings/strings.xml` and the same id in **every**
    `resources-<code>/strings/strings.xml` (por, spa, fre, deu, ita).
-2. Run `make strings` to regenerate `source/generated/Strings.mc`.
+2. Run `make strings` to regenerate `source/generated/Strings.mc` and the
+   tables in `resources/texts/`.
 3. `make resources-check` confirms that nothing is missing or stale.
 
 ## Adding a new language
