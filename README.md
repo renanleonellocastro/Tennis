@@ -111,6 +111,13 @@ a spreadsheet or feed to your own scripts:
 uv run tennis-export activity.fit --out my-match
 ```
 
+A match that was closed and resumed is saved as more than one activity.
+Give all its files, in any order, and they are joined into one export:
+
+```bash
+uv run tennis-export first-half.fit second-half.fit --out my-match
+```
+
 It writes into the chosen directory:
 
 * `points.csv`: one row for each point, with the score after it.

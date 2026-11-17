@@ -69,8 +69,8 @@ def test_derived_numbers_come_from_the_counters() -> None:
 def test_numbers_that_need_data_are_empty_before_the_first_point() -> None:
     statistics = replay_of(WatchLog().add(FAULT)).statistics
 
-    assert statistics.first_serve_percent(ME) == 0
-    assert statistics.average_seconds_between_points() == 0.0
+    assert statistics.first_serve_percent(ME) is None
+    assert statistics.average_seconds_between_points() is None
     assert statistics.average_deciding_heart_rate() is None
     assert statistics.counts == [0] * 30
 

@@ -68,11 +68,16 @@ def at(seconds: float) -> datetime:
 
 
 class FitBuilder:
-    """Writes messages in call order; developer values are given by field name and None means absent."""
+    """Writes messages in call order; developer values are given by field name and None means absent.
 
-    def __init__(self) -> None:
+    Every time is given in seconds from the start of the file, which is `begins` seconds after START.
+    """
+
+    def __init__(self, begins: float = 0.0) -> None:
+        self._begins = begins
         self._encoder = Encoder()
-        self._encoder.write_mesg({"mesg_num": FILE_ID, "type": "activity", "manufacturer": 1, "time_created": START})
+        created = {"type": "activity", "manufacturer": 1, "time_created": self._at(0)}
+        self._encoder.write_mesg({"mesg_num": FILE_ID, **created})
         self._encoder.write_mesg({"mesg_num": DEVELOPER_DATA_ID, **DEVELOPER})
         for number, name, base_type, message in FIELDS:
             self._describe(number, name, base_type, message)
@@ -87,6 +92,9 @@ class FitBuilder:
         }
         self._encoder.write_mesg({"mesg_num": FIELD_DESCRIPTION, **description})
         self._encoder.add_developer_field(number, DEVELOPER, description)
+
+    def _at(self, seconds: float) -> datetime:
+        return at(self._begins + seconds)
 
     def _write(self, message: int, native: dict[str, Any], developer: dict[str, Any]) -> Self:
         fields = {FIELD_NUMBERS[name]: value for name, value in developer.items() if value is not None}
@@ -103,14 +111,19 @@ class FitBuilder:
     ) -> Self:
         latitude, longitude = position or (None, None)
         native = {"heart_rate": heart_rate, "position_lat": latitude, "position_long": longitude}
-        return self._write(RECORD, {"timestamp": at(seconds), **native}, {"point_log": point_log})
+        return self._write(RECORD, {"timestamp": self._at(seconds), **native}, {"point_log": point_log})
 
-    def lap(self, seconds: float, **developer: Any) -> Self:
-        native = {"timestamp": at(seconds), "start_time": START, "total_timer_time": seconds}
-        return self._write(LAP, native, developer)
+    def lap(self, seconds: float, *, opened: float = 0.0, **developer: Any) -> Self:
+        """A lap that was opened at one moment of the file and closed at another, with the timer always running."""
+        times = {"timestamp": self._at(seconds), "start_time": self._at(opened)}
+        return self._write(LAP, {**times, "total_timer_time": seconds - opened}, developer)
+
+    def untimed_lap(self, seconds: float, **developer: Any) -> Self:
+        """A lap that says when it was closed but not when it was opened or how long it lasted."""
+        return self._write(LAP, {"timestamp": self._at(seconds)}, developer)
 
     def session(self, seconds: float, *, total_distance: float | None = None, **developer: Any) -> Self:
-        times = {"timestamp": at(seconds), "start_time": START, "total_elapsed_time": seconds}
+        times = {"timestamp": self._at(seconds), "start_time": self._at(0), "total_elapsed_time": seconds}
         totals = {"total_timer_time": seconds, "total_calories": 300, "total_distance": total_distance}
         return self._write(SESSION, {**times, **totals, "sport": "tennis"}, developer)
 

@@ -264,6 +264,13 @@ The converter prints the files it wrote in the chosen folder. Without
 `--out` they go to a folder named after the file, next to it (for
 `activity.fit`, the folder `activity-export`).
 
+A match that was closed and resumed is saved as two activity files. Give
+both to the converter in one command and it joins them into one result:
+
+   ```
+   uv run tennis-export first-half.fit second-half.fit --out my-match
+   ```
+
 * `points.csv`: one row for each point or fault, in the order played, with
   the server, the result, how it ended and the score after it.
 * `match.json`: the setup, the final score, the statistics of both players,

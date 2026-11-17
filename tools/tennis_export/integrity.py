@@ -14,14 +14,15 @@ if TYPE_CHECKING:
     from tennis_export.match_reader import Match
     from tennis_export.match_state import SetScore
     from tennis_export.replay import Row, ScoreAfter
+    from tennis_export.set_laps import SetLaps
 
 
-def integrity_document(match: Match, activity: Activity) -> dict[str, Any]:
+def integrity_document(match: Match, activity: Activity, set_laps: Sequence[SetLaps] | None) -> dict[str, Any]:
     """Empty list and true (or null when the watch stored nothing to compare) mean the two sides agree."""
     return {
         "score_mismatches": [row.slot.sequence for row in match.replay.rows if not agrees(row)],
         "statistics_match": statistics_match(activity.session, match.replay.statistics.counts),
-        "set_scores_match": set_scores_match(activity.laps, match.replay.state.set_scores),
+        "set_scores_match": set_scores_match(set_laps, match.replay.state.set_scores),
     }
 
 
@@ -46,8 +47,8 @@ def stored_set_form(score: SetScore) -> list[int]:
     return [*score.games, *score.tie_break_points]
 
 
-def set_scores_match(laps: Sequence[Message], scores: Sequence[SetScore]) -> bool | None:
-    """Only closed sets are compared, each with the lap of the same position."""
-    closed = laps[: len(scores)]
-    stored = [list(lap.developer[SET_SCORE_FIELD]) for lap in closed if SET_SCORE_FIELD in lap.developer]
+def set_scores_match(set_laps: Sequence[SetLaps] | None, scores: Sequence[SetScore]) -> bool | None:
+    """Each closed set is compared with the lap that closed it, the last of its laps."""
+    closing = [laps[-1] for laps in set_laps or () if laps]
+    stored = [list(lap.developer[SET_SCORE_FIELD]) for lap in closing if SET_SCORE_FIELD in lap.developer]
     return stored == [stored_set_form(score) for score in scores] if stored else None

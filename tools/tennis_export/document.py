@@ -8,6 +8,8 @@ from typing import TYPE_CHECKING, Any
 from tennis_export.integrity import integrity_document
 from tennis_export.layout import DISTANCE_FIELD, FINAL_SCORE_FIELD, FORMAT_VERSION, STEPS_FIELD
 from tennis_export.match_document import match_document
+from tennis_export.set_laps import laps_by_set
+from tennis_export.source_files import source_documents
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -15,6 +17,7 @@ if TYPE_CHECKING:
 
     from tennis_export.fit_reader import Activity, Message
     from tennis_export.match_reader import Match
+    from tennis_export.source_files import SourceFile
 
 type Document = dict[str, Any]
 
@@ -24,10 +27,14 @@ LONGITUDE = "position_long"
 NO_MATCH: Document = {"match": None, "point_log": None, "integrity": None, "watch_summary": None}
 
 
-def build_document(source: str, activity: Activity, match: Match | None, heat_map: Document | None) -> Document:
+def build_document(
+    sources: Sequence[SourceFile], activity: Activity, match: Match | None, heat_map: Document | None
+) -> Document:
+    """The sources are the files in recording order and the activity is what they hold together."""
     return {
         "format_version": FORMAT_VERSION,
-        "source": source,
+        "source": sources[0].name,
+        "source_files": source_documents(sources),
         "activity": activity_document(activity),
         **(NO_MATCH if match is None else match_sections(match, activity)),
         "heat_map": heat_map,
@@ -35,10 +42,11 @@ def build_document(source: str, activity: Activity, match: Match | None, heat_ma
 
 
 def match_sections(match: Match, activity: Activity) -> Document:
+    set_laps = laps_by_set(match.replay.rows, activity.records, activity.laps)
     return {
-        "match": match_document(match, activity.laps),
+        "match": match_document(match, set_laps),
         "point_log": point_log_document(match),
-        "integrity": integrity_document(match, activity),
+        "integrity": integrity_document(match, activity, set_laps),
         "watch_summary": {"final_score": activity.session.developer.get(FINAL_SCORE_FIELD)},
     }
 

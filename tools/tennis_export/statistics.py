@@ -82,11 +82,11 @@ class MatchStatistics:
     def count(self, stat: Stat, player: int) -> int:
         return self.counts[self._slot(stat, player)]
 
-    def first_serve_percent(self, player: int) -> int:
-        """Rounded to a whole percent; zero before the player has served."""
+    def first_serve_percent(self, player: int) -> int | None:
+        """Rounded to a whole percent; None before the player has served, where the watch shows zero."""
         served = self.count(Stat.SERVICE_POINTS, player)
         if served == 0:
-            return 0
+            return None
         return (self.count(Stat.FIRST_SERVES_IN, player) * PERCENT + served // 2) // served
 
     def second_serve_points(self, player: int) -> int:
@@ -104,11 +104,11 @@ class MatchStatistics:
     def break_points_saved(self, player: int) -> int:
         return self.break_points_faced(player) - self.count(Stat.BREAK_POINTS_WON, opponent_of(player))
 
-    def average_seconds_between_points(self) -> float:
-        """Zero until two points were played."""
+    def average_seconds_between_points(self) -> float | None:
+        """None until two points were played, where the watch shows zero."""
         times = self.point_times
         if times.count < 2:
-            return 0.0
+            return None
         return (times.last - times.first) / (times.count - 1)
 
     def average_deciding_heart_rate(self) -> int | None:
