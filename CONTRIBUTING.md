@@ -42,7 +42,7 @@ fixing the developer experience is a contribution too.
 | `resources/texts/` | Generated string tables, one JSON resource for each language (do not edit) |
 | `source/tests/` | Unit tests (`(:test)` functions, Run No Evil). New test files go inside a module, because the global scope holds at most 253 members |
 | `resources*/` | Launcher icon and the strings of each language |
-| `scripts/` | String table and icon generators, resources check, device API audit |
+| `scripts/` | String table and icon generators, resources check, device API audit, all devices build |
 | `tools/` | Function length checker and its tests |
 
 ## Changing text
@@ -83,6 +83,11 @@ Every PR must pass:
 * The strict function length gate (`make function-length-gate`)
 * All unit tests green on the simulator (`make test`)
 
+Before a release, and after any change to the device list in
+`manifest.xml`, also run `make build-all`: it compiles the app for every
+supported device and reports each one on its own. It takes about a minute
+and a half, so it is not part of `make check`.
+
 See [docs/TESTING.md](docs/TESTING.md) for the full strategy, including the
 manual pass on a real watch before releases.
 
@@ -97,7 +102,8 @@ manual pass on a real watch before releases.
 
 ## Releasing (maintainers)
 
-1. Update the version in the `AboutText` strings.
+1. Update the version in the `AboutText` strings, move the Unreleased
+   section of `CHANGELOG.md` under the new version and run `make build-all`.
 2. Tag: `git tag v1.x.y && git push --tags`. CI attaches `Tennis.iq` to the
    GitHub release.
 3. Upload the `.iq` to the
