@@ -46,21 +46,34 @@ module RecordingFields {
     const LAP = FitContributor.MESG_TYPE_LAP;
     const SESSION = FitContributor.MESG_TYPE_SESSION;
 
-    // [id, name in the file, message, unit, type, count, kind]
-    const TABLE = [
-        [POINT_LOG, "point_log", RECORD, NO_UNIT, FitContributor.DATA_TYPE_UINT32, POINT_LOG_COUNT, MATCH],
-        [LOG_SIZE, "log_size", SESSION, ENTRIES_UNIT, FitContributor.DATA_TYPE_UINT16, SINGLE, MATCH],
-        [MATCH_SETUP, "match_setup", SESSION, NO_UNIT, FitContributor.DATA_TYPE_UINT32, SINGLE, MATCH],
-        [FINAL_SCORE, "final_score", SESSION, NO_UNIT, FitContributor.DATA_TYPE_STRING, SCORE_BYTES, MATCH],
-        [STATISTICS, "statistics", SESSION, COUNTS_UNIT, FitContributor.DATA_TYPE_UINT16, STATISTICS_COUNT, MATCH],
-        [STEPS, "steps", SESSION, STEPS_UNIT, FitContributor.DATA_TYPE_UINT32, SINGLE, BOTH],
-        [DISTANCE, "distance", SESSION, METERS_UNIT, FitContributor.DATA_TYPE_UINT32, SINGLE, BOTH],
-        [SET_SCORE, "set_score", LAP, NO_UNIT, FitContributor.DATA_TYPE_UINT8, SET_SCORE_COUNT, MATCH],
-        [SET_STEPS, "set_steps", LAP, STEPS_UNIT, FitContributor.DATA_TYPE_UINT32, SINGLE, BOTH],
-        [SET_DISTANCE, "set_distance", LAP, METERS_UNIT, FitContributor.DATA_TYPE_UINT32, SINGLE, BOTH],
-        [BLOCK_HITS, "block_hits", LAP, SHOTS_UNIT, FitContributor.DATA_TYPE_UINT32, SINGLE, PRACTICE],
-        [BLOCK_MISSES, "block_misses", LAP, SHOTS_UNIT, FitContributor.DATA_TYPE_UINT32, SINGLE, PRACTICE]
-    ];
+    // [id, name in the file, message, unit, type, count, kind] of every
+    // field. Built when a session is created and let go after, so the
+    // table does not sit in memory for the whole run.
+    function table() as Array<Array> {
+        return wholeActivityRows().addAll(lapRows());
+    }
+
+    function wholeActivityRows() as Array<Array> {
+        return [
+            [POINT_LOG, "point_log", RECORD, NO_UNIT, FitContributor.DATA_TYPE_UINT32, POINT_LOG_COUNT, MATCH],
+            [LOG_SIZE, "log_size", SESSION, ENTRIES_UNIT, FitContributor.DATA_TYPE_UINT16, SINGLE, MATCH],
+            [MATCH_SETUP, "match_setup", SESSION, NO_UNIT, FitContributor.DATA_TYPE_UINT32, SINGLE, MATCH],
+            [FINAL_SCORE, "final_score", SESSION, NO_UNIT, FitContributor.DATA_TYPE_STRING, SCORE_BYTES, MATCH],
+            [STATISTICS, "statistics", SESSION, COUNTS_UNIT, FitContributor.DATA_TYPE_UINT16, STATISTICS_COUNT, MATCH],
+            [STEPS, "steps", SESSION, STEPS_UNIT, FitContributor.DATA_TYPE_UINT32, SINGLE, BOTH],
+            [DISTANCE, "distance", SESSION, METERS_UNIT, FitContributor.DATA_TYPE_UINT32, SINGLE, BOTH]
+        ] as Array<Array>;
+    }
+
+    function lapRows() as Array<Array> {
+        return [
+            [SET_SCORE, "set_score", LAP, NO_UNIT, FitContributor.DATA_TYPE_UINT8, SET_SCORE_COUNT, MATCH],
+            [SET_STEPS, "set_steps", LAP, STEPS_UNIT, FitContributor.DATA_TYPE_UINT32, SINGLE, BOTH],
+            [SET_DISTANCE, "set_distance", LAP, METERS_UNIT, FitContributor.DATA_TYPE_UINT32, SINGLE, BOTH],
+            [BLOCK_HITS, "block_hits", LAP, SHOTS_UNIT, FitContributor.DATA_TYPE_UINT32, SINGLE, PRACTICE],
+            [BLOCK_MISSES, "block_misses", LAP, SHOTS_UNIT, FitContributor.DATA_TYPE_UINT32, SINGLE, PRACTICE]
+        ] as Array<Array>;
+    }
 
     function isOfKind(row as Array, kind as Number) as Boolean {
         return ((row[6] as Number) & kind) != 0;

@@ -16,8 +16,9 @@ class FitSession {
         _session = ActivityRecording.createSession({
             :name => name, :sport => Activity.SPORT_TENNIS, :subSport => Activity.SUB_SPORT_GENERIC
         });
-        for (var i = 0; i < RecordingFields.TABLE.size(); i++) {
-            createFieldOfKind(RecordingFields.TABLE[i] as Array, kind);
+        var table = RecordingFields.table();
+        for (var i = 0; i < table.size(); i++) {
+            createFieldOfKind(table[i], kind);
         }
     }
 

@@ -217,9 +217,10 @@ module RecordingTests {
         var names = {0 => "point_log", 1 => "log_size", 2 => "match_setup", 3 => "final_score", 4 => "statistics", 5 => "steps", 6 => "distance",
                      7 => "set_score", 8 => "set_steps", 9 => "set_distance",
                      10 => "block_hits", 11 => "block_misses"};
-        Test.assertEqual(RecordingFields.TABLE.size(), names.size());
-        for (var i = 0; i < RecordingFields.TABLE.size(); i++) {
-            var row = RecordingFields.TABLE[i] as Array;
+        var table = RecordingFields.table();
+        Test.assertEqual(table.size(), names.size());
+        for (var i = 0; i < table.size(); i++) {
+            var row = table[i];
             Test.assertEqual(row[1] as String, names[row[0] as Number] as String);
         }
         return true;
@@ -228,8 +229,9 @@ module RecordingTests {
     // The ids of the fields a kind of activity carries, as text.
     function idsOfKind(kind as Number) as String {
         var ids = [] as Array<Number>;
-        for (var i = 0; i < RecordingFields.TABLE.size(); i++) {
-            var row = RecordingFields.TABLE[i] as Array;
+        var table = RecordingFields.table();
+        for (var i = 0; i < table.size(); i++) {
+            var row = table[i];
             if (RecordingFields.isOfKind(row, kind)) {
                 ids.add(row[0] as Number);
             }

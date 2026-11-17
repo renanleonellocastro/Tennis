@@ -1,6 +1,7 @@
 import Toybox.Lang;
 
-// Builds the pages of the report from a finished match. A page is
+// Builds the pages of the report from a finished match, one page at a time
+// so that only the page on screen takes memory. A page is
 // [title key, rows]; a row is [label, my value, opponent value] on the
 // pages that compare the players and [label, value] on the others. All the
 // cells are texts, so the screen only places them.
@@ -8,20 +9,13 @@ class ReportPresenter {
     static const MISSING = "--";
     hidden const OF = "/";
     hidden const PERCENT = "%";
-
-    // [label key, method that gives the value of a player].
-    hidden const SERVE = [
-        ["ReportFirstIn", :firstIn], ["ReportFirstWon", :firstWon],
-        ["ReportSecondWon", :secondWon], ["ReportDoubleFaults", :doubleFaults]
-    ];
-    hidden const ENDINGS = [
-        ["ReportAces", :aces], ["ReportWinners", :winners],
-        ["ReportNetErrors", :netErrors], ["ReportOutErrors", :outErrors]
-    ];
-    hidden const PRESSURE = [
-        ["ReportBreaks", :breaks], ["ReportSaved", :saved],
-        ["ReportHolds", :holds], ["ReportBestRun", :bestRun]
-    ];
+    // The pages in the order they show.
+    hidden const SCORE_PAGE = 0;
+    hidden const SERVE_PAGE = 1;
+    hidden const ENDINGS_PAGE = 2;
+    hidden const TIME_PAGE = 4;
+    hidden const BODY_PAGE = 5;
+    hidden const PAGE_COUNT = 6;
 
     hidden var _state as MatchState;
     hidden var _statistics as MatchStatistics;
@@ -32,15 +26,39 @@ class ReportPresenter {
     }
 
     // The endings page exists only when the match asked how points ended.
-    function pages(isDetailed as Boolean, clockSeconds as Number, sensors as BodySensors) as Array<Array> {
-        var pages = [["ReportScore", scoreRows()], ["ReportServe", playerRows(SERVE)]] as Array<Array>;
-        if (isDetailed) {
-            pages.add(["ReportEndings", playerRows(ENDINGS)]);
+    function pageCount(isDetailed as Boolean) as Number {
+        return isDetailed ? PAGE_COUNT : PAGE_COUNT - 1;
+    }
+
+    // The page at an index, counted from zero.
+    function page(index as Number, isDetailed as Boolean, clockSeconds as Number, sensors as BodySensors) as Array {
+        var kind = !isDetailed && index >= ENDINGS_PAGE ? index + 1 : index;
+        var titles = ["ReportScore", "ReportServe", "ReportEndings", "ReportPressure", "ReportTime", "ReportBody"];
+        return [titles[kind], rows(kind, clockSeconds, sensors)];
+    }
+
+    hidden function rows(kind as Number, clockSeconds as Number, sensors as BodySensors) as Array<Array> {
+        if (kind == SCORE_PAGE) {
+            return scoreRows();
         }
-        pages.add(["ReportPressure", playerRows(PRESSURE)]);
-        pages.add(["ReportTime", timeRows(clockSeconds)]);
-        pages.add(["ReportBody", bodyRows(sensors)]);
-        return pages;
+        if (kind == TIME_PAGE) {
+            return timeRows(clockSeconds);
+        }
+        return kind == BODY_PAGE ? bodyRows(sensors) : playerRows(playerTable(kind));
+    }
+
+    // [label key, method that gives the value of a player] for each row of
+    // a page that compares the players.
+    hidden function playerTable(kind as Number) as Array {
+        if (kind == SERVE_PAGE) {
+            return [["ReportFirstIn", :firstIn], ["ReportFirstWon", :firstWon],
+                    ["ReportSecondWon", :secondWon], ["ReportDoubleFaults", :doubleFaults]];
+        }
+        if (kind == ENDINGS_PAGE) {
+            return [["ReportAces", :aces], ["ReportWinners", :winners],
+                    ["ReportNetErrors", :netErrors], ["ReportOutErrors", :outErrors]];
+        }
+        return [["ReportBreaks", :breaks], ["ReportSaved", :saved], ["ReportHolds", :holds], ["ReportBestRun", :bestRun]];
     }
 
     hidden function playerRows(table as Array) as Array<Array> {

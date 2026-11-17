@@ -197,8 +197,8 @@ module PointSlotTests {
 
     (:test)
     function testPointLogFieldsAreARecordAndASessionField(logger as Test.Logger) as Boolean {
-        var log = RecordingFields.TABLE[0] as Array;
-        var size = RecordingFields.TABLE[1] as Array;
+        var log = RecordingFields.table()[0];
+        var size = RecordingFields.table()[1];
         Test.assertEqual(log[2] as Number, RecordingFields.RECORD);
         Test.assertEqual(log[5] as Number, PointSlot.SLOTS * PointSlot.WORDS);
         Test.assertEqual(size[2] as Number, RecordingFields.SESSION);
@@ -230,10 +230,10 @@ module PointSlotTests {
     function testReportHasNoRowForASetThatNeverStarted(logger as Test.Logger) as Boolean {
         var match = newMatch(MatchFormat.BEST_OF_3);
         match.games("MMMMMOM");
-        var rows = new ReportPresenter(match.state(), match.statistics()).pages(false, 0, new FakeSensors())[0][1] as Array;
+        var rows = new ReportPresenter(match.state(), match.statistics()).page(0, false, 0, new FakeSensors())[1] as Array;
         Test.assertEqual(rows.size(), 2);
         match.games("O");
-        rows = new ReportPresenter(match.state(), match.statistics()).pages(false, 0, new FakeSensors())[0][1] as Array;
+        rows = new ReportPresenter(match.state(), match.statistics()).page(0, false, 0, new FakeSensors())[1] as Array;
         Test.assertEqual(rows.size(), 3);
         match.games("OOOOOMMMMMM");
         Test.assert(match.state().isFinished());

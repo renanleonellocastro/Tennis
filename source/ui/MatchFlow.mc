@@ -199,20 +199,14 @@ module MatchFlow {
 
     // Report.
 
-    // The pages are built once, when the report opens; the statistics they
-    // came from are let go right after.
-    function reportPages(controller as MatchController) as Array<Array> {
-        var presenter = new ReportPresenter(controller.state(), controller.statistics());
-        return presenter.pages(controller.isDetailed(), controller.clockSeconds(), controller.sensors());
-    }
-
-    // [view, delegate] of the report of a match.
+    // [view, delegate] of the report of a match. The view asks for one
+    // page at a time, so the pages never sit in memory together.
     function reportScreen(controller as MatchController) as Array {
         var settings = System.getDeviceSettings();
-        var pages = reportPages(controller);
-        var pager = new ReportPager(pages.size());
+        var presenter = new ReportPresenter(controller.state(), controller.statistics());
+        var pager = new ReportPager(presenter.pageCount(controller.isDetailed()));
         var layout = new ReportLayout(settings.screenWidth, settings.screenHeight);
-        return [new ReportView(pages, layout, pager), new ReportDelegate(pager)];
+        return [new ReportView(presenter, controller, layout, pager), new ReportDelegate(pager)];
     }
 
     // Over the final score, which shows again when the report closes.
