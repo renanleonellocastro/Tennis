@@ -7,16 +7,14 @@ module Strings {
     // Module scope vars cannot be `hidden` in Monkey C; treat as private.
     var _code as Lang.String? = null;       // current effective code
     var _table as Lang.Dictionary? = null;  // cached dict for _code
-    var _eng as Lang.Dictionary? = null;    // eng fallback dict
 
-    // Look a key up in the active language, falling back to eng, then to the
-    // key itself so a missing translation is still debuggable on screen.
+    // Look a key up in the active language, falling back to the key itself
+    // so a missing text is still debuggable on screen. The generator gives
+    // every language every key (the English text where a translation is
+    // missing), so one table in memory is enough.
     function t(key as Lang.String) as Lang.String {
         ensureInit();
         var value = (_table as Lang.Dictionary).get(key);
-        if (value == null) {
-            value = (_eng as Lang.Dictionary).get(key);
-        }
         return value != null ? value as Lang.String : key;
     }
 
@@ -26,12 +24,11 @@ module Strings {
         return _code as Lang.String;
     }
 
-    // When the active language IS English, reuse the same dictionary as the
-    // fallback instead of allocating a second identical table.
+    // The old table is let go first so the two are never in memory together.
     function loadTables(code as Lang.String) as Void {
         _code = code;
+        _table = null;
         _table = I18n.table(code);
-        _eng = code.equals("eng") ? _table : I18n.table("eng");
     }
 
     // Map the device system locale to one of the supported codes.
