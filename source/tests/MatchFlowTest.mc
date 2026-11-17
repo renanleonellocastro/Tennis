@@ -66,4 +66,51 @@ module MatchFlowTests {
         MatchAlert.changeEnds();
         return true;
     }
+
+    (:test)
+    function testFinalAndResumeMenuRowsHaveATextAndAHandler(logger as Test.Logger) as Boolean {
+        var bench = simpleBench(MatchFormat.BEST_OF_3);
+        assertRowsAreMethodsOf(MatchFlow.finalMenuRows(), new FinalMenuDelegate(bench.controller));
+        assertRowsAreMethodsOf(MatchFlow.resumeMenuRows(), new ResumeMenuDelegate(bench.store));
+        assertKeyInEveryLanguage("ResumeTitle");
+        assertKeyInEveryLanguage("DiscardQ");
+        return true;
+    }
+
+    (:test)
+    function testDiscardConfirmationDiscardsOnlyOnYes(logger as Test.Logger) as Boolean {
+        var bench = simpleBench(MatchFormat.BEST_OF_3);
+        var confirm = new DiscardConfirmDelegate(bench.controller);
+        Test.assert(confirm.onResponse(WatchUi.CONFIRM_NO));
+        Test.assert(bench.controller.farewellKey() == null);
+        Test.assert(confirm.onResponse(WatchUi.CONFIRM_YES));
+        Test.assertEqual(bench.controller.farewellKey() as String, "DiscardedMsg");
+        return true;
+    }
+
+    (:test)
+    function testSetupMenuHasOneRowPerFieldAndTheStartRow(logger as Test.Logger) as Boolean {
+        Strings.loadTables("eng");
+        var setup = new MatchSetup(null);
+        var menu = MatchFlow.setupMenu(setup, setup.fields(false));
+        Test.assertEqual((menu.getItem(3) as WatchUi.MenuItem).getId() as Number, MatchSetup.FIRST_SERVER);
+        Test.assertEqual((menu.getItem(4) as WatchUi.MenuItem).getId() as Symbol, :start);
+        menu = MatchFlow.setupMenu(setup, setup.fields(true));
+        Test.assertEqual((menu.getItem(4) as WatchUi.MenuItem).getLabel(), "GPS");
+        Test.assert(menu.getItem(6) == null);
+        return true;
+    }
+
+    // The recorder of the watch itself: a short activity with a lap, thrown
+    // away at the end so the test leaves no file behind.
+    (:test)
+    function testDeviceRecorderRecordsOnThisWatch(logger as Test.Logger) as Boolean {
+        Strings.loadTables("eng");
+        var recorder = MatchFlow.deviceRecorder(new MatchSetup(null));
+        recorder.start(0, false);
+        recorder.closeSets(1, false);
+        recorder.pause();
+        recorder.discard();
+        return true;
+    }
 }

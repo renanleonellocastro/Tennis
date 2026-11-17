@@ -7,6 +7,10 @@ import Toybox.WatchUi;
 // they rely on lives in the plain classes of source/match.
 module MatchFlow {
     const TOUCH_NEEDED_MS = 4000;
+    const FAREWELL_MS = 1800;
+
+    // The match that is open, so the app can keep it when it closes.
+    var active as MatchController? = null;
 
     // Menu rows as [label key, id]. The id is the method of the menu
     // delegate that the row runs.
@@ -26,6 +30,20 @@ module MatchFlow {
         ];
     }
 
+    function finalMenuRows() as Array {
+        return [
+            ["FinalSave", :save],
+            ["FinalDiscard", :askToDiscard]
+        ];
+    }
+
+    function resumeMenuRows() as Array {
+        return [
+            ["MatchMenuResume", :resume],
+            ["FinalDiscard", :discard]
+        ];
+    }
+
     function menuOf(titleKey as String, rows as Array) as WatchUi.Menu2 {
         var menu = new WatchUi.Menu2({:title => Strings.t(titleKey)});
         for (var i = 0; i < rows.size(); i++) {
@@ -37,11 +55,11 @@ module MatchFlow {
 
     // Setup.
 
-    function setupMenu(setup as MatchSetup) as WatchUi.Menu2 {
+    function setupMenu(setup as MatchSetup, fields as Array<Number>) as WatchUi.Menu2 {
         var menu = new WatchUi.Menu2({:title => Strings.t("MenuStartMatch")});
-        for (var field = 0; field < MatchSetup.FIELD_COUNT; field++) {
-            menu.addItem(new WatchUi.MenuItem(Strings.t(setup.labelKey(field)),
-                                              Strings.t(setup.valueKey(field)), field, null));
+        for (var i = 0; i < fields.size(); i++) {
+            menu.addItem(new WatchUi.MenuItem(Strings.t(setup.labelKey(fields[i])),
+                                              Strings.t(setup.valueKey(fields[i])), fields[i], null));
         }
         menu.addItem(new WatchUi.MenuItem(Strings.t("SetupStart"), null, :start, null));
         return menu;
@@ -51,8 +69,9 @@ module MatchFlow {
     // choices is one press away.
     function pushSetup() as Void {
         var setup = SetupStore.load();
-        var menu = setupMenu(setup);
-        menu.setFocus(MatchSetup.FIELD_COUNT);
+        var fields = setup.fields(GpsLocator.isAvailable());
+        var menu = setupMenu(setup, fields);
+        menu.setFocus(fields.size());
         WatchUi.pushView(menu, new SetupMenuDelegate(setup), WatchUi.SLIDE_LEFT);
     }
 
@@ -62,8 +81,46 @@ module MatchFlow {
             showTouchNeeded();
             return;
         }
-        var engine = new MatchEngine(setup.config(), new PointLog([] as Array<Number>));
-        showMatch(new MatchController(engine, setup.isDetailed(), new SystemTime()), WatchUi.SLIDE_LEFT);
+        var store = new MatchStore(new AppStorage());
+        store.begin(setup.toArray());
+        open(setup, [] as Array<Number>, store);
+    }
+
+    // Shows the match that the log adds up to, recording from now on.
+    function open(setup as MatchSetup, entries as Array<Number>, store as MatchStore) as Void {
+        var engine = new MatchEngine(setup.config(), new PointLog(entries));
+        var controller = new MatchController(engine, setup.isDetailed(), new SystemTime(),
+                                             deviceRecorder(setup), store);
+        active = controller;
+        showMatch(controller, WatchUi.SLIDE_LEFT);
+    }
+
+    function deviceRecorder(setup as MatchSetup) as MatchRecorder {
+        var usesGps = setup.usesGps() && GpsLocator.isAvailable();
+        return new MatchRecorder(new FitSession(Strings.t("AppName")), new WatchSensors(),
+                                 usesGps ? new GpsLocator() : new NoLocator());
+    }
+
+    // A match the app closed on. Called once, when the home screen shows.
+
+    function offerResume() as Void {
+        var store = new MatchStore(new AppStorage());
+        if (store.hasMatch()) {
+            WatchUi.pushView(menuOf("ResumeTitle", resumeMenuRows()), new ResumeMenuDelegate(store),
+                             WatchUi.SLIDE_UP);
+        }
+    }
+
+    // The score comes back from the stored log; the activity is a new one.
+    function resume(store as MatchStore) as Void {
+        var stored = store.load();
+        if (stored == null) {
+            WatchUi.popView(WatchUi.SLIDE_DOWN);
+        } else if (!MatchInput.profileOfDevice().canScore()) {
+            showTouchNeeded();
+        } else {
+            open(new MatchSetup(stored[0] as Object?), stored[1] as Array<Number>, store);
+        }
     }
 
     function showTouchNeeded() as Void {
@@ -104,6 +161,29 @@ module MatchFlow {
         if (controller.isOver()) {
             WatchUi.switchToView(new FinalScoreView(controller), new FinalScoreDelegate(controller),
                                  WatchUi.SLIDE_UP);
+        }
+    }
+
+    // Final score: save or discard.
+
+    function pushFinalMenu(controller as MatchController) as Void {
+        WatchUi.pushView(menuOf("FinalMatchEnded", finalMenuRows()), new FinalMenuDelegate(controller),
+                         WatchUi.SLIDE_UP);
+    }
+
+    function showDiscardConfirmation(controller as MatchController) as Void {
+        WatchUi.switchToView(new WatchUi.Confirmation(Strings.t("DiscardQ")),
+                             new DiscardConfirmDelegate(controller), WatchUi.SLIDE_IMMEDIATE);
+    }
+
+    // Replaces the final screen, which must be the one on top, once the
+    // match was saved or discarded.
+    function showFarewellIfClosed(controller as MatchController) as Void {
+        var key = controller.farewellKey();
+        if (key != null) {
+            active = null;
+            WatchUi.switchToView(new MessageView(Strings.t(key), Theme.COLOR_ACCENT, FAREWELL_MS),
+                                 new MessageDelegate(), WatchUi.SLIDE_UP);
         }
     }
 

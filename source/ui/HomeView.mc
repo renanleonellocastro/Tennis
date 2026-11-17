@@ -10,8 +10,17 @@ class HomeView extends WatchUi.View {
     const HINT_Y_PERCENT = 80;
     const BALL_RADIUS_DIVISOR = 26;
 
+    hidden var _hasOfferedResume as Boolean = false;
+
     function initialize() {
         View.initialize();
+    }
+
+    function onShow() as Void {
+        if (!_hasOfferedResume) {
+            _hasOfferedResume = true;
+            MatchFlow.offerResume();
+        }
     }
 
     function onUpdate(dc as Dc) as Void {
