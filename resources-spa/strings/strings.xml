@@ -1,0 +1,13 @@
+<!-- Spanish -->
+<strings>
+    <string id="AppName">Tenis</string>
+
+    <string id="HomeHint">MENÚ</string>
+
+    <string id="MenuStartMatch">Iniciar partido</string>
+    <string id="MenuPractice">Práctica</string>
+    <string id="MenuSettings">Ajustes</string>
+    <string id="MenuAbout">Acerca de</string>
+    <string id="ComingSoonMsg">Próximamente</string>
+    <string id="AboutText">Tennis 0.1.0 MIT</string>
+</strings>

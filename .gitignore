@@ -5,7 +5,7 @@ dist/
 *.prg.debug.xml
 *.iq
 
-# Developer signing keys — never commit these
+# Developer signing keys: never commit these
 *.der
 *.pem
 developer_key*
@@ -14,7 +14,7 @@ developer_key*
 .Garmin/
 GarminDeviceLogs/
 
-# Python tooling (illustration generator)
+# Python tooling
 __pycache__/
 *.pyc
 .venv/
