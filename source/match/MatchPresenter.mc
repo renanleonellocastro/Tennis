@@ -114,6 +114,11 @@ module MatchPresenter {
         return (minutes / MINUTES_PER_HOUR) + ":" + twoDigits(minutes % MINUTES_PER_HOUR) + tail;
     }
 
+    // "" when the watch has no reading.
+    function heartRateText(beats as Number?) as String {
+        return beats == null ? "" : beats.toString();
+    }
+
     // The notice keys as one translated line, or "" for no notice.
     function noticeText(keys as Array<String>) as String {
         var text = "";

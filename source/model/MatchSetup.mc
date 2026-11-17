@@ -1,23 +1,26 @@
 import Toybox.Lang;
 
-// The choices of the setup screen: preset, deuce scoring, detail level and
-// who serves first. Each field holds the index of one option, so a new
+// The choices of the setup screen: preset, deuce scoring, detail level, who
+// serves first and the GPS. Each field holds the index of one option, so a new
 // option is one more key in its row and no new code.
 class MatchSetup {
     static const FORMAT = 0;
     static const NO_ADVANTAGE = 1;
     static const DETAIL = 2;
     static const FIRST_SERVER = 3;
-    static const FIELD_COUNT = 4;
+    static const GPS = 4;
+    static const FIELD_COUNT = 5;
 
-    hidden const LABEL_KEYS = ["SetupFormat", "SetupNoAd", "SetupDetail", "SetupFirstServe"];
+    hidden const LABEL_KEYS = ["SetupFormat", "SetupNoAd", "SetupDetail", "SetupFirstServe", "SetupGps"];
     // Rows follow the field ids; the options of each row follow the values
-    // the engine uses (MatchFormat, off then on, simple then detailed, Player).
+    // the engine uses (MatchFormat, off then on, simple then detailed, Player,
+    // off then on).
     hidden const VALUE_KEYS = [
         ["FormatBestOf3", "FormatMatchTieBreak", "FormatOneSet", "FormatProSet", "FormatTieBreakOnly"],
         ["ValueOff", "ValueOn"],
         ["DetailSimple", "DetailDetailed"],
-        ["PlayerMe", "PlayerOpponent"]
+        ["PlayerMe", "PlayerOpponent"],
+        ["ValueOff", "ValueOn"]
     ];
 
     hidden var _values as Array<Number>;
@@ -25,7 +28,7 @@ class MatchSetup {
     // Takes what storage returned. Anything that is not a full list of valid
     // options falls back to the defaults.
     function initialize(stored as Object?) {
-        _values = isValid(stored) ? stored as Array<Number> : [0, 0, 0, 0] as Array<Number>;
+        _values = isValid(stored) ? stored as Array<Number> : [0, 0, 0, 0, 0] as Array<Number>;
     }
 
     hidden function isValid(stored as Object?) as Boolean {
@@ -64,6 +67,16 @@ class MatchSetup {
     // The value to put in storage.
     function toArray() as Array<Number> {
         return _values;
+    }
+
+    // The rows of the setup screen. A watch without GPS has no GPS row.
+    function fields(hasGps as Boolean) as Array<Number> {
+        var all = [FORMAT, NO_ADVANTAGE, DETAIL, FIRST_SERVER, GPS] as Array<Number>;
+        return hasGps ? all : all.slice(0, GPS);
+    }
+
+    function usesGps() as Boolean {
+        return _values[GPS] == 1;
     }
 
     function isDetailed() as Boolean {

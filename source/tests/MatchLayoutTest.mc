@@ -145,4 +145,30 @@ module MatchLayoutTests {
         Test.assert(!keys.isOnControls(keys.controlsY()));
         return true;
     }
+
+    (:test)
+    function testFooterCentersTheClockAloneWithoutAHeartRate(logger as Test.Logger) as Boolean {
+        var layouts = testLayouts();
+        for (var i = 0; i < layouts.size(); i++) {
+            Test.assertEqual(layouts[i].footerXs(40, 0)[0], layouts[i].centerX() - 20);
+        }
+        return true;
+    }
+
+    // The clock, the dot and the heart rate follow each other without
+    // touching, and the row as a whole sits in the middle.
+    (:test)
+    function testFooterPutsTheHeartRateAfterTheClock(logger as Test.Logger) as Boolean {
+        var layouts = testLayouts();
+        for (var i = 0; i < layouts.size(); i++) {
+            var xs = layouts[i].footerXs(60, 30);
+            var radius = layouts[i].heartDotRadius();
+            Test.assert(radius > 0);
+            Test.assert(xs[0] + 60 < xs[1] - radius);
+            Test.assert(xs[1] + radius < xs[2]);
+            Test.assert((xs[0] + xs[2] + 30) / 2 - layouts[i].centerX() <= 1);
+            Test.assert(layouts[i].centerX() - (xs[0] + xs[2] + 30) / 2 <= 1);
+        }
+        return true;
+    }
 }

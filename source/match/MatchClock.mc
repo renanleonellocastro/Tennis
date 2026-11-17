@@ -13,6 +13,11 @@ class MatchClock {
         _runningSinceMs = nowMs;
     }
 
+    // Moves the clock forward, for a match that resumes where it stopped.
+    function advance(seconds as Number) as Void {
+        _playedMs += seconds * MS_PER_SECOND;
+    }
+
     function pause(nowMs as Number) as Void {
         if (_isRunning) {
             _playedMs += nowMs - _runningSinceMs;
