@@ -1,0 +1,6 @@
+project.manifest = manifest.xml
+
+# Source and base resources use the default paths (source, resources), so
+# the per language string folders (resources-por, resources-spa, ...) are
+# picked up automatically. Base resources hold the strings and the launcher
+# icon. Tennis ships no per device resources yet.

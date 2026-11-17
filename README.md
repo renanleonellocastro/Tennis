@@ -9,15 +9,16 @@ and calories, and finish with a full statistics report of your game.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-ffaa00.svg)](LICENSE)
 [![Connect IQ](https://img.shields.io/badge/Connect%20IQ-watch%20app-ff8800)](https://developer.garmin.com/connect-iq/)
-[![Status](https://img.shields.io/badge/status-planning-ff5500)](#status)
+[![Status](https://img.shields.io/badge/status-in%20development-ff5500)](#status)
 
 </div>
 
 ## 🚧 Status
 
-This project is in the planning stage. Nothing is released yet. The list
-below is the vision that guides the first version and it may change while
-the plan is refined.
+This project is in development. Nothing is released yet. Milestone M0
+(foundation) is done: the app builds, opens on a home screen and shows a
+menu whose entries are not built yet. The list below is the vision that
+guides the first version and it may change while the plan is refined.
 
 ## ✨ Planned features
 
@@ -47,10 +48,35 @@ numbers and simple button controls that work on every supported watch.
 The agreed requirements, decisions and milestones live in
 [docs/PLAN.md](docs/PLAN.md).
 
+## 🛠 Getting started (developers)
+
+You need the Connect IQ SDK, a signing key and
+[`uv`](https://docs.astral.sh/uv/). The one time setup is described in
+[CONTRIBUTING.md](CONTRIBUTING.md).
+
+```bash
+make build    # compile for the Forerunner 55 (DEVICE=venu2 picks another watch)
+make sim      # start the simulator
+make test     # run the unit tests on the simulator
+make check    # run every local quality gate
+```
+
+Project layout:
+
+* `source/`: the app (entry point, `ui/`, `i18n/`, generated string table
+  and `tests/`)
+* `resources*/`: launcher icon and the strings of the six languages
+* `scripts/`: string table and icon generators, resources check and device
+  API audit
+* `tools/`: function length checker and its tests
+* `docs/`: [plan](docs/PLAN.md), [quality bar](docs/QUALITY.md) and
+  [testing strategy](docs/TESTING.md)
+
 ## 🤝 Contributing
 
 Ideas and feedback are welcome. Open an issue to suggest a statistic, a
-scoring format or a device you would like to see supported.
+scoring format or a device you would like to see supported. To change the
+code, read [CONTRIBUTING.md](CONTRIBUTING.md) first.
 
 ## 📄 License
 
