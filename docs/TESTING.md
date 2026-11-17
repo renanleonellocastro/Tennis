@@ -56,7 +56,21 @@ passes only when it reads `PASSED` and no test failed or errored.
   pause, notices, change of ends, ending and reopening a match.
 * `ScoreFixerTest`: undo of a whole game and awarding a game.
 * `EndingChoicesTest`: the point ending list for each winner and server.
-* `MatchFlowTest`: the rows of the match menus and the methods they run.
+* `MatchFlowTest`: the rows of the match, final and resume menus and the
+  methods they run, the setup menu with and without the GPS row, the
+  discard confirmation, and a short real activity recorded and discarded.
+* `RecordingTest`: steps and distance counted from the first reading, over
+  a pause, a missing reading and midnight, per lap; the recorder starting,
+  pausing, opening laps, saving and discarding; the field ids; the real
+  sensors, GPS and storage of the watch the suite runs on.
+* `MatchStoreTest`: the stored match, one value per set, corrections that
+  go back over a set, loading and going on, clearing, unknown headers.
+* `MatchRecordingTest`: the controller recording a match: heart rate in the
+  entries, pause, laps per set, save, discard, the app closing, and a
+  resumed match with its score, clock and laps.
+
+The recording tests use fakes for the session, sensors, GPS and storage
+(`source/tests/RecordingFakes.mc`), so they need no sensor data.
 
 The engine tests reach every function and both outcomes of every condition
 in `source/model/` and `source/engine/`. This was measured once with a
@@ -71,6 +85,18 @@ report; nothing enforces it, so keep it true when the engine changes.
 | Functions that push, switch or pop views (`MatchFlow`, the delegates) | A view stack exists only in a running app | Watch pass; they hold no decision of their own |
 | Touch against button input | Simulator input differs from a real digitizer | Watch pass |
 | Vibration, tones and backlight | Hardware | Watch pass |
+| Real heart rate, calories, steps and GPS in the saved activity | The simulator gives no sensor data without its menus | Watch pass |
+| The activity file itself (sport, laps, fields) | The suite cannot read files | A scripted match on the simulator, see below; watch pass |
+
+### Checking the activity file by hand
+
+A saved match appears as a FIT file in the simulator folder
+`$TMPDIR/com.garmin.connectiq/GARMIN/Activities/`. Any FIT reader shows the
+sport (tennis), one lap per set and the developer fields of
+`docs/RECORDING.md`. This was done once for M4 with a throwaway copy of the
+app that played a scripted match by itself; the result is in
+`docs/RECORDING.md`. A session discarded by the test suite can leave an
+empty lap in the next file the simulator saves; that is a simulator effect.
 
 ## Watch pass (before each release)
 
@@ -98,6 +124,19 @@ Sideload: `make build DEVICE=fr55`, then copy `bin/Tennis-fr55.prg` to
       undoes or awards a game, end match asks first.
 * [ ] The final score screen shows after the last point; BACK reopens the
       match, START returns to the menu.
+* [ ] The heart rate shows after the red dot next to the clock, and the row
+      holds only the clock while there is no reading.
+* [ ] On the final score screen START offers Save and Discard; Discard asks
+      first; both end on a short message and return to the menu.
+* [ ] A saved match is in Garmin Connect as Tennis with one lap per set,
+      heart rate, calories, and the Steps and Distance fields in the summary
+      and in each lap. Compare the steps with the daily step count before
+      and after.
+* [ ] With the GPS switch on, the saved activity has a track; a watch
+      without GPS shows no GPS row.
+* [ ] Leaving the app in the middle of a match saves an activity; opening
+      the app again offers Resume or Discard; Resume brings back the score
+      and the clock, and the rest is saved as a second activity.
 * [ ] About shows the version text.
 * [ ] BACK leaves the menu and then the app.
 
