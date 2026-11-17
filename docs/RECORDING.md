@@ -33,16 +33,28 @@ activity. The app plans for 12 at most. Ids are shared with the export tool
 |---|---|---|---|---|---|
 | 0 | point_log | record | UINT32 array | | M6 (planned) |
 | 1 | log_size | session | | | M6 (planned) |
-| 2 | match_setup | session | | | M5 (planned) |
-| 3 | final_score | session | | | M5 (planned) |
-| 4 | statistics | session | | | M5 (planned) |
+| 2 | match_setup | session | UINT32 | | M5 |
+| 3 | final_score | session | STRING, 32 bytes | | M5 |
+| 4 | statistics | session | UINT16 array of 30 | counts | M5 |
 | 5 | steps | session | UINT32 | steps | M4 |
 | 6 | distance | session | UINT32 | m | M4 |
-| 7 | set_score | lap | | | M5 (planned) |
+| 7 | set_score | lap | UINT8 array of 4 | | M5 |
 | 8 | set_steps | lap | UINT32 | steps | M4 |
 | 9 | set_distance | lap | UINT32 | m | M4 |
 
-Used: 4. Planned in total: 10. Free: 2.
+Used: 8. Planned in total: 10. Free: 2.
+
+The four summary fields are built by `source/match/MatchSummary.mc` and
+written by `MatchRecorder.writeSummary`: when the match opens, when the app
+closes with a match in progress and when the player saves. `set_score` is
+written right before each lap closes, so every lap carries the score of its
+set. Only the fields with a unit have a label for Garmin Connect; a label
+needs a unit, and the packed and text fields have none.
+
+Checked on the simulator (fr55): a scripted one set match saved with the
+tags clay and friendly gave a file with `match_setup` 9505, `final_score`
+`6-1`, the thirty counts and one lap with `set_score` 6, 1, 0, 0;
+`tennis-export` read all of them back.
 
 The ids and names in code are in `source/recording/RecordingFields.mc`; the
 labels shown by Garmin Connect are in `resources/fit/fitcontributions.xml`.
@@ -56,6 +68,7 @@ accepts for one value.
 | Key | Value |
 |---|---|
 | `setup` | The remembered setup choices (written by `SetupStore`) |
+| `tags` | The surface and the kind of the last saved match (written by `TagStore`) |
 | `match` | `[version, setup values]` of the match in progress. Version is 1 |
 | `set0`, `set1`, ... | The point log entries of each set, one key per set |
 
