@@ -20,7 +20,7 @@ UV ?= uv
 RUN = $(UV) run --frozen
 TOOLS_COVERAGE = --cov=tools --cov-branch --cov-report=term-missing --cov-fail-under=100
 
-.PHONY: help key build build-shapes test-build test sim package strings icon clean \
+.PHONY: help key build build-shapes build-all test-build test sim package strings icon clean \
 	resources-check audit lint-tools test-tools function-length function-length-gate check
 
 help:
@@ -28,6 +28,7 @@ help:
 	@echo "  key            Generate a developer signing key (once)"
 	@echo "  build          Compile a debug build for DEVICE (default: fr55)"
 	@echo "  build-shapes   Compile for one device per screen shape"
+	@echo "  build-all      Compile for every device in manifest.xml, one result per device"
 	@echo "  test-build     Compile the unit test build for DEVICE"
 	@echo "  sim            Launch the Connect IQ simulator"
 	@echo "  test           Run unit tests on the simulator (start 'make sim' first)"
@@ -55,6 +56,13 @@ build-shapes:
 	@for device in $(SHAPE_DEVICES); do \
 		$(MAKE) --no-print-directory build DEVICE=$$device || exit 1; \
 	done
+
+# Every manifest device on its own, so one run names each device that fails.
+# About a minute and a half on a laptop and longer on a CI runner, so it is a
+# release step and not part of `make check`.
+build-all: key
+	python3 scripts/build_all_devices.py --monkeyc $(MONKEYC) --key $(KEY) \
+		--type-check $(TYPE_CHECK) $(BUILD_ALL_OPTIONS)
 
 test-build: key
 	@mkdir -p bin
