@@ -2,11 +2,14 @@ import Toybox.Graphics;
 import Toybox.Lang;
 import Toybox.WatchUi;
 
-// The final score: who won, the sets and the time played.
+// The final score: who won, the sets and the time played, with a mark at
+// the bottom for the report that waits one page down.
 class FinalScoreView extends WatchUi.View {
     hidden const TITLE_Y = 28;
     hidden const SETS_Y = 50;
     hidden const CLOCK_Y = 72;
+    hidden const MORE_Y = 88;
+    hidden const MORE_SIZE_DIVISOR = 30;
     hidden const CENTERED = Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER;
 
     hidden var _controller as MatchController;
@@ -32,6 +35,16 @@ class FinalScoreView extends WatchUi.View {
         drawLine(dc, SETS_Y, Graphics.FONT_MEDIUM, Theme.COLOR_TEXT, MatchPresenter.setsText(state));
         drawLine(dc, CLOCK_Y, Graphics.FONT_TINY, Theme.COLOR_TEXT_DIM,
                  MatchPresenter.clockText(_controller.clockSeconds()));
+        drawMoreMark(dc);
+    }
+
+    // A small arrow head pointing down.
+    hidden function drawMoreMark(dc as Dc) as Void {
+        var x = dc.getWidth() / 2;
+        var y = dc.getHeight() * MORE_Y / 100;
+        var size = dc.getWidth() / MORE_SIZE_DIVISOR;
+        dc.setColor(Theme.COLOR_TEXT_DIM, Graphics.COLOR_TRANSPARENT);
+        dc.fillPolygon([[x - size, y], [x + size, y], [x, y + size]]);
     }
 
     hidden function drawLine(dc as Dc, percentY as Number, font as Graphics.FontDefinition,
@@ -41,8 +54,9 @@ class FinalScoreView extends WatchUi.View {
     }
 }
 
-// START or a tap asks to save or discard the activity. BACK returns to the
-// match, so a last point entered by mistake can still be taken back.
+// START or a tap opens the menu to save, see the report or discard. DOWN or
+// a swipe up opens the report directly. BACK returns to the match, so a
+// last point entered by mistake can still be taken back.
 class FinalScoreDelegate extends WatchUi.BehaviorDelegate {
     hidden var _controller as MatchController;
 
@@ -53,6 +67,11 @@ class FinalScoreDelegate extends WatchUi.BehaviorDelegate {
 
     function onSelect() as Boolean {
         MatchFlow.pushFinalMenu(_controller);
+        return true;
+    }
+
+    function onNextPage() as Boolean {
+        MatchFlow.pushReport(_controller);
         return true;
     }
 

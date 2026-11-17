@@ -1,3 +1,4 @@
+import Toybox.Application;
 import Toybox.Lang;
 import Toybox.Test;
 import Toybox.WatchUi;
@@ -94,10 +95,85 @@ module MatchFlowTests {
         var setup = new MatchSetup(null);
         var menu = MatchFlow.setupMenu(setup, setup.fields(false));
         Test.assertEqual((menu.getItem(3) as WatchUi.MenuItem).getId() as Number, MatchSetup.FIRST_SERVER);
-        Test.assertEqual((menu.getItem(4) as WatchUi.MenuItem).getId() as Symbol, :start);
+        Test.assertEqual((menu.getItem(4) as WatchUi.MenuItem).getId() as Symbol, :confirm);
         menu = MatchFlow.setupMenu(setup, setup.fields(true));
         Test.assertEqual((menu.getItem(4) as WatchUi.MenuItem).getLabel(), "GPS");
         Test.assert(menu.getItem(6) == null);
+        return true;
+    }
+
+    (:test)
+    function testFinalMenuOffersSaveTheReportAndDiscard(logger as Test.Logger) as Boolean {
+        var rows = MatchFlow.finalMenuRows();
+        Test.assertEqual(rows.size(), 3);
+        Test.assertEqual((rows[0] as Array)[0] as String, "FinalSave");
+        Test.assertEqual((rows[1] as Array)[0] as String, "FinalReport");
+        Test.assertEqual((rows[2] as Array)[0] as String, "FinalDiscard");
+        return true;
+    }
+
+    (:test)
+    function testSaveMenuHasARowPerTagAndTheSaveRow(logger as Test.Logger) as Boolean {
+        Strings.loadTables("eng");
+        var tags = new MatchTags([1, 0]);
+        var menu = MatchFlow.optionMenu("FinalSave", tags, tags.fields(), "FinalSave");
+        var surface = menu.getItem(0) as WatchUi.MenuItem;
+        Test.assertEqual(surface.getId() as Number, MatchTags.SURFACE);
+        Test.assertEqual(surface.getLabel(), "Surface");
+        Test.assertEqual(surface.getSubLabel() as String, "Clay");
+        Test.assertEqual((menu.getItem(1) as WatchUi.MenuItem).getSubLabel() as String, "Not set");
+        Test.assertEqual((menu.getItem(2) as WatchUi.MenuItem).getLabel(), "Save");
+        Test.assertEqual((menu.getItem(2) as WatchUi.MenuItem).getId() as Symbol, :confirm);
+        return true;
+    }
+
+    (:test)
+    function testSaveMenuRowMovesATagToItsNextOption(logger as Test.Logger) as Boolean {
+        Strings.loadTables("eng");
+        var tags = new MatchTags(null);
+        var item = new WatchUi.MenuItem("Type", "Not set", MatchTags.KIND, null);
+        new SaveMenuDelegate(simpleBench(MatchFormat.ONE_SET).controller, tags).onSelect(item);
+        Test.assertEqual(item.getSubLabel() as String, "Match");
+        Test.assertEqual(joinedNumbers(tags.toArray()), "0,1");
+        return true;
+    }
+
+    (:test)
+    function testSavingRemembersTheTagsAndSavesTheActivityWithThem(logger as Test.Logger) as Boolean {
+        var bench = simpleBench(MatchFormat.ONE_SET);
+        bench.games("MMMMMM");
+        MatchFlow.saveWithTags(bench.controller, new MatchTags([2, 2]));
+        Test.assertEqual(joinedNumbers(TagStore.load().toArray()), "2,2");
+        Application.Storage.deleteValue(TagStore.KEY);
+        Test.assertEqual(bench.session.calls, "spS");
+        Test.assertEqual(bench.session.fields[RecordingFields.MATCH_SETUP] as Number,
+                         1 + (2 << 4) + (2 << 10) + (2 << 12));
+        return true;
+    }
+
+    (:test)
+    function testReportOfAMatchFollowsItsDetailLevel(logger as Test.Logger) as Boolean {
+        Strings.loadTables("eng");
+        var simple = simpleBench(MatchFormat.ONE_SET);
+        simple.games("MMMMMM");
+        simple.time.ms = 65000;
+        var pages = MatchFlow.reportPages(simple.controller);
+        Test.assertEqual(pages.size(), 5);
+        Test.assertEqual((pages[0][1] as Array<Array>)[0][1] as String, "6");
+        Test.assertEqual(MatchFlow.reportPages(new MatchBench(MatchFormat.ONE_SET, true).controller).size(), 6);
+        Test.assertEqual(MatchFlow.reportScreen(simple.controller).size(), 2);
+        return true;
+    }
+
+    (:test)
+    function testReportKeysTurnThePages(logger as Test.Logger) as Boolean {
+        var pager = new ReportPager(4);
+        var delegate = new ReportDelegate(pager);
+        Test.assert(delegate.onNextPage());
+        Test.assert(delegate.onSelect());
+        Test.assertEqual(pager.index(), 2);
+        Test.assert(delegate.onPreviousPage());
+        Test.assertEqual(pager.index(), 1);
         return true;
     }
 
@@ -108,7 +184,7 @@ module MatchFlowTests {
         Strings.loadTables("eng");
         var recorder = MatchFlow.deviceRecorder(new MatchSetup(null));
         recorder.start(0, false);
-        recorder.closeSets(1, false);
+        recorder.closeSets(1, false, [6, 4, 0, 0]);
         recorder.pause();
         recorder.discard();
         return true;
