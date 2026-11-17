@@ -6,10 +6,11 @@ import json
 from typing import TYPE_CHECKING, Any
 
 from tennis_export.integrity import integrity_document
-from tennis_export.layout import DISTANCE_FIELD, FINAL_SCORE_FIELD, FORMAT_VERSION, STEPS_FIELD
+from tennis_export.layout import DISTANCE_FIELD, FORMAT_VERSION, STEPS_FIELD
 from tennis_export.match_document import match_document
 from tennis_export.set_laps import laps_by_set
 from tennis_export.source_files import source_documents
+from tennis_export.watch_summary import watch_summary_document
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -47,7 +48,7 @@ def match_sections(match: Match, activity: Activity) -> Document:
         "match": match_document(match, set_laps),
         "point_log": point_log_document(match),
         "integrity": integrity_document(match, activity, set_laps),
-        "watch_summary": {"final_score": activity.session.developer.get(FINAL_SCORE_FIELD)},
+        "watch_summary": watch_summary_document(activity),
     }
 
 
