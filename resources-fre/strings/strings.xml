@@ -66,10 +66,51 @@
     <string id="FinalYouLost">Défaite</string>
     <string id="FinalMatchEnded">Match terminé</string>
     <string id="FinalSave">Enregistrer</string>
+    <string id="FinalReport">Statistiques</string>
     <string id="FinalDiscard">Supprimer</string>
     <string id="DiscardQ">Supprimer l'activité ?</string>
     <string id="SavedMsg">Enregistré !</string>
     <string id="DiscardedMsg">Supprimé</string>
+
+    <!-- Tags of a saved match -->
+    <string id="TagSurface">Surface</string>
+    <string id="TagKind">Type</string>
+    <string id="TagNotSet">Non défini</string>
+    <string id="SurfaceClay">Terre battue</string>
+    <string id="SurfaceHard">Dur</string>
+    <string id="SurfaceGrass">Gazon</string>
+    <string id="KindMatch">Match</string>
+    <string id="KindFriendly">Amical</string>
+
+    <!-- Report -->
+    <string id="ReportScore">SCORE</string>
+    <string id="ReportSet">Set</string>
+    <string id="ReportPoints">Points</string>
+    <string id="ReportServe">SERVICE</string>
+    <string id="ReportFirstIn">1re balle</string>
+    <string id="ReportFirstWon">Gagnés 1re</string>
+    <string id="ReportSecondWon">Gagnés 2e</string>
+    <string id="ReportDoubleFaults">Doubles f.</string>
+    <string id="ReportEndings">POINTS</string>
+    <string id="ReportAces">Aces</string>
+    <string id="ReportWinners">Gagnants</string>
+    <string id="ReportNetErrors">Err. filet</string>
+    <string id="ReportOutErrors">Err. dehors</string>
+    <string id="ReportPressure">PRESSION</string>
+    <string id="ReportBreaks">Breaks</string>
+    <string id="ReportSaved">Sauvées</string>
+    <string id="ReportHolds">Jeux tenus</string>
+    <string id="ReportBestRun">Série</string>
+    <string id="ReportTime">TEMPS</string>
+    <string id="ReportMatchTime">Match</string>
+    <string id="ReportAvgGame">Jeu moyen</string>
+    <string id="ReportLongGame">Jeu long</string>
+    <string id="ReportPerPoint">Par point</string>
+    <string id="ReportBody">CORPS</string>
+    <string id="ReportAvgHr">FC moy.</string>
+    <string id="ReportMaxHr">FC max</string>
+    <string id="ReportKeyHr">FC clé</string>
+    <string id="ReportCalories">Calories</string>
 
     <!-- Resume a match the app closed on -->
     <string id="ResumeTitle">Match ouvert</string>

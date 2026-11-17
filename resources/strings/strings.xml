@@ -66,10 +66,51 @@
     <string id="FinalYouLost">You lost</string>
     <string id="FinalMatchEnded">Match ended</string>
     <string id="FinalSave">Save</string>
+    <string id="FinalReport">Statistics</string>
     <string id="FinalDiscard">Discard</string>
     <string id="DiscardQ">Discard the activity?</string>
     <string id="SavedMsg">Saved!</string>
     <string id="DiscardedMsg">Discarded</string>
+
+    <!-- Tags of a saved match -->
+    <string id="TagSurface">Surface</string>
+    <string id="TagKind">Type</string>
+    <string id="TagNotSet">Not set</string>
+    <string id="SurfaceClay">Clay</string>
+    <string id="SurfaceHard">Hard</string>
+    <string id="SurfaceGrass">Grass</string>
+    <string id="KindMatch">Match</string>
+    <string id="KindFriendly">Friendly</string>
+
+    <!-- Report -->
+    <string id="ReportScore">SCORE</string>
+    <string id="ReportSet">Set</string>
+    <string id="ReportPoints">Points</string>
+    <string id="ReportServe">SERVE</string>
+    <string id="ReportFirstIn">1st in</string>
+    <string id="ReportFirstWon">1st won</string>
+    <string id="ReportSecondWon">2nd won</string>
+    <string id="ReportDoubleFaults">Dbl faults</string>
+    <string id="ReportEndings">POINTS</string>
+    <string id="ReportAces">Aces</string>
+    <string id="ReportWinners">Winners</string>
+    <string id="ReportNetErrors">Net errors</string>
+    <string id="ReportOutErrors">Out errors</string>
+    <string id="ReportPressure">PRESSURE</string>
+    <string id="ReportBreaks">Breaks</string>
+    <string id="ReportSaved">Saved</string>
+    <string id="ReportHolds">Holds</string>
+    <string id="ReportBestRun">Best run</string>
+    <string id="ReportTime">TIME</string>
+    <string id="ReportMatchTime">Match</string>
+    <string id="ReportAvgGame">Avg game</string>
+    <string id="ReportLongGame">Long game</string>
+    <string id="ReportPerPoint">Per point</string>
+    <string id="ReportBody">BODY</string>
+    <string id="ReportAvgHr">Avg HR</string>
+    <string id="ReportMaxHr">Max HR</string>
+    <string id="ReportKeyHr">Key pts HR</string>
+    <string id="ReportCalories">Calories</string>
 
     <!-- Resume a match the app closed on -->
     <string id="ResumeTitle">Open match</string>
