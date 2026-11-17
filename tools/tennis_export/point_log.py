@@ -47,7 +47,7 @@ def collect_slots(values: Iterable[Sequence[int]]) -> tuple[dict[int, Slot], int
     return latest, newest
 
 
-def forget_undone(latest: dict[int, Slot], newest: int) -> None:
+def forget_undone[Kept](latest: dict[int, Kept], newest: int) -> None:
     """A record whose newest entry is older than entries seen before means those were undone."""
     for sequence in [known for known in latest if known > newest]:
         del latest[sequence]

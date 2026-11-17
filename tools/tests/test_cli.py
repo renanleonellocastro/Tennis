@@ -29,7 +29,7 @@ def full_match_file(tmp_path: Path) -> Path:
     track = track_from_meters([(index % 9 - 4.0, (index % 23) - 11.0) for index in range(ENTRIES)])
     builder = FitBuilder().records(log.record_values(), track)
     builder.lap(1100, set_score=[7, 6, 7, 0], set_steps=900, set_distance=700)
-    builder.lap(1580, set_score=[6, 0, 0, 0], set_steps=500, set_distance=400)
+    builder.lap(1580, opened=1100, set_score=[6, 0, 0, 0], set_steps=500, set_distance=400)
     builder.session(
         1600,
         log_size=ENTRIES,
@@ -111,6 +111,7 @@ def test_the_document_lists_sets_and_games_with_their_durations(tmp_path: Path) 
             "duration_seconds": 1100,
             "steps": 900,
             "distance_m": 700,
+            "laps": 1,
         },
         {
             "set": 2,
@@ -120,6 +121,7 @@ def test_the_document_lists_sets_and_games_with_their_durations(tmp_path: Path) 
             "duration_seconds": 480,
             "steps": 500,
             "distance_m": 400,
+            "laps": 1,
         },
     ]
     assert len(match["games"]) == 19
@@ -261,8 +263,40 @@ def test_a_set_without_a_lap_has_no_steps_or_distance(tmp_path: Path) -> None:
 
     document, _ = exported(tmp_path, builder.write(tmp_path / "no_laps.fit"))
 
-    assert document["match"]["sets"][0]["steps"] is None
+    first_set = document["match"]["sets"][0]
+    assert (first_set["steps"], first_set["distance_m"], first_set["laps"]) == (None, None, 0)
     assert document["match"]["tags"] == {"surface": None, "kind": None}
+
+
+def test_a_set_that_was_undone_and_played_again_is_still_one_set(tmp_path: Path) -> None:
+    log = WatchLog().play(HOLD * 6)
+    values = log.record_values()
+    values.append(log.undo().record_value())
+    values += [log.play(letter).record_value() for letter in "om" + HOLD * 6]
+    builder = FitBuilder().records(values)
+    builder.lap(480, set_score=[6, 0, 0, 0], set_steps=400, set_distance=300)
+    builder.lap(540, opened=480, set_score=[6, 0, 0, 0], set_steps=50, set_distance=40)
+    builder.lap(1020, opened=540, set_score=[6, 0, 0, 0], set_steps=450, set_distance=350)
+    builder.session(1020, log_size=len(log.entries), match_setup=pack_setup())
+
+    document, _ = exported(tmp_path, builder.write(tmp_path / "replayed.fit"))
+    motion = [(played["steps"], played["distance_m"], played["laps"]) for played in document["match"]["sets"]]
+
+    assert motion == [(450, 340, 2), (450, 350, 1)]
+    assert document["integrity"]["set_scores_match"] is True
+
+
+def test_laps_without_times_leave_the_steps_of_every_set_unknown(tmp_path: Path) -> None:
+    log = WatchLog(config(ONE_SET)).play(HOLD * 6)
+    builder = FitBuilder().records(log.record_values())
+    builder.untimed_lap(480, set_score=[6, 0, 0, 0], set_steps=400)
+    builder.session(500, match_setup=pack_setup(ONE_SET))
+
+    document, _ = exported(tmp_path, builder.write(tmp_path / "bare_lap.fit"))
+    first_set = document["match"]["sets"][0]
+
+    assert (first_set["steps"], first_set["distance_m"], first_set["laps"]) == (None, None, None)
+    assert document["integrity"]["set_scores_match"] is None
 
 
 def test_lost_records_are_reported_and_only_the_start_of_the_log_is_replayed(tmp_path: Path) -> None:

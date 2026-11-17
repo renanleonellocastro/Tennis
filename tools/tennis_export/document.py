@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Any
 from tennis_export.integrity import integrity_document
 from tennis_export.layout import DISTANCE_FIELD, FINAL_SCORE_FIELD, FORMAT_VERSION, STEPS_FIELD
 from tennis_export.match_document import match_document
+from tennis_export.set_laps import laps_by_set
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -35,10 +36,11 @@ def build_document(source: str, activity: Activity, match: Match | None, heat_ma
 
 
 def match_sections(match: Match, activity: Activity) -> Document:
+    set_laps = laps_by_set(match.replay.rows, activity.records, activity.laps)
     return {
-        "match": match_document(match, activity.laps),
+        "match": match_document(match, set_laps),
         "point_log": point_log_document(match),
-        "integrity": integrity_document(match, activity),
+        "integrity": integrity_document(match, activity, set_laps),
         "watch_summary": {"final_score": activity.session.developer.get(FINAL_SCORE_FIELD)},
     }
 
