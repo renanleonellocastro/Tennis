@@ -1,3 +1,4 @@
+import Toybox.Application;
 import Toybox.Lang;
 import Toybox.System;
 import Toybox.WatchUi;
@@ -106,8 +107,9 @@ module MatchFlow {
 
     function deviceRecorder(setup as MatchSetup) as MatchRecorder {
         var usesGps = setup.usesGps() && GpsLocator.isAvailable();
-        return new MatchRecorder(new FitSession(Strings.t("AppName"), RecordingFields.MATCH), new WatchSensors(),
-                                 usesGps ? new GpsLocator() : new NoLocator());
+        var session = new PacedSession(new FitSession(Strings.t("AppName"), RecordingFields.MATCH),
+                                       (Application.getApp() as TennisApp).alarm);
+        return new MatchRecorder(session, new WatchSensors(), usesGps ? new GpsLocator() : new NoLocator());
     }
 
     // A match the app closed on. Called once, when the home screen shows.
@@ -228,6 +230,12 @@ module MatchFlow {
 
     // Replaces the final screen, which must be the one on top, once the
     // match was saved or discarded.
+    // True while a stop or a save still waits for the watch (see
+    // PacedSession).
+    function isSaving() as Boolean {
+        return (Application.getApp() as TennisApp).alarm.isWaiting();
+    }
+
     function showFarewellIfClosed(controller as MatchController) as Void {
         var key = controller.farewellKey();
         if (key != null) {

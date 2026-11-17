@@ -3,6 +3,7 @@ import Toybox.ActivityMonitor;
 import Toybox.Application;
 import Toybox.Lang;
 import Toybox.Position;
+import Toybox.Timer;
 
 // The real sensors, GPS and storage of the watch.
 
@@ -64,6 +65,40 @@ class NoLocator {
     }
 
     function turnOff() as Void {
+    }
+}
+
+// One timer for what has to wait (see PacedSession). When the app closes
+// nothing can wait any longer, so whatever is due is called at once.
+class WatchAlarm {
+    hidden var _timer as Timer.Timer = new Timer.Timer();
+    hidden var _callback as (Method() as Void)? = null;
+
+    function ring(delayMs as Number, callback as Method() as Void) as Void {
+        _callback = callback;
+        _timer.stop();
+        _timer.start(method(:onTimer), delayMs, false);
+    }
+
+    function isWaiting() as Boolean {
+        return _callback != null;
+    }
+
+    function onTimer() as Void {
+        var callback = _callback;
+        _callback = null;
+        if (callback != null) {
+            callback.invoke();
+        }
+    }
+
+    // A callback may ring again (a stop, then the save), so this goes on
+    // until nothing waits.
+    function ringNow() as Void {
+        _timer.stop();
+        while (_callback != null) {
+            onTimer();
+        }
     }
 }
 
