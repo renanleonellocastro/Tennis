@@ -1,8 +1,9 @@
 # Recording
 
-How a match becomes a Garmin activity, what the app keeps in storage while
+How a match or a practice becomes a Garmin activity, what the app keeps in storage while
 a match is open, and what happens when the app closes in the middle of one.
-The code lives in `source/recording/`.
+The code lives in `source/recording/`; a practice reuses it through
+`source/practice/PracticeRecorder.mc`.
 
 ## The activity
 
@@ -41,8 +42,10 @@ activity. The app plans for 12 at most. Ids are shared with the export tool
 | 7 | set_score | lap | UINT8 array of 4 | | M5 |
 | 8 | set_steps | lap | UINT32 | steps | M4 |
 | 9 | set_distance | lap | UINT32 | m | M4 |
+| 10 | block_hits | lap | UINT32 | shots | M7 (practice) |
+| 11 | block_misses | lap | UINT32 | shots | M7 (practice) |
 
-Used: 8. Planned in total: 10. Free: 2.
+Used: 10. Planned in total: 12. Free: 0.
 
 The four summary fields are built by `source/match/MatchSummary.mc` and
 written by `MatchRecorder.writeSummary`: when the match opens, when the app
@@ -58,6 +61,30 @@ tags clay and friendly gave a file with `match_setup` 9505, `final_score`
 
 The ids and names in code are in `source/recording/RecordingFields.mc`; the
 labels shown by Garmin Connect are in `resources/fit/fitcontributions.xml`.
+
+## Practice
+
+A practice records the same kind of activity as a match, through the same
+session, sensors and step counting. `PracticeRecorder` wraps `MatchRecorder`
+and adds only the two block fields.
+
+* The session starts when the practice screen opens, stops on pause and on
+  the summary, and starts again on resume or when the summary is left with
+  BACK.
+* One lap per block. Closing a block writes its hits and misses on the lap,
+  opens the next lap and starts both fields from zero. Every hit, miss and
+  undo rewrites the two fields, so the lap that is open always carries the
+  current counts.
+* A block with no entries does not close, and a closed block cannot be
+  reopened (a lap cannot be taken back).
+* No GPS and no setup screen: a practice starts straight from the menu.
+* A practice is not kept in storage and cannot be resumed. When the app
+  closes with a practice open, or on its summary without a choice, the
+  activity recorded so far is saved.
+* Each kind of activity creates only its own fields: a practice has the
+  movement fields and the two block fields, a match has the movement
+  fields and the match fields. A simulator practice file was read back and
+  carries no match field.
 
 ## Storage keys
 

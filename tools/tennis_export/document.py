@@ -1,4 +1,4 @@
-"""Builds match.json: the activity, the match, how complete the point log is and the heat map."""
+"""Builds match.json and practice.json: the activity, the match, how complete the point log is and the heat map."""
 
 from __future__ import annotations
 
@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Any
 from tennis_export.integrity import integrity_document
 from tennis_export.layout import DISTANCE_FIELD, FORMAT_VERSION, STEPS_FIELD
 from tennis_export.match_document import match_document
+from tennis_export.practice_document import practice_document
 from tennis_export.set_laps import laps_by_set
 from tennis_export.source_files import source_documents
 from tennis_export.watch_summary import watch_summary_document
@@ -18,6 +19,7 @@ if TYPE_CHECKING:
 
     from tennis_export.fit_reader import Activity, Message
     from tennis_export.match_reader import Match
+    from tennis_export.practice import Block
     from tennis_export.source_files import SourceFile
 
 type Document = dict[str, Any]
@@ -38,6 +40,20 @@ def build_document(
         "source_files": source_documents(sources),
         "activity": activity_document(activity),
         **(NO_MATCH if match is None else match_sections(match, activity)),
+        "heat_map": heat_map,
+    }
+
+
+def build_practice_document(
+    sources: Sequence[SourceFile], activity: Activity, blocks: Sequence[Block], heat_map: Document | None
+) -> Document:
+    """A practice has one file and no match; the blocks take the place of the match sections."""
+    return {
+        "format_version": FORMAT_VERSION,
+        "source": sources[0].name,
+        "source_files": source_documents(sources),
+        "activity": activity_document(activity),
+        "practice": practice_document(blocks),
         "heat_map": heat_map,
     }
 

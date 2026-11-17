@@ -18,7 +18,7 @@ These rules apply to all production code: the app in `source/` and the Python sc
 4. **Meaningful names.** No abbreviations beyond the universal ones (`id`, `url`, `api`, `ui`, `fit`); no single letter names outside tiny loops, lambdas and comprehensions; booleans read as predicates (`is`, `has`, `can`, `should`); functions are verbs, classes are nouns.
 5. **No dead code, no commented out code, no duplicated logic** (extract the shared part), no magic numbers or strings (use named constants; text the user sees always comes from the string resources), no broad `except`.
 6. **Comments explain why**, never what. Docstrings only where the contract is not obvious.
-7. **Refactoring never changes behavior.** The only exception is a real bug fix: first a test that shows the bug, then the fix, and the commit says what changed. Generated files (`Strings.mc`, the launcher icon) must stay byte for byte identical after a refactor of their generator.
+7. **Refactoring never changes behavior.** The only exception is a real bug fix: first a test that shows the bug, then the fix, and the commit says what changed. Generated files (`Strings.mc`, the tables in `resources/texts/`, the launcher icon) must stay byte for byte identical after a refactor of their generator.
 
 Also: DRY, KISS and YAGNI; high cohesion and low coupling; the Law of Demeter (no long call chains through other objects); tell, don't ask; command query separation; guard clauses and fail fast; immutability by default (frozen dataclasses, `const`); pure functions for logic; composition over inheritance; explicit errors; no boolean flag parameters that switch behavior (split the function); consistent module structure and file naming.
 
@@ -28,7 +28,7 @@ Tests keep covering everything testable (see [TESTING.md](TESTING.md)); the tool
 
 `make check` runs, in this order:
 
-1. `make resources-check`: every XML file parses, the six string catalogs have the same ids and `source/generated/Strings.mc` is up to date.
+1. `make resources-check`: every XML file parses, the six string catalogs have the same ids and the generated string files (`source/generated/Strings.mc`, `resources/texts/`) are up to date.
 2. `make audit`: every Toybox symbol the app uses exists on every target device.
 3. `make build-shapes`: a build at type check level 2 with warnings on, for one device per screen shape (fr55, venu2, venusq2).
 4. `make lint-tools`: `ruff` and `mypy --strict` on the tools.

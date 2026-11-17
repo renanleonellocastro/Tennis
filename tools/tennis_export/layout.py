@@ -21,6 +21,8 @@ DISTANCE_FIELD = "distance"
 SET_SCORE_FIELD = "set_score"
 SET_STEPS_FIELD = "set_steps"
 SET_DISTANCE_FIELD = "set_distance"
+BLOCK_HITS_FIELD = "block_hits"
+BLOCK_MISSES_FIELD = "block_misses"
 
 RESULT_FAULT = 0
 ENDING_NAMES = ("none", "winner", "ace", "error_net", "error_out")

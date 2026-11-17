@@ -10,7 +10,7 @@ module MenuKit {
     function mainMenuRows() as Array {
         return [
             ["MenuStartMatch", :startMatch, new Lang.Method(MatchFlow, :pushSetup)],
-            ["MenuPractice", :practice, new Lang.Method(MenuKit, :pushComingSoon)],
+            ["MenuPractice", :practice, new Lang.Method(PracticeFlow, :start)],
             ["MenuSettings", :settings, new Lang.Method(MenuKit, :pushComingSoon)],
             ["MenuAbout", :about, new Lang.Method(MenuKit, :pushAbout)]
         ];

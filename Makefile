@@ -32,7 +32,7 @@ help:
 	@echo "  sim            Launch the Connect IQ simulator"
 	@echo "  test           Run unit tests on the simulator (start 'make sim' first)"
 	@echo "  package        Build the store ready .iq package (all devices)"
-	@echo "  strings        Regenerate source/generated/Strings.mc from the strings.xml files"
+	@echo "  strings        Regenerate the string tables from the strings.xml files"
 	@echo "  icon           Regenerate the launcher icon"
 	@echo "  check          Run every local quality gate (see docs/QUALITY.md)"
 	@echo "  function-length  List functions over 12 lines, longest first"

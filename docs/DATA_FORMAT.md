@@ -5,7 +5,8 @@ its activity files. It has two halves:
 
 1. What the watch writes into the FIT activity file (developer fields).
 2. What the converter in `tools/tennis_export` produces from that file
-   (`points.csv`, `match.json` and `heatmap.png`).
+   (`points.csv`, `match.json` and `heatmap.png` for a match, `blocks.csv`
+   and `practice.json` for a practice).
 
 ## Status: partly proven on the simulator
 
@@ -17,7 +18,8 @@ with this tool and those fields read back as written. The point log
 (`point_log`, `log_size`) is **not written yet**, so today the converter
 has no point by point data: see
 [What a file without a point log gives](#what-a-file-without-a-point-log-gives).
-Nothing has run on a real watch. Every item that still needs confirmation
+A practice saved by the simulator was converted too: one lap for each
+block, with its hits and misses. Nothing has run on a real watch. Every item that still needs confirmation
 is listed in [Still to be confirmed on the watch](#still-to-be-confirmed-on-the-watch).
 
 The tests of the converter build FIT files with the encoder of the official
@@ -30,8 +32,9 @@ bytes.
 ### Overview
 
 The watch records a normal tennis activity (sport `tennis`) with heart rate
-and, when enabled, GPS. On top of that it adds ten developer fields. The
-limit agreed for the app is twelve, so two ids stay free.
+and, when enabled, GPS. On top of that it adds twelve developer fields: ten
+for a match and two for a practice. The limit agreed for the app is twelve,
+so no id stays free.
 
 | Id | Name | FIT message | Type | Count | Units | Meaning |
 |---:|------|-------------|------|------:|-------|---------|
@@ -45,8 +48,8 @@ limit agreed for the app is twelve, so two ids stay free.
 | 7 | `set_score` | lap (19) | UINT8 | 4 | none | Games and tie break points of the set the lap covers |
 | 8 | `set_steps` | lap (19) | UINT32 | 1 | steps | Steps taken during the set |
 | 9 | `set_distance` | lap (19) | UINT32 | 1 | m | Distance covered during the set |
-
-Ids 10 and 11 are not used.
+| 10 | `block_hits` | lap (19) | UINT32 | 1 | shots | Practice only: hits counted in the block the lap covers |
+| 11 | `block_misses` | lap (19) | UINT32 | 1 | shots | Practice only: misses counted in the block the lap covers |
 
 > **Considered, not built: a match identifier.** A match that is closed and
 > resumed is saved as several activity files, and nothing in them says
@@ -251,6 +254,28 @@ carries `match_setup`), again when the app closes with a match in progress,
 and a last time when the player saves. The tags are chosen on the save
 screen, so a match saved by the app closing has both tags at 0 (not set).
 
+### Practice: one lap for each block (lap message)
+
+A practice is the same tennis activity with free counters instead of a
+score. It has no point log and none of the match session fields (ids 0 to 4
+and 7); it writes `steps`, `distance`, `set_steps` and `set_distance` like a
+match, where the "set" of the two lap fields is the block.
+
+* The watch closes a lap when a block is closed, so lap `n` covers block
+  `n`. Saving closes the lap of the block that was open.
+* `block_hits` and `block_misses`: the hits and misses counted in the block.
+  The success rate is not stored: it is `hits / (hits + misses)`.
+* A block with no entries cannot be closed on the watch, so only the last
+  lap can have 0 and 0. It is the time after the last closed block and is
+  not a block.
+* A closed block is final: undo on the watch only reaches the entries of
+  the open block, so the values of a closed lap never change.
+
+A practice file carries only the developer fields of a practice: `steps`,
+`distance`, `set_steps`, `set_distance`, `block_hits` and `block_misses`. A
+match file carries none of the two block fields. What the converter makes
+of a practice is in [A practice](#a-practice).
+
 ### Still to be confirmed on the watch
 
 The summary fields ran on the simulator only. The watch side must check
@@ -319,8 +344,10 @@ uv run tennis-export first-half.fit second-half.fit --out some-directory
 ```
 
 The command takes one file, or every file of one match (see
-[Several files of one match](#several-files-of-one-match)), and always
+[Several files of one match](#several-files-of-one-match)). For a match it
 writes one `points.csv`, one `match.json` and at most one `heatmap.png`.
+For a practice it writes one `blocks.csv` and one `practice.json` instead
+(see [A practice](#a-practice)).
 
 Without `--out` the files go to a directory named after the file, next to
 it (`activity-export`). With several files it is named after the one that
@@ -576,6 +603,54 @@ the match is then only in `watch_summary`. In `integrity`,
 `points_drawn` (positions that fall inside the picture) and
 `rotation_degrees` (direction taken as the court length, counted
 counterclockwise from east, from 0 to 180).
+
+### A practice
+
+A file is a practice when it has no `match_setup` and at least one lap
+carries `block_hits`. The command then writes `blocks.csv` and
+`practice.json`, and no `points.csv` or `match.json`. A practice is one
+file: several practice files in one command are refused, like any files
+that are not parts of one match.
+
+Which laps are blocks:
+
+* Only the last `num_laps` laps of the session are read, so laps left in
+  the file by something else are ignored.
+* A last lap with 0 hits and 0 misses is dropped: it is the time after the
+  last closed block (see
+  [Practice: one lap for each block](#practice-one-lap-for-each-block-lap-message)).
+
+`blocks.csv` has one row for each block and a last row named `total`:
+
+| Column | Meaning |
+|--------|---------|
+| `block` | Number of the block, from 1, or `total` |
+| `hits`, `misses` | The two counts of the block |
+| `shots` | Hits plus misses |
+| `success_percent` | Hits out of shots, rounded half up to a whole number; empty when there were no shots |
+| `duration_seconds` | Timer time of the lap; empty on the total row |
+| `steps`, `distance_m` | `set_steps` and `set_distance` of the lap; empty on the total row and when the lap lacks the field |
+
+`practice.json`:
+
+```
+{
+  "format_version": 1,
+  "source": "activity.fit",
+  "source_files": [ ... ],
+  "activity": { ... },                  same section as in match.json
+  "practice": {
+    "blocks": [ { "block": 1, "hits": 8, "misses": 2, "shots": 10,
+                  "success_percent": 80, "duration_seconds": 312.4,
+                  "steps": 140, "distance_m": 96 }, ... ],
+    "totals": { "blocks": 3, "hits": 20, "misses": 9, "shots": 29,
+                "success_percent": 69 }
+  },
+  "heat_map": { ... } or null           null today: a practice records no GPS
+}
+```
+
+Unknown values are `null`.
 
 ### `heatmap.png`
 

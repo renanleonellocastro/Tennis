@@ -4,8 +4,8 @@
 Three gates, all of which must pass:
   1. manifest.xml and every XML file under resources*/ parse.
   2. Every language strings.xml has exactly the ids of the base (eng) file.
-  3. source/generated/Strings.mc matches what scripts/generate_strings.py
-     would write now.
+  3. source/generated/Strings.mc and the text tables in resources/texts
+     match what scripts/generate_strings.py would write now.
 
 Usage:
     python3 scripts/check_resources.py
@@ -62,12 +62,19 @@ def out_of_sync_problems():
     return problems
 
 
+def stale_problem(path, expected):
+    try:
+        with open(os.path.join(ROOT, path), encoding="utf-8") as handle:
+            if handle.read() == expected:
+                return None
+    except OSError:
+        pass
+    return f"STALE {path}: run python3 scripts/generate_strings.py"
+
+
 def stale_table_problems():
-    expected = generate_strings.render_module(generate_strings.read_tables())
-    with open(generate_strings.OUTPUT_PATH, encoding="utf-8") as handle:
-        if handle.read() == expected:
-            return []
-    return ["STALE source/generated/Strings.mc: run python3 scripts/generate_strings.py"]
+    expected = generate_strings.outputs(generate_strings.read_tables())
+    return [problem for problem in map(stale_problem, expected, expected.values()) if problem]
 
 
 def main():

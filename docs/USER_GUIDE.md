@@ -313,14 +313,28 @@ a later version.
 
 ## Practice mode
 
-**(planned)** Choose **Practice** in the menu to record a training session
-instead of a match.
+Choose **Practice** in the menu to record a training session instead of a
+match. It starts at once: there is nothing to set up, and it records no
+GPS track.
 
 * The session records time, heart rate, calories, steps and distance.
-* Free counters: UP is a hit and DOWN is a miss.
-* One button closes the block, so you can count one drill after another,
-  for example serves and then forehands.
-* The summary at the end shows the success rate of each block.
+* Free counters: UP is a hit and DOWN is a miss. On a touch screen, tap the
+  left half for a hit and the right half for a miss.
+* START closes the block and opens the next one, so you can count one drill
+  after another, for example serves and then forehands. On a watch without
+  those buttons, tap **NEXT**. A block with no entries does not close.
+* BACK takes back the last entry of the open block. A closed block cannot
+  be changed.
+* The screen shows the block number, the two counts, the success rate of
+  the block, the clock and the heart rate.
+* The menu (hold UP, or tap **MENU**) has **Pause** or **Resume** and
+  **End practice**.
+* After you end it, the summary shows the total and one line for each
+  block, for example `2  8/10  80%`. UP and DOWN turn its pages, START
+  opens **Save** or **Discard**, and BACK goes on with the practice.
+* A saved practice is a Tennis activity with one lap for each block.
+  `tennis-export` turns it into `blocks.csv` and `practice.json`, with the
+  hits, misses and success rate of each block and the totals.
 
 ## To confirm before release
 
@@ -338,8 +352,10 @@ ends up different.
    a real match. Also to confirm: what the two activities of a resumed
    match contain, and the exact name of the export action in Garmin
    Connect.
-5. **Practice mode (M7, in progress).** The whole section, including which
-   button closes a block. The menu entry shows **Coming soon** today.
+5. **Practice mode on a real watch.** The section was checked on the
+   simulator only (Forerunner 55, Venu 2, Venu Sq 2), with scripted input
+   instead of real key presses. How Garmin Connect shows the laps of a
+   practice is open.
 6. **Controls on real watches.** Hold UP for the menu, taps, the back swipe
    and the **MENU** and **FAULT** buttons need the watch pass of
    [TESTING.md](TESTING.md). The Venu 2 as the example of a two button

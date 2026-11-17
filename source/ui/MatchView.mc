@@ -7,16 +7,12 @@ import Toybox.WatchUi;
 // positions from MatchLayout and the state from MatchController.
 class MatchView extends WatchUi.View {
     hidden const CLOCK_TICK_MS = 1000;
-    // Largest first; the first one whose widest score fits is used.
-    hidden const POINT_FONTS = [Graphics.FONT_NUMBER_THAI_HOT, Graphics.FONT_NUMBER_HOT,
-                                Graphics.FONT_NUMBER_MEDIUM, Graphics.FONT_NUMBER_MILD];
     hidden const WIDEST_SCORE = "40";
     hidden const SECOND_SERVE_MARK = "2";
     // Indexed by Player, which is also the BannerTone of a point at stake.
     hidden const TONE_COLORS = [Theme.COLOR_ACCENT, Theme.COLOR_TEXT_DIM, Theme.COLOR_WARM];
     hidden const LABEL_KEYS = ["LabelMe", "LabelOpponent"];
     hidden const CENTERED = Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER;
-    hidden const LEFT = Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER;
 
     hidden var _controller as MatchController;
     hidden var _layout as MatchLayout;
@@ -30,12 +26,7 @@ class MatchView extends WatchUi.View {
     }
 
     function onLayout(dc as Dc) as Void {
-        var sizes = [] as Array< Array<Number> >;
-        for (var i = 0; i < POINT_FONTS.size(); i++) {
-            var font = POINT_FONTS[i] as Graphics.FontDefinition;
-            sizes.add([dc.getTextWidthInPixels(WIDEST_SCORE, font), dc.getFontHeight(font)] as Array<Number>);
-        }
-        _pointsFont = POINT_FONTS[_layout.firstFitting(sizes)] as Graphics.FontDefinition;
+        _pointsFont = MatchDraw.numberFont(dc, _layout, WIDEST_SCORE);
     }
 
     // Menus and dialogs change the match while this screen is hidden, so it
@@ -139,47 +130,8 @@ class MatchView extends WatchUi.View {
     }
 
     hidden function drawFooter(dc as Dc) as Void {
-        drawClock(dc);
-        if (_layout.hasTouchControls()) {
-            drawTouchControls(dc);
-        }
-        if (_layout.hasKeyHints()) {
-            drawKeyHint(dc, Player.ME);
-            drawKeyHint(dc, Player.OPPONENT);
-        }
-    }
-
-    // The clock and, when the watch reads one, the heart rate after a dot.
-    hidden function drawClock(dc as Dc) as Void {
-        var clock = MatchPresenter.clockText(_controller.clockSeconds());
-        var beats = MatchPresenter.heartRateText(_controller.heartRate());
-        var xs = _layout.footerXs(dc.getTextWidthInPixels(clock, Graphics.FONT_TINY),
-                                  dc.getTextWidthInPixels(beats, Graphics.FONT_TINY));
-        dc.setColor(_controller.isPaused() ? Theme.COLOR_TEXT_DIM : Theme.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(xs[0], _layout.clockY(), Graphics.FONT_TINY, clock, LEFT);
-        if (beats.length() > 0) {
-            dc.drawText(xs[2], _layout.clockY(), Graphics.FONT_TINY, beats, LEFT);
-            dc.setColor(Theme.COLOR_DANGER, Graphics.COLOR_TRANSPARENT);
-            dc.fillCircle(xs[1], _layout.clockY(), _layout.heartDotRadius());
-        }
-    }
-
-    hidden function drawTouchControls(dc as Dc) as Void {
-        Theme.drawPill(dc, _layout.menuControlX(), _layout.controlsY(), Strings.t("HomeHint"),
-                       Graphics.FONT_XTINY, Theme.COLOR_TEXT_DIM);
-        Theme.drawPill(dc, _layout.faultControlX(), _layout.controlsY(), Strings.t("ControlFault"),
-                       Graphics.FONT_XTINY, Theme.COLOR_TEXT_DIM);
-    }
-
-    // A short arc on the screen edge next to the key that scores for a
-    // player, in the color of that player's label.
-    hidden function drawKeyHint(dc as Dc, player as Number) as Void {
-        var degrees = _layout.keyHintDegrees(player);
-        dc.setPenWidth(Theme.ARC_PEN);
-        dc.setColor(TONE_COLORS[player] as Number, Graphics.COLOR_TRANSPARENT);
-        dc.drawArc(_layout.centerX(), dc.getHeight() / 2, Theme.frameRadius(dc),
-                   Graphics.ARC_COUNTER_CLOCKWISE, degrees[0], degrees[1]);
-        dc.setPenWidth(1);
+        MatchDraw.draw(dc, _layout, [_controller.clockSeconds(), _controller.heartRate(), _controller.isPaused()],
+                         "ControlFault");
     }
 }
 

@@ -5,19 +5,25 @@ import Toybox.Lang;
 
 typedef FieldOptions as { :mesgType as Number, :units as String, :count as Number };
 
-// The tennis activity of the watch with the developer fields of
-// RecordingFields. Heart rate, calories and the GPS track are recorded by
+// The tennis activity of the watch with the developer fields that
+// RecordingFields lists for its kind (a match or a practice). Heart rate, calories and the GPS track are recorded by
 // the watch itself.
 class FitSession {
     hidden var _session as ActivityRecording.Session;
     hidden var _fields as Dictionary<Number, FitContributor.Field> = {} as Dictionary<Number, FitContributor.Field>;
 
-    function initialize(name as String) {
+    function initialize(name as String, kind as Number) {
         _session = ActivityRecording.createSession({
             :name => name, :sport => Activity.SPORT_TENNIS, :subSport => Activity.SUB_SPORT_GENERIC
         });
         for (var i = 0; i < RecordingFields.TABLE.size(); i++) {
-            createField(RecordingFields.TABLE[i] as Array);
+            createFieldOfKind(RecordingFields.TABLE[i] as Array, kind);
+        }
+    }
+
+    hidden function createFieldOfKind(row as Array, kind as Number) as Void {
+        if (RecordingFields.isOfKind(row, kind)) {
+            createField(row);
         }
     }
 

@@ -105,7 +105,7 @@ module MatchFlow {
 
     function deviceRecorder(setup as MatchSetup) as MatchRecorder {
         var usesGps = setup.usesGps() && GpsLocator.isAvailable();
-        return new MatchRecorder(new FitSession(Strings.t("AppName")), new WatchSensors(),
+        return new MatchRecorder(new FitSession(Strings.t("AppName"), RecordingFields.MATCH), new WatchSensors(),
                                  usesGps ? new GpsLocator() : new NoLocator());
     }
 

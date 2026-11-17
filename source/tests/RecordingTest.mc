@@ -215,12 +215,48 @@ module RecordingTests {
     (:test)
     function testFieldTableUsesTheIdsSharedWithTheConverter(logger as Test.Logger) as Boolean {
         var names = {2 => "match_setup", 3 => "final_score", 4 => "statistics", 5 => "steps", 6 => "distance",
-                     7 => "set_score", 8 => "set_steps", 9 => "set_distance"};
+                     7 => "set_score", 8 => "set_steps", 9 => "set_distance",
+                     10 => "block_hits", 11 => "block_misses"};
         Test.assertEqual(RecordingFields.TABLE.size(), names.size());
         for (var i = 0; i < RecordingFields.TABLE.size(); i++) {
             var row = RecordingFields.TABLE[i] as Array;
             Test.assertEqual(row[1] as String, names[row[0] as Number] as String);
         }
+        return true;
+    }
+
+    // The ids of the fields a kind of activity carries, as text.
+    function idsOfKind(kind as Number) as String {
+        var ids = [] as Array<Number>;
+        for (var i = 0; i < RecordingFields.TABLE.size(); i++) {
+            var row = RecordingFields.TABLE[i] as Array;
+            if (RecordingFields.isOfKind(row, kind)) {
+                ids.add(row[0] as Number);
+            }
+        }
+        return joinedNumbers(ids);
+    }
+
+    (:test)
+    function testEachKindOfActivityCarriesOnlyItsFields(logger as Test.Logger) as Boolean {
+        Test.assertEqual(idsOfKind(RecordingFields.MATCH), "2,3,4,5,6,7,8,9");
+        Test.assertEqual(idsOfKind(RecordingFields.PRACTICE), "5,6,8,9,10,11");
+        return true;
+    }
+
+    (:test)
+    function testRecorderClosesALapWithItsStepsAndStartsTheNextFromZero(logger as Test.Logger) as Boolean {
+        var session = new FakeSession();
+        var sensors = new FakeSensors();
+        var recorder = recorderOn(session, sensors, new FakeLocator());
+        sensors.walk(100, 5000);
+        recorder.start(0, false);
+        sensors.walk(12, 900);
+        recorder.closeLap();
+        Test.assertEqual(session.calls, "sl");
+        Test.assertEqual(joinedNumbers(session.laps[0]), "12,9");
+        Test.assertEqual(session.fields[RecordingFields.SET_STEPS] as Number, 0);
+        Test.assertEqual(session.numbers(RecordingFields.SET_SCORE), "");
         return true;
     }
 
