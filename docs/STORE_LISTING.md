@@ -504,9 +504,11 @@ app ends up different.
 3. **Statistics in Garmin Connect (M5, in progress).** Today only steps and
    distance are written as extra fields. "The main statistics" depends on
    M5 and on how Garmin Connect shows them.
-4. **Point log in the activity file (M6 watch side, in progress).** The
-   whole "Your data is yours" section and the FitContributor line depend on
-   it. Today the converter is proven only against files built by its tests.
+4. **Point log in the activity file.** The "Your data is yours" section
+   and the FitContributor line depend on it. Confirmed on the simulator
+   (Forerunner 55): scripted matches, one of them closed and resumed, were
+   converted and matched the script point by point. Still to confirm with
+   a file of a real watch.
 5. **Practice mode on a real watch.** Counters, blocks and the success
    rate per block work on the simulator; nothing ran on a real watch.
 6. **Controls on real watches.** Hold UP for the menu, taps on touch

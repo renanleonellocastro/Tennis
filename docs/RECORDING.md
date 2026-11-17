@@ -32,8 +32,8 @@ activity. The app plans for 12 at most. Ids are shared with the export tool
 
 | Id | Name | Message | Type | Unit | Written by |
 |---|---|---|---|---|---|
-| 0 | point_log | record | UINT32 array | | M6 (planned) |
-| 1 | log_size | session | | | M6 (planned) |
+| 0 | point_log | record | UINT32 array of 9 | | M6 |
+| 1 | log_size | session | UINT16 | entries | M6 |
 | 2 | match_setup | session | UINT32 | | M5 |
 | 3 | final_score | session | STRING, 32 bytes | | M5 |
 | 4 | statistics | session | UINT16 array of 30 | counts | M5 |
@@ -45,10 +45,10 @@ activity. The app plans for 12 at most. Ids are shared with the export tool
 | 10 | block_hits | lap | UINT32 | shots | M7 (practice) |
 | 11 | block_misses | lap | UINT32 | shots | M7 (practice) |
 
-Used: 10. Planned in total: 12. Free: 0.
+Used: 12. Free: 0.
 
-The four summary fields are built by `source/match/MatchSummary.mc` and
-written by `MatchRecorder.writeSummary`: when the match opens, when the app
+The summary fields (`log_size` and the four above) are built by
+`source/match/MatchSummary.mc` and written by `MatchRecorder.writeSummary`: when the match opens, when the app
 closes with a match in progress and when the player saves. `set_score` is
 written right before each lap closes, so every lap carries the score of its
 set. Only the fields with a unit have a label for Garmin Connect; a label
@@ -59,8 +59,49 @@ tags clay and friendly gave a file with `match_setup` 9505, `final_score`
 `6-1`, the thirty counts and one lap with `set_score` 6, 1, 0, 0;
 `tennis-export` read all of them back.
 
+## The point log in the file
+
+`point_log` holds the newest three entries of the log, three words each
+(`source/engine/PointSlot.mc`; layout in `docs/DATA_FORMAT.md`). The engine
+keeps the nine words ready, so writing them costs no replay.
+
+What the simulator showed, and what the code does about it:
+
+* An array field is accepted on a record. A field value stays: every record
+  written after `setData` carries it until the next `setData`.
+* Records are written once a second while the timer runs, plus one at each
+  timer start and stop. Saving writes no record. A value set right before
+  `save()` is lost; a value set right before `start()` or `stop()` is in
+  the record of that start or stop.
+* So `MatchController` writes the point log **before** it starts or stops
+  the session, after every point, fault and correction, and once when the
+  match screen opens.
+* Two entries a second for a whole match lost nothing (three entries fit
+  between two records).
+* An undo writes the field again with a lower newest sequence number; the
+  converter drops the undone entries.
+
+Accepted for version 1:
+
+* An entry marked in the last second before the app closes may be missing
+  from the file being closed. The resumed file repeats the newest three
+  entries in its first record, which brings it back.
+* A correction made while paused that ends the match, saved without a
+  resume, reaches no record. `log_size` shows the gap.
+* A finished match that is reopened and finished again within about a
+  second may miss its last entry in the file (seen in a few simulator
+  runs, not in most). `log_size` shows the gap.
+* Smart Recording on a real watch (records less often than once a second)
+  cannot be tested on the simulator.
+
+Checked on the simulator (fr55) with scripted matches converted by
+`tennis-export` and compared entry by entry with the script: see
+"Checked on the simulator" in `docs/DATA_FORMAT.md`.
+
 The ids and names in code are in `source/recording/RecordingFields.mc`; the
 labels shown by Garmin Connect are in `resources/fit/fitcontributions.xml`.
+The table of fields is built only while a session is created, so it does
+not stay in memory during the match.
 
 ## Practice
 
@@ -98,6 +139,7 @@ accepts for one value.
 | `tags` | The surface and the kind of the last saved match (written by `TagStore`) |
 | `match` | `[version, setup values]` of the match in progress. Version is 1 |
 | `set0`, `set1`, ... | The point log entries of each set, one key per set |
+| `marks` | The marks of the engine (see below), one small array per mark |
 
 Rules:
 
@@ -105,16 +147,46 @@ Rules:
 * After each point, fault or correction only the key of the set in progress
   is written again. A correction that goes back over a set removes the keys
   of the sets after it.
+* `marks` is written only when the number of marks changes (about once
+  every 48 entries, or when a correction goes back over a mark).
 * Save and Discard remove every key of the match.
 * A `match` value with another version or shape is ignored.
+
+## Marks: why a long match stays fast
+
+The watch stops an app whose code runs too long in one go (the simulator
+reports "Watchdog Tripped Error - Code Executed Too Long"). Replaying a
+whole log did that: on the fr55 simulator a full replay of state and
+statistics passed with 140 entries and was stopped with 160, and a real
+match has 300 or more.
+
+So the engine never replays the whole log:
+
+* The statistics are counted as the match goes (`StatisticsCollector`),
+  not by a replay when the report opens.
+* When a game closes and 48 or more entries were added since the last
+  mark, the engine takes a **mark**: the size of the log, where the game
+  before started, the statistics so far and the state of the match.
+* An undo, a correction or a resume restores the newest mark that is at
+  least three entries behind the end of the log and replays only the
+  entries after it: about 48 entries plus one game at most.
+* A correction that goes back over a mark drops it.
+* The marks are stored with the match, so a resume is as fast.
+
+Checked on the simulator: a match of 300 entries and more was played,
+corrected, saved and its report opened without the watchdog.
 
 ## Resuming a match
 
 * When the home screen shows and a stored match exists, the app offers
   Resume or Discard. BACK leaves the stored match for later. Starting a new
   match replaces it.
-* Resume replays the stored log, so score, server, sides and statistics come
-  back exactly. The match clock goes on from the time of the last entry.
+* Resume restores the newest stored mark and replays the entries after it,
+  so score, server, sides and statistics come back exactly. The match clock
+  goes on from the time of the last entry, and the sequence numbers of the
+  point log go on too.
+* The first record of the new activity file repeats the newest three
+  entries of the log.
 * A fault that was waiting for its second serve is in the log and comes
   back too. A point whose ending was still being chosen is lost.
 
@@ -123,7 +195,10 @@ Rules:
 * When the app closes with a match open, the app saves the activity recorded
   so far and keeps the stored match. A resumed match records a **new**
   activity: the match then has two activity files, each with its own time,
-  steps, distance and laps. The second file opens laps only for the sets
+  steps, distance and laps. `log_size`, `statistics` and `final_score` of
+  each file cover the whole match up to that moment, so the last file
+  speaks for the match. `tennis-export` joins the files when all of them
+  are given. The second file opens laps only for the sets
   that close after the resume.
 * When the app closes on the final score screen without a choice, the
   activity is saved and the stored match is removed.
