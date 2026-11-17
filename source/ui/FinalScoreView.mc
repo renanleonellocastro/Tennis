@@ -1,0 +1,58 @@
+import Toybox.Graphics;
+import Toybox.Lang;
+import Toybox.WatchUi;
+
+// The final score: who won, the sets and the time played.
+class FinalScoreView extends WatchUi.View {
+    hidden const TITLE_Y = 28;
+    hidden const SETS_Y = 50;
+    hidden const CLOCK_Y = 72;
+    hidden const CENTERED = Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER;
+
+    hidden var _controller as MatchController;
+
+    function initialize(controller as MatchController) {
+        View.initialize();
+        _controller = controller;
+    }
+
+    function onUpdate(dc as Dc) as Void {
+        var state = _controller.state();
+        dc.setColor(Theme.COLOR_TEXT, Theme.COLOR_BG);
+        dc.clear();
+        Theme.drawBrandArc(dc, Theme.COLOR_ACCENT);
+        drawLine(dc, TITLE_Y, Graphics.FONT_SMALL, Theme.COLOR_ACCENT,
+                 Strings.t(MatchPresenter.finalTitleKey(state)));
+        drawLine(dc, SETS_Y, Graphics.FONT_MEDIUM, Theme.COLOR_TEXT, MatchPresenter.setsText(state));
+        drawLine(dc, CLOCK_Y, Graphics.FONT_TINY, Theme.COLOR_TEXT_DIM,
+                 MatchPresenter.clockText(_controller.clockSeconds()));
+    }
+
+    hidden function drawLine(dc as Dc, percentY as Number, font as Graphics.FontDefinition,
+                             color as Number, text as String) as Void {
+        dc.setColor(color, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(dc.getWidth() / 2, dc.getHeight() * percentY / 100, font, text, CENTERED);
+    }
+}
+
+// START or a tap leaves for the main menu. BACK returns to the match, so a
+// last point entered by mistake can still be taken back.
+class FinalScoreDelegate extends WatchUi.BehaviorDelegate {
+    hidden var _controller as MatchController;
+
+    function initialize(controller as MatchController) {
+        BehaviorDelegate.initialize();
+        _controller = controller;
+    }
+
+    function onSelect() as Boolean {
+        WatchUi.popView(WatchUi.SLIDE_RIGHT);
+        return true;
+    }
+
+    function onBack() as Boolean {
+        _controller.reopen();
+        MatchFlow.showMatch(_controller, WatchUi.SLIDE_DOWN);
+        return true;
+    }
+}
