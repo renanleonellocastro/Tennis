@@ -43,16 +43,14 @@ limit agreed for the app is twelve, so two ids stay free.
 
 Ids 10 and 11 are not used.
 
-> **Proposed, not built: a match identifier.** A match that is closed and
+> **Considered, not built: a match identifier.** A match that is closed and
 > resumed is saved as several activity files, and nothing in them says
-> "these belong together". The proposal is to use id 10 for a `match_id`
-> field in the session message (UINT32, one value, top bit zero): a value
-> chosen when the match starts, for example the start time of the match in
-> seconds, kept with the stored match so every file of a resumed match
-> carries the same one. The converter does not read it today and works
-> without it: it tells the files of one match apart with the rules in
-> [Several files of one match](#several-files-of-one-match). With the field
-> that check would become exact.
+> "these belong together". A dedicated `match_id` field would make that
+> check exact, but the budget of 12 developer fields is already taken
+> (ids 10 and 11 are reserved for the practice block laps), so it would
+> have to travel inside `match_setup`. The converter works without it: it
+> tells the files of one match apart with the rules in
+> [Several files of one match](#several-files-of-one-match).
 
 Rules that hold for every field:
 
