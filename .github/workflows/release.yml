@@ -1,0 +1,83 @@
+name: Release
+
+# Builds the .iq package for the store when a version tag is pushed (for
+# example v1.0.0) and attaches it to a GitHub release. Upload the .iq to the
+# Connect IQ store from https://apps.garmin.com/developer/dashboard.
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+env:
+  SDK_VERSION: 9.2.0
+  AGREEMENT_HASH: CC737BBBA104D7740D5BBCF27D0F6382
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    name: Build .iq package
+    runs-on: ubuntu-latest
+    # Building the .iq needs the Garmin login of the maintainer. Without the
+    # secrets the job does nothing and stays green: the release can still be
+    # created and its .iq attached by hand after a local `make package`.
+    env:
+      HAS_CREDS: ${{ secrets.GARMIN_USERNAME != '' && secrets.GARMIN_PASSWORD != '' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Note when packaging is skipped
+        if: env.HAS_CREDS != 'true'
+        run: echo "::notice::The GARMIN secrets are not set, so the .iq packaging is skipped. Attach dist/Tennis.iq to the release by hand or add the secrets."
+
+      - uses: actions/setup-java@v4
+        if: env.HAS_CREDS == 'true'
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Install connect-iq-sdk-manager
+        if: env.HAS_CREDS == 'true'
+        run: |
+          curl --silent --location \
+            https://raw.githubusercontent.com/lindell/connect-iq-sdk-manager-cli/master/install.sh \
+            | sudo sh
+
+      - name: Download SDK and device files
+        if: env.HAS_CREDS == 'true'
+        env:
+          GARMIN_USERNAME: ${{ secrets.GARMIN_USERNAME }}
+          GARMIN_PASSWORD: ${{ secrets.GARMIN_PASSWORD }}
+        run: |
+          connect-iq-sdk-manager agreement accept --agreement-hash "$AGREEMENT_HASH"
+          connect-iq-sdk-manager login
+          connect-iq-sdk-manager sdk set "$SDK_VERSION"
+          connect-iq-sdk-manager device download --include-fonts --manifest manifest.xml
+          echo "$(connect-iq-sdk-manager sdk current-path --bin)" >> "$GITHUB_PATH"
+
+      - name: Import signing key
+        if: env.HAS_CREDS == 'true'
+        env:
+          # Base64 of the developer_key.der used to sign store uploads.
+          # Keep using the SAME key for every release of the app.
+          SIGNING_KEY_B64: ${{ secrets.CIQ_SIGNING_KEY_B64 }}
+        run: |
+          mkdir -p ~/.garmin-keys
+          if [ -n "$SIGNING_KEY_B64" ]; then
+            echo "$SIGNING_KEY_B64" | base64 -d > ~/.garmin-keys/developer_key.der
+          else
+            echo "::warning::The CIQ_SIGNING_KEY_B64 secret is not set, using a throwaway key"
+            make key
+          fi
+
+      - name: Build package
+        if: env.HAS_CREDS == 'true'
+        run: make package
+
+      - name: Attach .iq to the release
+        if: env.HAS_CREDS == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/Tennis.iq
