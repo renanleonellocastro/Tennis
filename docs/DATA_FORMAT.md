@@ -8,19 +8,19 @@ its activity files. It has two halves:
    (`points.csv`, `match.json` and `heatmap.png` for a match, `blocks.csv`
    and `practice.json` for a practice).
 
-## Status: partly proven on the simulator
+## Status: proven on the simulator
 
-The converter half is built and tested. The watch writes eight of the ten
-fields: the summary of the match (`match_setup`, `final_score`,
-`statistics`, `set_score`) and the movement totals (`steps`, `distance`,
-`set_steps`, `set_distance`). A file saved by the simulator was converted
-with this tool and those fields read back as written. The point log
-(`point_log`, `log_size`) is **not written yet**, so today the converter
-has no point by point data: see
-[What a file without a point log gives](#what-a-file-without-a-point-log-gives).
-A practice saved by the simulator was converted too: one lap for each
-block, with its hits and misses. Nothing has run on a real watch. Every item that still needs confirmation
-is listed in [Still to be confirmed on the watch](#still-to-be-confirmed-on-the-watch).
+Both halves are built and tested. The watch writes all twelve fields: the
+point log (`point_log`, `log_size`), the summary of the match
+(`match_setup`, `final_score`, `statistics`, `set_score`), the movement
+totals (`steps`, `distance`, `set_steps`, `set_distance`) and the two
+practice fields. Scripted matches played on the simulator (fr55) were
+converted with this tool and compared with the script entry by entry: see
+[Checked on the simulator](#checked-on-the-simulator). A practice saved by
+the simulator was converted too: one lap for each block, with its hits and
+misses. Nothing has run on a real watch. Every item that still needs
+confirmation is listed in
+[Still to be confirmed on the watch](#still-to-be-confirmed-on-the-watch).
 
 The tests of the converter build FIT files with the encoder of the official
 Garmin FIT SDK and read them back with its decoder. That proves the reader
@@ -155,6 +155,65 @@ The header and score words are not needed to replay the match. They exist so
 a reader can check its own replay against what the watch saw, and so a
 single record is still readable on its own.
 
+A record written before the watch set the field for the first time holds
+the FIT "no value" marker (`0xFFFFFFFF`) in every word. A reader skips such
+a record. The app sets the field before it starts the timer, so its files
+should not have one.
+
+#### How the watch writes the log
+
+These rules were found by test on the simulator and the watch code follows
+them.
+
+* **When the field is set.** After every point, fault and correction, and
+  once when the match screen opens (also on resume), the app sets the
+  field to the newest three entries. A field value stays: the watch copies
+  it to every record until the app sets it again.
+* **When records are written.** The watch writes one record a second while
+  the timer runs, and one more at every timer start and stop. Saving the
+  activity writes **no** record. So the app always sets the field
+  **before** it starts or stops the timer: the record of that start or
+  stop then carries the newest entries.
+* **Entries between two records.** A record holds three entries, so up to
+  three entries marked within one second all reach the file. Two entries a
+  second, kept up for a whole match, lost nothing.
+* **Undo.** An undo sets the field again with a lower newest sequence
+  number, and the numbers above it are used again by the next entries.
+  An entry that was written and then undone stays in older records and is
+  dropped by reader rule 2.
+* **The last entry.** The entry that ends the match stops the timer, and
+  the record of that stop carries it. An entry marked in the last second
+  before the app closes may miss the file that is being closed: `log_size`
+  of that file shows it, and the file of the resumed match repeats the
+  entry (see below).
+* **Two corners that lose entries.** A correction made while the match is
+  paused, when it ends the match and the player saves without resuming,
+  reaches no record. And a finished match that is reopened and finished
+  again within about a second may miss its last entry: the stop record
+  was written in most runs on the simulator, but not in all. In both
+  cases `log_size` is larger than the entries found and the converter
+  reports them as missing.
+
+#### A match that is closed and resumed
+
+A resumed match records a new activity file. The rules, which the
+converter relies on to join the files:
+
+* Sequence numbers go on where the file before stopped. They never start
+  again at 1.
+* The match clock inside the entries goes on from the clock of the last
+  entry.
+* The first record of the new file carries the newest three entries of the
+  match as they were when the app closed, so it repeats entries of the
+  file before it (and heals an entry that missed that file).
+* `log_size`, `statistics` and `final_score` of each file describe the
+  whole match up to the moment that file was saved, never only the part
+  played in it. The last file therefore speaks for the whole match.
+* `match_setup` of a file saved because the app closed has both tags at
+  zero: the tags are chosen when the player saves. All other bits are the
+  same in every file of the match.
+* `steps`, `distance` and the laps count from the start of each file.
+
 ### Match configuration and tags (`match_setup`, session message)
 
 One UINT32 word:
@@ -191,8 +250,11 @@ reader must refuse a version it does not know instead of guessing.
 * `log_size`: number of entries in the log when the activity was saved.
 * `final_score`: the score as text, built the same way as `score.text` of
   `match.json`: the closed sets as on a scoreboard, then the games of a set
-  that was still open (`7-6(7-5) 6-3`, `6-4 2-1`). Kept for people who open
-  the file in other tools. The watch cuts the text at 31 characters, which
+  that was still open (`7-6(7-5) 6-3`, `6-4 2-1`). A match that stops
+  right after a set has no open set: the text is `6-1`, not `6-1 0-0`. A
+  new set counts as open from its first point (`6-1 0-0` then means a
+  first game in progress), and a match with no closed set always shows its
+  games (`0-0`). Kept for people who open the file in other tools. The watch cuts the text at 31 characters, which
   only a match with three long tie breaks can reach.
 * `statistics`: thirty UINT16 counts. The value for statistic `s` and
   player `p` is at index `s * 2 + p`.
@@ -276,56 +338,75 @@ A practice file carries only the developer fields of a practice: `steps`,
 match file carries none of the two block fields. What the converter makes
 of a practice is in [A practice](#a-practice).
 
+### Checked on the simulator
+
+Scripted matches were played on the simulator (fr55) by a test build that
+drives the real controller, saved, and converted with `tennis-export`. The
+rows of `points.csv` were compared with the script entry by entry.
+
+| Match | Entries | Result |
+|---|---|---|
+| One file: faults, double faults, aces, a tie break, an undo | 162 | Every row equal, all integrity checks true, score `7-6(7-5) 0-6 6-1` |
+| Closed and resumed twice, three files | 166 | Every row equal, all integrity checks true, score `6-7(6-8) 5-4`; one entry missing from the first file came back with the second |
+| Long match | 303 | Every row equal, all integrity checks true, score `7-6(7-0) 6-7(1-7) 7-5` equal to `final_score` |
+
+A first run of the long match reopened the finished match and finished it
+again within a second. Its file had 302 of the 303 entries: the last one
+was missing and the converter said so (`missing_sequences` 303,
+`statistics_match` false). This is the second corner listed in
+[How the watch writes the log](#how-the-watch-writes-the-log).
+
+An ace by the receiver is refused by the watch, so such a step of a script
+is not an entry.
+
 ### Still to be confirmed on the watch
 
 The summary fields ran on the simulator only. The watch side must check
 each point on a real watch and this document must be corrected where
 reality differs.
 
-1. **The point log is not written yet.** `point_log` and `log_size` are a
-   proposal until the watch code exists. The other eight fields are written
-   with the ids, names, types and packing above.
-2. **Record fields under Smart Recording.** Smart Recording may write
-   records less often than once a second. Three entries per record should
-   cover that, but it must be measured: mark points quickly, save, and
-   check that no sequence number is missing.
-3. **The last entries before saving.** An entry marked just before the
-   activity is saved may never reach a record. `log_size` lets a reader see
-   that. The watch side should make sure a record is written after the last
-   entry, or accept the loss and say so.
-4. **Array fields.** `point_log` (9 values in a record), `statistics`
-   (30 values) and `set_score` (4 values) rely on array developer fields.
-   Whether the Connect IQ FIT contributor writes them as designed, in
-   records, laps and sessions, must be confirmed. Confirmed on the
-   simulator for the session (`statistics`, 30 values, and the
-   `final_score` text) and the lap (`set_score`); the record is still open.
+1. **Everything, on a real watch.** All twelve fields are written and were
+   read back from simulator files. No file of a real watch was read yet.
+2. **Record fields under Smart Recording.** The simulator writes a record
+   every second. A real watch set to Smart Recording may write records
+   less often, and how often cannot be tested on the simulator. Three
+   entries per record cover up to three entries between two records. It
+   must be measured on a watch: mark points quickly, save, and check that
+   `missing_sequences` is empty.
+3. **The last entries before saving.** Settled on the simulator: saving
+   writes no record, a timer start or stop does. The app sets the field
+   before each start and stop, so the last entry reaches the file. The
+   corners that remain are listed in
+   [How the watch writes the log](#how-the-watch-writes-the-log).
+4. **Array fields.** Confirmed on the simulator for the record
+   (`point_log`, 9 values), the session (`statistics`, 30 values, and the
+   `final_score` text) and the lap (`set_score`, 4 values).
 5. **Size limits.** A message may hold at most 256 bytes of developer data.
-   The session uses about 110 and a record 36, by design. The session was
-   confirmed with a simulator file; the record is still open.
-6. **Number of fields.** Ten fields against a working limit of twelve. The
-   real limit of each target watch must be checked.
+   The session uses about 110 and a record 36, by design. Both were
+   confirmed with simulator files.
+6. **Number of fields.** A match file declares ten fields and a practice
+   file six, against a working limit of twelve. The real limit of each
+   target watch must be checked.
 7. **Garmin Connect display.** Array fields and packed words are not meant
    to be shown in Garmin Connect, so the app declares no label for them
    (`match_setup`, `final_score`, `statistics`, `set_score` are absent from
    `resources/fit/fitcontributions.xml`). How Connect treats a field
    without a label is unknown.
-8. **Undo.** The reader rule for undo (rule 2 above) assumes the watch
-   lowers the newest sequence number after an undo and reuses the numbers.
+8. **Undo.** Confirmed on the simulator: the watch lowers the newest
+   sequence number after an undo and reuses the numbers, and reader rule 2
+   gave the log as played.
 9. **Laps.** That the watch can close one lap for each set, and that steps
    and distance per set are available on every target watch.
 10. **Field names.** The reader matches fields by name only. It does not
     check the application id of the developer data.
-11. **The point log after a resume.** Joining the files of a resumed match
-    assumes that the sequence numbers go on where the first file stopped,
-    that the match clock of the entries goes on too, and that the first
-    record of the second file with a `point_log` repeats entries the first
-    file already had.
-12. **The summary after a resume.** The converter takes `log_size`,
-    `final_score` and `statistics` of the last file as values for the whole
-    match, and `steps` and `distance` of each file as counted from the
-    start of that file only. The second half was seen on the simulator
-    (two files of one match with 26 and 37 steps); the first half was not,
-    because no file with those fields exists yet.
+11. **The point log after a resume.** Confirmed on the simulator with a
+    match saved in three files: the sequence numbers and the match clock
+    went on, and the first record of each later file repeated the newest
+    three entries.
+12. **The summary after a resume.** Confirmed on the simulator: `log_size`,
+    `final_score` and `statistics` of the last file covered the whole
+    match, and `steps` and `distance` of each file counted from the start
+    of that file only.
 13. **The lap that closes a set.** The converter compares the score of a
     set with the `set_score` of the last lap of that set. It assumes the
     lap closed when the set ended carries the final score of the set.
@@ -394,7 +475,8 @@ The watch writes no match identifier today, so "the same match" is decided
 from what the files do carry. Files are refused when any of these is true:
 
 1. A file has no `match_setup` (it is not a match of this app).
-2. Two files have a different `match_setup` word.
+2. Two files have a different `match_setup` word. The two tags are left out
+   of this comparison: a part saved when the app closed has none.
 3. A file starts before the file ahead of it ends.
 4. The files ahead of a file hold point log entries, and the first
    `point_log` of that file repeats none of them unchanged. A resumed match
@@ -590,7 +672,8 @@ on the point log:
 
 ### What a file without a point log gives
 
-Until the watch writes the point log, a converted file has an empty
+A match file with no `point_log` (a later part of a resumed match that was
+saved at once, converted alone) has an empty
 `points.csv` and a `match` section replayed from nothing: `finished` false,
 `score.text` `0-0`, no sets, every statistic zero. `match.config` and
 `match.tags` are right, because they come from `match_setup`. The result of

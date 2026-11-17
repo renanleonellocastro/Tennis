@@ -7,22 +7,7 @@ module ScoreFixer {
     // Removes the game in progress, or the game before it when the game in
     // progress has no entry yet. False when the log is empty.
     function undoGame(engine as MatchEngine) as Boolean {
-        return engine.truncate(gameStart(engine));
-    }
-
-    // Where the game to remove starts in the log.
-    function gameStart(engine as MatchEngine) as Number {
-        var log = engine.log();
-        var state = new MatchState(engine.config());
-        var previousStart = 0;
-        var start = 0;
-        for (var i = 0; i < log.size(); i++) {
-            if ((state.apply(log.at(i)) & Outcome.GAME) != 0) {
-                previousStart = start;
-                start = i + 1;
-            }
-        }
-        return start == log.size() ? previousStart : start;
+        return engine.truncate(engine.gameStart());
     }
 
     // Gives the game in progress to a player by logging plain points for

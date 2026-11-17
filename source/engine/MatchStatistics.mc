@@ -21,78 +21,106 @@ module Stat {
     const ERRORS_OUT = 14;
     const COUNT = 15;
 
+    // What the match keeps as a whole, after the counters of both players.
+    const POINT_COUNT = 30;
+    const FIRST_POINT_TIME = 31;
+    const LAST_POINT_TIME = 32;
+    const HEART_RATE_SUM = 33;
+    const HEART_RATE_SAMPLES = 34;
+    const GAME_COUNT = 35;
+    const GAME_SECONDS = 36;
+    const LONGEST_GAME = 37;
+    // The run of points in progress and when the game in progress started.
+    const RUN_PLAYER = 38;
+    const RUN_LENGTH = 39;
+    const GAME_START = 40;
+    const SIZE = 41;
+
+    // The values of a match with no entry: the match clock starts at zero,
+    // so the first game starts there.
+    function zeros() as Array<Number> {
+        var values = [] as Array<Number>;
+        for (var i = 0; i < SIZE; i++) {
+            values.add(0);
+        }
+        values[RUN_PLAYER] = Player.NONE;
+        return values;
+    }
+
     function forEnding(ending as Number) as Number {
         return WINNERS + ending - Ending.WINNER;
     }
 }
 
 // The numbers of a match for both players. StatisticsCollector fills them in
-// while the log is replayed; the report only reads them.
+// entry by entry; the report only reads them. Everything is kept in one
+// array of numbers, so a copy of it is all it takes to come back to an
+// earlier moment of the match (see MatchEngine).
 class MatchStatistics {
     hidden const PERCENT = 100;
 
-    hidden var _counts as Array<Number> = [] as Array<Number>;
-    hidden var _gameDurations as Array<Number> = [] as Array<Number>;
-    hidden var _setDurations as Array<Number> = [] as Array<Number>;
-    hidden var _pointCount as Number = 0;
-    hidden var _firstPointTime as Number = 0;
-    hidden var _lastPointTime as Number = 0;
-    hidden var _heartRateSum as Number = 0;
-    hidden var _heartRateSamples as Number = 0;
+    hidden var _values as Array<Number>;
 
-    function initialize() {
-        for (var i = 0; i < Stat.COUNT * Player.COUNT; i++) {
-            _counts.add(0);
-        }
+    // Stat.zeros() for a new match, or the values of an earlier moment.
+    function initialize(values as Array<Number>) {
+        _values = values;
     }
 
     // Filled in by the collector.
 
     function add(stat as Number, player as Number) as Void {
-        _counts[slot(stat, player)] += 1;
+        _values[stat * Player.COUNT + player] += 1;
     }
 
-    function raiseTo(stat as Number, player as Number, value as Number) as Void {
-        if (value > count(stat, player)) {
-            _counts[slot(stat, player)] = value;
+    // A point for the winner: the run of points in a row and its record.
+    function noteRun(winner as Number) as Void {
+        var length = winner == _values[Stat.RUN_PLAYER] ? _values[Stat.RUN_LENGTH] + 1 : 1;
+        _values[Stat.RUN_PLAYER] = winner;
+        _values[Stat.RUN_LENGTH] = length;
+        if (length > count(Stat.LONGEST_RUN, winner)) {
+            _values[Stat.LONGEST_RUN * Player.COUNT + winner] = length;
         }
     }
 
-    function addGameDuration(seconds as Number) as Void {
-        _gameDurations.add(seconds);
-    }
-
-    function addSetDuration(seconds as Number) as Void {
-        _setDurations.add(seconds);
+    // A game that closed at this time of the match clock.
+    function closeGame(time as Number) as Void {
+        var seconds = time - _values[Stat.GAME_START];
+        _values[Stat.GAME_START] = time;
+        _values[Stat.GAME_COUNT] += 1;
+        _values[Stat.GAME_SECONDS] += seconds;
+        if (seconds > _values[Stat.LONGEST_GAME]) {
+            _values[Stat.LONGEST_GAME] = seconds;
+        }
     }
 
     function notePointTime(time as Number) as Void {
-        if (_pointCount == 0) {
-            _firstPointTime = time;
+        if (_values[Stat.POINT_COUNT] == 0) {
+            _values[Stat.FIRST_POINT_TIME] = time;
         }
-        _lastPointTime = time;
-        _pointCount += 1;
+        _values[Stat.LAST_POINT_TIME] = time;
+        _values[Stat.POINT_COUNT] += 1;
     }
 
     function addDecidingHeartRate(heartRate as Number) as Void {
-        _heartRateSum += heartRate;
-        _heartRateSamples += 1;
+        _values[Stat.HEART_RATE_SUM] += heartRate;
+        _values[Stat.HEART_RATE_SAMPLES] += 1;
     }
 
-    hidden function slot(stat as Number, player as Number) as Number {
-        return stat * Player.COUNT + player;
+    // A copy of everything, to come back to later.
+    function snapshot() as Array<Number> {
+        return _values.slice(0, null);
     }
 
     // Read by the report.
 
     function count(stat as Number, player as Number) as Number {
-        return _counts[slot(stat, player)];
+        return _values[stat * Player.COUNT + player];
     }
 
     // Every counter in the order the activity file keeps them: statistic by
     // statistic, me and then the opponent.
     function toArray() as Array<Number> {
-        return _counts;
+        return _values.slice(0, Stat.COUNT * Player.COUNT);
     }
 
     // Rounded to a whole percent; zero before the player has served.
@@ -124,30 +152,34 @@ class MatchStatistics {
         return breakPointsFaced(player) - count(Stat.BREAK_POINTS_WON, Player.opponentOf(player));
     }
 
-    // Seconds of each finished game, in order, tie breaks included.
-    function gameDurations() as Array<Number> {
-        return _gameDurations;
+    // Rounded average of the finished games, tie breaks included; zero
+    // before the first one closes.
+    function averageGameSeconds() as Number {
+        var games = _values[Stat.GAME_COUNT];
+        return games == 0 ? 0 : (_values[Stat.GAME_SECONDS] + games / 2) / games;
     }
 
-    // Seconds of each finished set, in order.
-    function setDurations() as Array<Number> {
-        return _setDurations;
+    function longestGameSeconds() as Number {
+        return _values[Stat.LONGEST_GAME];
+    }
+
+    function gameCount() as Number {
+        return _values[Stat.GAME_COUNT];
     }
 
     // Zero until two points were played.
     function averageSecondsBetweenPoints() as Float {
-        if (_pointCount < 2) {
+        var points = _values[Stat.POINT_COUNT];
+        if (points < 2) {
             return 0.0;
         }
-        return (_lastPointTime - _firstPointTime).toFloat() / (_pointCount - 1);
+        return (_values[Stat.LAST_POINT_TIME] - _values[Stat.FIRST_POINT_TIME]).toFloat() / (points - 1);
     }
 
     // Average over the break, set and match points that carried a heart
     // rate; null when none did.
     function averageDecidingHeartRate() as Number? {
-        if (_heartRateSamples == 0) {
-            return null;
-        }
-        return (_heartRateSum + _heartRateSamples / 2) / _heartRateSamples;
+        var samples = _values[Stat.HEART_RATE_SAMPLES];
+        return samples == 0 ? null : (_values[Stat.HEART_RATE_SUM] + samples / 2) / samples;
     }
 }

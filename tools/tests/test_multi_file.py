@@ -175,6 +175,17 @@ def test_files_with_different_match_settings_are_not_joined(tmp_path: Path, caps
     assert message == f"{PROGRAM}: match.fit and other.fit have different match settings, so they are not one match\n"
 
 
+def test_a_part_saved_without_tags_joins_the_part_saved_with_them(tmp_path: Path) -> None:
+    log = WatchLog().play("mmmmoo")
+    closed = FitBuilder().records(log.record_values()[:4]).session(100, match_setup=pack_setup())
+    tagged = pack_setup(surface=1, kind=2)
+    saved = FitBuilder(200).records(log.record_values()[3:]).session(100, match_setup=tagged, log_size=6)
+
+    document, rows = exported(tmp_path, [str(closed.write(tmp_path / "a.fit")), str(saved.write(tmp_path / "b.fit"))])
+
+    assert (len(rows), document["match"]["tags"]) == (6, {"surface": "clay", "kind": "friendly"})
+
+
 def test_files_that_overlap_in_time_are_not_joined(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     early = match_file(tmp_path, "early.fit", "mmmm")
     during = match_file(tmp_path, "during.fit", "mmmm", begins=50)

@@ -36,3 +36,10 @@ def test_an_undone_entry_has_no_time_and_a_record_without_a_time_gives_none() ->
     records.append(record(60, log.undo().record_value()))
 
     assert entry_times(records) == {1: None}
+
+
+def test_a_record_written_before_the_first_point_log_value_is_skipped() -> None:
+    values = WatchLog().play("m").record_values()
+    records = [record(5, [0xFFFFFFFF] * 9), record(10, values[0])]
+
+    assert entry_times(records) == {1: at(10)}

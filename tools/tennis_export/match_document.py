@@ -67,9 +67,15 @@ def set_text(score: SetScore) -> str:
 def score_text(state: MatchState) -> str:
     """Closed sets as on a scoreboard, then the games of the set that was still open, when there is one."""
     parts = [set_text(score) for score in state.set_scores]
-    if not state.is_finished:
+    if has_open_set(state):
         parts.append(f"{state.games[ME]}-{state.games[OPPONENT]}")
     return " ".join(parts)
+
+
+def has_open_set(state: MatchState) -> bool:
+    """A match that stops right after a set has no open set: its next set has neither a game nor a point."""
+    is_played = any(state.games) or any(state.points)
+    return not state.is_finished and (is_played or not state.set_scores)
 
 
 def score_document(state: MatchState) -> Document:

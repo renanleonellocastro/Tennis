@@ -33,6 +33,14 @@ passes only when it reads `PASSED` and no test failed or errored.
 * `MenuKitTest`: the main menu rows and the action each one maps to.
 * `PointLogTest`: packing of a point into one number (result, ending, heart
   rate, time, with clamping) and the log operations.
+* `PointSlotTest`: the three words of an entry in the `point_log` field,
+  the newest three entries the engine keeps, undo lowering the newest
+  sequence number, the field written before every timer start and stop, a
+  resumed match repeating the newest entries, and the score text, the
+  report and the stored score without a set that never started.
+* `MatchMarksTest`: when the engine takes a mark, undo and corrections that
+  go back over a mark, a match rebuilt from its marks being the match
+  played, the state restored from its array, and the marks in storage.
 * `MatchScoringTest`: points, games, sets and the end of the match in every
   format, with and without advantage, including both kinds of tie break.
 * `MatchServeTest`: server rotation, serve side, second serve, ends and when
@@ -94,8 +102,8 @@ passes only when it reads `PASSED` and no test failed or errored.
   practice text in every language, and a short real activity recorded and
   discarded.
 
-The practice suites run with the rest in `make test` (388 tests on the
-Forerunner 55 at the end of M7).
+The practice suites run with the rest in `make test` (421 tests on the
+Forerunner 55 at the end of M6).
 
 The recording tests use fakes for the session, sensors, GPS and storage
 (`source/tests/RecordingFakes.mc`), so they need no sensor data.

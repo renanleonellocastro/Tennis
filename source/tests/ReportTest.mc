@@ -16,7 +16,12 @@ module ReportTests {
 
     function pagesOf(match as MatchDriver, isDetailed as Boolean, clock as Number, sensors as FakeSensors) as Array<Array> {
         Strings.loadTables("eng");
-        return new ReportPresenter(match.state(), match.statistics()).pages(isDetailed, clock, sensors);
+        var presenter = new ReportPresenter(match.state(), match.statistics());
+        var pages = [] as Array<Array>;
+        for (var i = 0; i < presenter.pageCount(isDetailed); i++) {
+            pages.add(presenter.page(i, isDetailed, clock, sensors));
+        }
+        return pages;
     }
 
     // The rows of a page as text: "label|mine|theirs" joined by commas.

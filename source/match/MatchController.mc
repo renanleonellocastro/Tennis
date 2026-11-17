@@ -47,6 +47,7 @@ class MatchController {
     hidden function begin() as Void {
         var log = _engine.log();
         _clock.advance(log.size() == 0 ? 0 : PointEntry.time(log.at(log.size() - 1)));
+        writePointLog();
         _recorder.start(state().finishedSets(), state().isFinished());
         writeSummary(new MatchTags(null));
         if (state().isFinished()) {
@@ -64,9 +65,17 @@ class MatchController {
         _recorder.resume();
     }
 
+    // Hands the newest entries to the activity file. It runs before the
+    // session starts or stops, because the watch writes a record at both
+    // and that record then carries them. On a resumed match the first
+    // record so repeats the entries the file before it ended with.
+    hidden function writePointLog() as Void {
+        _recorder.writePointLog(_engine.slots());
+    }
+
     // Stores the log and opens the lap of a new set.
     hidden function persist() as Void {
-        _store.sync(_engine.log().toArray(), state().finishedSets());
+        _store.sync(_engine.log().toArray(), state().finishedSets(), _engine.marks());
         _recorder.closeSets(state().finishedSets(), state().isFinished(), MatchSummary.closedSetScore(state()));
     }
 
@@ -150,6 +159,7 @@ class MatchController {
     // Shows what the entry closed and stops the clock when it ended the match.
     hidden function afterEntry(gamesBefore as Number, setsBefore as Number) as Number {
         _notice.show(noticeKeysSince(gamesBefore, setsBefore), _time.now());
+        writePointLog();
         persist();
         if (state().isFinished()) {
             stopClock();
@@ -190,6 +200,7 @@ class MatchController {
     // A correction can reopen a finished match or finish an open one.
     hidden function afterCorrection() as Number {
         _notice.clear();
+        writePointLog();
         if (state().isFinished()) {
             stopClock();
         } else {

@@ -39,7 +39,7 @@ module ScoreFixerTests {
     function testUndoGameRemovesTheGameInProgress(logger as Test.Logger) as Boolean {
         var match = newMatch(MatchFormat.BEST_OF_3);
         match.play("MMMMOFO");
-        Test.assertEqual(ScoreFixer.gameStart(match.engine), 4);
+        Test.assertEqual(match.engine.gameStart(), 4);
         Test.assert(ScoreFixer.undoGame(match.engine));
         Test.assertEqual(match.engine.log().size(), 4);
         Test.assertEqual(match.score(), "0-0 1-0 0-0");
@@ -50,7 +50,7 @@ module ScoreFixerTests {
     function testUndoGameRemovesThePreviousGameWhenNoneIsInProgress(logger as Test.Logger) as Boolean {
         var match = newMatch(MatchFormat.BEST_OF_3);
         match.games("MO");
-        Test.assertEqual(ScoreFixer.gameStart(match.engine), 4);
+        Test.assertEqual(match.engine.gameStart(), 4);
         Test.assert(ScoreFixer.undoGame(match.engine));
         Test.assertEqual(match.score(), "0-0 1-0 0-0");
         Test.assert(ScoreFixer.undoGame(match.engine));

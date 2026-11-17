@@ -91,12 +91,13 @@ module MatchFlow {
         }
         var store = new MatchStore(new AppStorage());
         store.begin(setup.toArray());
-        open(setup, [] as Array<Number>, store);
+        open(setup, [] as Array<Number>, [] as Array< Array<Number> >, store);
     }
 
     // Shows the match that the log adds up to, recording from now on.
-    function open(setup as MatchSetup, entries as Array<Number>, store as MatchStore) as Void {
-        var engine = new MatchEngine(setup.config(), new PointLog(entries));
+    function open(setup as MatchSetup, entries as Array<Number>, marks as Array< Array<Number> >,
+                  store as MatchStore) as Void {
+        var engine = new MatchEngine(setup.config(), new PointLog(entries), marks);
         var controller = new MatchController(engine, setup, new SystemTime(),
                                              deviceRecorder(setup), store);
         active = controller;
@@ -119,7 +120,8 @@ module MatchFlow {
         }
     }
 
-    // The score comes back from the stored log; the activity is a new one.
+    // The score comes back from the stored log and marks; the activity is a
+    // new one.
     function resume(store as MatchStore) as Void {
         var stored = store.load();
         if (stored == null) {
@@ -127,7 +129,8 @@ module MatchFlow {
         } else if (!MatchInput.profileOfDevice().canScore()) {
             showTouchNeeded();
         } else {
-            open(new MatchSetup(stored[0] as Object?), stored[1] as Array<Number>, store);
+            open(new MatchSetup(stored[0] as Object?), stored[1] as Array<Number>, stored[2] as Array< Array<Number> >,
+                 store);
         }
     }
 
@@ -196,20 +199,14 @@ module MatchFlow {
 
     // Report.
 
-    // The pages are built once, when the report opens; the statistics they
-    // came from are let go right after.
-    function reportPages(controller as MatchController) as Array<Array> {
-        var presenter = new ReportPresenter(controller.state(), controller.statistics());
-        return presenter.pages(controller.isDetailed(), controller.clockSeconds(), controller.sensors());
-    }
-
-    // [view, delegate] of the report of a match.
+    // [view, delegate] of the report of a match. The view asks for one
+    // page at a time, so the pages never sit in memory together.
     function reportScreen(controller as MatchController) as Array {
         var settings = System.getDeviceSettings();
-        var pages = reportPages(controller);
-        var pager = new ReportPager(pages.size());
+        var presenter = new ReportPresenter(controller.state(), controller.statistics());
+        var pager = new ReportPager(presenter.pageCount(controller.isDetailed()));
         var layout = new ReportLayout(settings.screenWidth, settings.screenHeight);
-        return [new ReportView(pages, layout, pager), new ReportDelegate(pager)];
+        return [new ReportView(presenter, controller, layout, pager), new ReportDelegate(pager)];
     }
 
     // Over the final score, which shows again when the report closes.

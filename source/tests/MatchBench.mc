@@ -30,7 +30,7 @@ class MatchBench {
     var store as MatchStore;
 
     function initialize(format as Number, isDetailed as Boolean) {
-        engine = new MatchEngine(new MatchConfig(format, false, Player.ME), new PointLog([] as Array<Number>));
+        engine = new MatchEngine(new MatchConfig(format, false, Player.ME), new PointLog([] as Array<Number>), []);
         store = new MatchStore(memory);
         controller = controllerOn(engine, setupOf(format, isDetailed));
     }

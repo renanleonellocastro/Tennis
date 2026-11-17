@@ -157,10 +157,11 @@ module MatchFlowTests {
         var simple = simpleBench(MatchFormat.ONE_SET);
         simple.games("MMMMMM");
         simple.time.ms = 65000;
-        var pages = MatchFlow.reportPages(simple.controller);
-        Test.assertEqual(pages.size(), 5);
-        Test.assertEqual((pages[0][1] as Array<Array>)[0][1] as String, "6");
-        Test.assertEqual(MatchFlow.reportPages(new MatchBench(MatchFormat.ONE_SET, true).controller).size(), 6);
+        var presenter = new ReportPresenter(simple.controller.state(), simple.controller.statistics());
+        var page = presenter.page(0, false, simple.controller.clockSeconds(), simple.controller.sensors());
+        Test.assertEqual(presenter.pageCount(simple.controller.isDetailed()), 5);
+        Test.assertEqual((page[1] as Array<Array>)[0][1] as String, "6");
+        Test.assertEqual(presenter.pageCount(new MatchBench(MatchFormat.ONE_SET, true).controller.isDetailed()), 6);
         Test.assertEqual(MatchFlow.reportScreen(simple.controller).size(), 2);
         return true;
     }

@@ -11,13 +11,23 @@ class FakeSession {
     var laps as Array< Array<Number> > = [] as Array< Array<Number> >;
     // The set score each lap closed with, as text: "6,4,0,0".
     var lapScores as Array<String> = [] as Array<String>;
+    // The newest sequence number of the point log at each start and stop,
+    // where the watch writes a record.
+    var records as Array<Number> = [] as Array<Number>;
 
     function start() as Void {
         calls += "s";
+        writeRecord();
     }
 
     function stop() as Void {
         calls += "p";
+        writeRecord();
+    }
+
+    function writeRecord() as Void {
+        var slots = fields.get(RecordingFields.POINT_LOG);
+        records.add(slots instanceof Lang.Array ? (slots as Array<Number>)[0] & PointSlot.SEQUENCE_MASK : 0);
     }
 
     function addLap() as Void {

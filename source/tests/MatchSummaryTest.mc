@@ -70,7 +70,7 @@ module MatchSummaryTests {
         Test.assertEqual(MatchSummary.scoreText(match.state()), "0-0");
         match.games("MOMOMOMOMOMO");
         match.play("MMMMMOOMM");
-        Test.assertEqual(MatchSummary.scoreText(match.state()), "7-6(7-2) 0-0");
+        Test.assertEqual(MatchSummary.scoreText(match.state()), "7-6(7-2)");
         match.games("MMMOOO");
         Test.assertEqual(MatchSummary.scoreText(match.state()), "7-6(7-2) 3-3");
         match.games("MMM");

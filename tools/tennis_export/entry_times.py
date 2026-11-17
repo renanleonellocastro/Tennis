@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from tennis_export.layout import POINT_LOG_FIELD, decode_slots, newest_sequence
+from tennis_export.layout import decode_slots, newest_sequence, written_point_log
 from tennis_export.point_log import forget_undone
 
 if TYPE_CHECKING:
@@ -26,7 +26,7 @@ def entry_times(records: Iterable[Message]) -> dict[int, datetime | None]:
     """
     sightings: dict[int, Sighting] = {}
     for record in records:
-        words = record.developer.get(POINT_LOG_FIELD)
+        words = written_point_log(record.developer)
         if words is not None:
             forget_undone(sightings, newest_sequence(words))
             note_first_sightings(sightings, decode_slots(words), record.native.get(RECORD_TIME))

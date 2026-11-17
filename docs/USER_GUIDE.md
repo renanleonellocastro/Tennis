@@ -243,7 +243,7 @@ A saved match is a Tennis activity with:
 
 ## Exporting your data
 
-**(planned on the watch side)** Every point is stored inside the activity
+Every point is stored inside the activity
 file, in FIT, the open Garmin format: who served, the faults, who won, how
 it ended, the score and the time. A free converter named `tennis-export`,
 shipped in the repository of the app, turns that file into files any
@@ -347,10 +347,11 @@ ends up different.
    options are named.
 3. **Statistics in Garmin Connect (M5, in progress).** Only **Steps** and
    **Distance** are written as extra fields today.
-4. **Point log in the activity file (M6 watch side, in progress).** Until
-   it is written, `tennis-export` gives only the general activity data for
-   a real match. Also to confirm: what the two activities of a resumed
-   match contain, and the exact name of the export action in Garmin
+4. **Point log in the activity file.** Confirmed on the simulator
+   (Forerunner 55): scripted matches, one of them closed and resumed, were
+   exported with `tennis-export` and matched the script point by point.
+   Still to confirm: the same with a file of a real watch (also with Smart
+   Recording on), and the exact name of the export action in Garmin
    Connect.
 5. **Practice mode on a real watch.** The section was checked on the
    simulator only (Forerunner 55, Venu 2, Venu Sq 2), with scripted input

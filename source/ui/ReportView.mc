@@ -3,26 +3,30 @@ import Toybox.Lang;
 import Toybox.WatchUi;
 
 // One page of the report at a time: the title, the rows the presenter
-// built and the page number. It only places texts.
+// builds for that page and the page number. It only places texts.
 class ReportView extends WatchUi.View {
     hidden const CENTERED = Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER;
     hidden const FROM_LEFT = Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER;
     hidden const TO_RIGHT = Graphics.TEXT_JUSTIFY_RIGHT | Graphics.TEXT_JUSTIFY_VCENTER;
     hidden const PLAYER_CELLS = 3;
 
-    hidden var _pages as Array<Array>;
+    hidden var _presenter as ReportPresenter;
+    hidden var _controller as MatchController;
     hidden var _layout as ReportLayout;
     hidden var _pager as ReportPager;
 
-    function initialize(pages as Array<Array>, layout as ReportLayout, pager as ReportPager) {
+    function initialize(presenter as ReportPresenter, controller as MatchController, layout as ReportLayout,
+                        pager as ReportPager) {
         View.initialize();
-        _pages = pages;
+        _presenter = presenter;
+        _controller = controller;
         _layout = layout;
         _pager = pager;
     }
 
     function onUpdate(dc as Dc) as Void {
-        var page = _pages[_pager.index()];
+        var page = _presenter.page(_pager.index(), _controller.isDetailed(), _controller.clockSeconds(),
+                                   _controller.sensors());
         var rows = page[1] as Array<Array>;
         dc.setColor(Theme.COLOR_TEXT, Theme.COLOR_BG);
         dc.clear();

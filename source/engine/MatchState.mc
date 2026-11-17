@@ -12,7 +12,8 @@ module Outcome {
 
 // The score of a match, built by applying the log entries in order. It knows
 // the rules of tennis and nothing about the clock, the screen or storage.
-// Views read it; only MatchEngine and MatchReplay apply entries to it.
+// Views read it; only MatchEngine applies entries to it, through its
+// StatisticsCollector.
 class MatchState {
     // Shown in place of 40 for the player who is one point from the game
     // after deuce.
@@ -25,6 +26,10 @@ class MatchState {
     hidden const TWO_CLEAR = 2;
     hidden const TIE_BREAK_POINTS_PER_END = 6;
     hidden const SET_SCORE_WIDTH = 4;
+    // Where the parts start in the array of toArray().
+    hidden const SETS_AT = 2;
+    hidden const TURN_AT = 4;
+    hidden const SET_SCORES_AT = 7;
 
     hidden var _config as MatchConfig;
     hidden var _points as Array<Number> = [0, 0] as Array<Number>;
@@ -38,9 +43,34 @@ class MatchState {
     hidden var _endChanges as Number = 0;
     hidden var _isChangeOfEndsDue as Boolean = false;
     hidden var _winner as Number = Player.NONE;
+    // The rules of the game in progress, worked out once when it starts.
+    hidden var _isTieBreak as Boolean = false;
+    hidden var _gameTarget as Number = REGULAR_GAME_POINTS;
+    hidden var _gameMargin as Number = TWO_CLEAR;
 
     function initialize(config as MatchConfig) {
         _config = config;
+        startGame();
+    }
+
+    // What it takes to come back to the start of a game: the games and sets
+    // of both players, the service turn, the changes of ends, whether one
+    // is due, and the scores of the finished sets.
+    function toArray() as Array<Number> {
+        var values = [_games[0], _games[1], _sets[0], _sets[1], _serviceTurn, _endChanges,
+                      _isChangeOfEndsDue ? 1 : 0] as Array<Number>;
+        return values.addAll(_setScores);
+    }
+
+    // Takes a new state to the start of the game that toArray() described.
+    function restore(values as Array<Number>) as Void {
+        _games = values.slice(0, SETS_AT);
+        _sets = values.slice(SETS_AT, TURN_AT);
+        _serviceTurn = values[TURN_AT];
+        _endChanges = values[TURN_AT + 1];
+        _isChangeOfEndsDue = values[TURN_AT + 2] == 1;
+        _setScores = values.slice(SET_SCORES_AT, null);
+        startGame();
     }
 
     // Applies one log entry and returns its Outcome flags.
@@ -63,7 +93,9 @@ class MatchState {
         _isSecondServe = false;
         _points[winner] += 1;
         if (winsGameWith(_points[winner], lead(_points, winner))) {
-            return Outcome.POINT | closeGame(winner);
+            var closed = closeGame(winner);
+            startGame();
+            return Outcome.POINT | closed;
         }
         changeEndsEverySixTieBreakPoints();
         return Outcome.POINT;
@@ -110,8 +142,7 @@ class MatchState {
     // Rules of the game in progress.
 
     function isTieBreak() as Boolean {
-        var gamesAll = _config.gamesPerSet();
-        return isMatchTieBreak() || (_games[Player.ME] == gamesAll && _games[Player.OPPONENT] == gamesAll);
+        return _isTieBreak;
     }
 
     hidden function isMatchTieBreak() as Boolean {
@@ -120,19 +151,21 @@ class MatchState {
             && _sets[Player.OPPONENT] == setsBeforeDecider;
     }
 
-    hidden function gameTarget() as Number {
-        if (isMatchTieBreak()) {
-            return _config.matchTieBreakPoints();
+    // The rules do not change inside a game, and they are asked for with
+    // every entry, so they are worked out here and kept.
+    hidden function startGame() as Void {
+        var gamesAll = _config.gamesPerSet();
+        var isDecider = isMatchTieBreak();
+        _isTieBreak = isDecider || (_games[Player.ME] == gamesAll && _games[Player.OPPONENT] == gamesAll);
+        _gameMargin = _isTieBreak ? TWO_CLEAR : _config.gameWinMargin();
+        _gameTarget = _isTieBreak ? _config.tieBreakPoints() : REGULAR_GAME_POINTS;
+        if (isDecider) {
+            _gameTarget = _config.matchTieBreakPoints();
         }
-        return isTieBreak() ? _config.tieBreakPoints() : REGULAR_GAME_POINTS;
-    }
-
-    hidden function gameMargin() as Number {
-        return isTieBreak() ? TWO_CLEAR : _config.gameWinMargin();
     }
 
     hidden function winsGameWith(points as Number, pointsLead as Number) as Boolean {
-        return points >= gameTarget() && pointsLead >= gameMargin();
+        return points >= _gameTarget && pointsLead >= _gameMargin;
     }
 
     hidden function wouldWinSet(player as Number) as Boolean {
@@ -205,6 +238,11 @@ class MatchState {
             return points * DISPLAY_POINT_STEP;
         }
         return lead(_points, player) > 0 && points > DEUCE_POINTS ? DISPLAY_ADVANTAGE : DISPLAY_FORTY;
+    }
+
+    // Points of the game in progress as a plain count.
+    function points(player as Number) as Number {
+        return _points[player];
     }
 
     function games(player as Number) as Number {

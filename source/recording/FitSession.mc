@@ -16,8 +16,9 @@ class FitSession {
         _session = ActivityRecording.createSession({
             :name => name, :sport => Activity.SPORT_TENNIS, :subSport => Activity.SUB_SPORT_GENERIC
         });
-        for (var i = 0; i < RecordingFields.TABLE.size(); i++) {
-            createFieldOfKind(RecordingFields.TABLE[i] as Array, kind);
+        var table = RecordingFields.table();
+        for (var i = 0; i < table.size(); i++) {
+            createFieldOfKind(table[i], kind);
         }
     }
 
@@ -37,7 +38,7 @@ class FitSession {
 
     // A field of one value takes no count.
     hidden function options(row as Array, count as Number) as FieldOptions {
-        var mesgType = row[2] as Boolean ? FitContributor.MESG_TYPE_LAP : FitContributor.MESG_TYPE_SESSION;
+        var mesgType = row[2] as Number;
         if (count == RecordingFields.SINGLE) {
             return {:mesgType => mesgType, :units => row[3] as String};
         }

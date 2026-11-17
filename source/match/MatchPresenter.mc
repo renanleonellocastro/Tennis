@@ -74,6 +74,12 @@ module MatchPresenter {
         return finished.length() == 0 ? current : finished + SET_GAP + current;
     }
 
+    // The final screen leaves out a set that never started: a match that
+    // stopped right after a set reads "6-1", not "6-1  0-0".
+    function finalSetsText(state as MatchState) as String {
+        return MatchSummary.hasOpenSet(state) ? setsText(state) : finishedSetsText(state);
+    }
+
     // [label key, player] of the heaviest point at stake, or null.
     function pressure(state as MatchState) as Array? {
         for (var i = 0; i < PRESSURES.size(); i++) {

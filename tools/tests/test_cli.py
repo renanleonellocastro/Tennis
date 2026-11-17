@@ -264,6 +264,24 @@ def test_a_match_that_was_stopped_early_keeps_what_was_played(tmp_path: Path) ->
     assert (document["activity"]["has_gps"], document["heat_map"]) == (False, None)
 
 
+def test_a_match_stopped_right_after_a_set_shows_no_empty_open_set(tmp_path: Path) -> None:
+    log = WatchLog().play(HOLD * 6)
+    builder = FitBuilder().records(log.record_values()).session(200, match_setup=pack_setup())
+
+    document, _ = exported(tmp_path, builder.write(tmp_path / "set.fit"))
+
+    assert (document["match"]["finished"], document["match"]["score"]["text"]) == (False, "6-0")
+
+
+def test_a_set_that_has_only_points_is_an_open_set(tmp_path: Path) -> None:
+    log = WatchLog().play(HOLD * 6 + "m")
+    builder = FitBuilder().records(log.record_values()).session(200, match_setup=pack_setup())
+
+    document, _ = exported(tmp_path, builder.write(tmp_path / "set.fit"))
+
+    assert document["match"]["score"]["text"] == "6-0 0-0"
+
+
 def test_a_set_without_a_lap_has_no_steps_or_distance(tmp_path: Path) -> None:
     log = WatchLog(config(ONE_SET)).play(HOLD * 6)
     builder = FitBuilder().records(log.record_values()).session(500, match_setup=pack_setup(ONE_SET))
