@@ -72,6 +72,12 @@ jobs:
             make key
           fi
 
+      # One result per device, so a watch that stops compiling is named
+      # before anything is attached to the release.
+      - name: Build every device
+        if: env.HAS_CREDS == 'true'
+        run: make build-all
+
       - name: Build package
         if: env.HAS_CREDS == 'true'
         run: make package
