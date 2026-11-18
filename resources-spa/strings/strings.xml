@@ -6,10 +6,7 @@
 
     <string id="MenuStartMatch">Iniciar partido</string>
     <string id="MenuPractice">Práctica</string>
-    <string id="MenuSettings">Ajustes</string>
     <string id="MenuAbout">Acerca de</string>
-    <string id="ComingSoonMsg">Próximamente</string>
-    <string id="AboutText">Tennis 1.0.0 MIT</string>
 
     <!-- Match setup -->
     <string id="SetupFormat">Formato</string>

@@ -102,7 +102,7 @@ manual pass on a real watch before releases.
 
 ## Releasing (maintainers)
 
-1. Update the version in the `AboutText` strings, move the Unreleased
+1. Update `VERSION` in `source/ui/MenuKit.mc`, move the Unreleased
    section of `CHANGELOG.md` under the new version and run `make build-all`.
 2. Tag: `git tag v1.x.y && git push --tags`. CI attaches `Tennis.iq` to the
    GitHub release.

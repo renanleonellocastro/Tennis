@@ -8,8 +8,8 @@ import Toybox.Test;
 module TextFitTests {
     // The label of a menu row, including the row that is not selected.
     const MENU_ROW_KEYS = [
-        "MenuStartMatch", "MenuPractice", "MenuSettings", "MenuAbout", "SetupFormat", "SetupNoAd", "SetupDetail",
-        "SetupFirstServe", "SetupGps", "SetupStart", "MatchMenuPause", "MatchMenuResume", "MatchMenuFix",
+        "MenuStartMatch", "MenuPractice", "MenuAbout", "SetupFormat", "SetupNoAd", "SetupDetail", "SetupFirstServe",
+        "SetupGps", "SetupStart", "MatchMenuPause", "MatchMenuResume", "MatchMenuFix",
         "MatchMenuEnd", "FixUndoGame", "FixGameMe", "FixGameOpponent", "EndingWinner", "EndingAce",
         "EndingErrorNet", "EndingErrorOut", "FinalSave", "FinalReport", "FinalDiscard", "TagSurface", "TagKind",
         "PracticeMenuEnd"
@@ -44,8 +44,16 @@ module TextFitTests {
 
     // A message screen: a longer line runs over the frame ring on the
     // rectangular screens.
-    const MESSAGE_KEYS = ["ComingSoonMsg", "AboutText", "TouchNeededMsg", "SavedMsg", "DiscardedMsg"];
+    const MESSAGE_KEYS = ["TouchNeededMsg", "SavedMsg", "DiscardedMsg"];
     const MESSAGE_LINE_MAX_CHARS = 15;
+
+    // The texts of the message screens in every language: the messages
+    // and the About text, the name of the app followed by the version.
+    function messageTexts() as Array<String> {
+        var texts = TextFitTests.textsOf(MESSAGE_KEYS);
+        texts.addAll(TextFitTests.textsWithTail(["AppName"], " " + MenuKit.VERSION));
+        return texts;
+    }
 
     // The first text of the keys that is longer than the limit in any
     // language, or null when all of them fit.
@@ -92,13 +100,11 @@ module TextFitTests {
     (:test)
     function testMessageLinesStayInsideTheFrameRingInEveryLanguage(logger as Test.Logger) as Boolean {
         var lineChars = new MessageView("", 0, 0).LINE_CHARS;
-        for (var c = 0; c < I18n.CODES.size(); c++) {
-            var table = I18n.table(I18n.CODES[c] as String);
-            for (var i = 0; i < MESSAGE_KEYS.size(); i++) {
-                var lines = Theme.splitTwoLines(table.get(MESSAGE_KEYS[i]) as String, lineChars);
-                Test.assert((lines[0] as String).length() <= MESSAGE_LINE_MAX_CHARS);
-                Test.assert((lines[lines.size() - 1] as String).length() <= MESSAGE_LINE_MAX_CHARS);
-            }
+        var texts = messageTexts();
+        for (var i = 0; i < texts.size(); i++) {
+            var lines = Theme.splitTwoLines(texts[i], lineChars);
+            Test.assert((lines[0] as String).length() <= MESSAGE_LINE_MAX_CHARS);
+            Test.assert((lines[lines.size() - 1] as String).length() <= MESSAGE_LINE_MAX_CHARS);
         }
         return true;
     }

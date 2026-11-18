@@ -366,5 +366,3 @@ in [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md).
 5. **Garmin Connect.** How it shows the Tennis activity, the laps, the
    **Steps** and **Distance** fields and the laps of a practice, and the
    exact name of its export action.
-6. **Settings.** The menu has a **Settings** entry that shows **Coming
-   soon**. The plan does not define its content.

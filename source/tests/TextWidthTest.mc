@@ -297,7 +297,7 @@ module TextFitTests {
         var height = System.getDeviceSettings().screenHeight;
         var lineHeight = canvas().getFontHeight(font);
         var ring = Theme.FRAME_INSET + Theme.FRAME_PEN;
-        var texts = textsOf(MESSAGE_KEYS);
+        var texts = messageTexts();
         for (var i = 0; i < texts.size(); i++) {
             var lines = Theme.splitTwoLines(texts[i], new MessageView("", 0, 0).LINE_CHARS);
             var y = height / 2 - (lines.size() * lineHeight) / 2 + height / 20 + lineHeight / 2;

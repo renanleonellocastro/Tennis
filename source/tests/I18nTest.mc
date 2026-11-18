@@ -48,7 +48,7 @@ function testStringsTranslateKnownKeys(logger as Test.Logger) as Boolean {
     Strings.loadTables("eng");
     Test.assertEqual(Strings.t("AppName"), "Tennis");
     Strings.loadTables("por");
-    Test.assertEqual(Strings.t("ComingSoonMsg"), "Em breve");
+    Test.assertEqual(Strings.t("MenuPractice"), I18n.table("por").get("MenuPractice") as String);
     return true;
 }
 

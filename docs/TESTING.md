@@ -222,9 +222,7 @@ build (see [Memory](#memory)).
 
 * [ ] The app opens on the home screen: frame ring, brand arc, app name and
       MENU pill, nothing clipped.
-* [ ] START opens the menu with Start match, Practice, Settings and About.
-* [ ] Settings shows the coming soon message and returns to the menu by
-      itself.
+* [ ] START opens the menu with Start match, Practice and About.
 * [ ] Practice opens the practice screen: block 1, 0 and 0, clock running.
       UP adds a hit, DOWN a miss, BACK takes the last entry back, START
       closes the block with a vibration and opens block 2. An empty block

@@ -8,7 +8,7 @@ import Toybox.WatchUi;
 (:test)
 function testMainMenuRowsHaveUniqueIdsAndActions(logger as Test.Logger) as Boolean {
     var rows = MenuKit.mainMenuRows();
-    Test.assertEqual(rows.size(), 4);
+    Test.assertEqual(rows.size(), 3);
     var seen = {} as Dictionary<Symbol, Boolean>;
     for (var i = 0; i < rows.size(); i++) {
         var row = rows[i] as Array;
@@ -20,9 +20,9 @@ function testMainMenuRowsHaveUniqueIdsAndActions(logger as Test.Logger) as Boole
 }
 
 (:test)
-function testMainMenuOrderIsMatchPracticeSettingsAbout(logger as Test.Logger) as Boolean {
+function testMainMenuOrderIsMatchPracticeAbout(logger as Test.Logger) as Boolean {
     var rows = MenuKit.mainMenuRows();
-    var expected = [:startMatch, :practice, :settings, :about];
+    var expected = [:startMatch, :practice, :about];
     for (var i = 0; i < expected.size(); i++) {
         Test.assert(((rows[i] as Array)[1] as Symbol) == expected[i]);
     }
@@ -49,5 +49,14 @@ function testActionForFindsTheRegisteredMethodOnly(logger as Test.Logger) as Boo
     var actions = {:about => action} as Dictionary<Symbol, Method>;
     Test.assert(MenuKit.actionFor(actions, new WatchUi.MenuItem("About", null, :about, null)) == action);
     Test.assert(MenuKit.actionFor(actions, new WatchUi.MenuItem("Other", null, :other, null)) == null);
+    return true;
+}
+
+(:test)
+function testAboutNamesTheAppInTheLanguageOfTheWatchWithItsVersion(logger as Test.Logger) as Boolean {
+    Strings.loadTables("por");
+    Test.assertEqual(MenuKit.aboutText(), "Tênis 1.0.0");
+    Strings.loadTables("eng");
+    Test.assertEqual(MenuKit.aboutText(), "Tennis 1.0.0");
     return true;
 }
