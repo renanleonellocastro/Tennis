@@ -368,7 +368,7 @@ DAS KANNST DU TUN
 BEDIENUNG
 * UP: Punkt für mich. DOWN: Punkt für den Gegner.
 * START: Aufschlagfehler. BACK: zurücknehmen.
-* UP gedrückt halten: Menü mit Pause, Korrigieren und Match beenden.
+* UP gedrückt halten: Menü mit Pause, Korrigieren und Beenden.
 * Touchscreens: Tippe auf die linke Hälfte für deinen Punkt und auf die rechte Hälfte für den Punkt des Gegners. Uhren ohne die Tasten UP und DOWN zeigen die Schaltflächen MENÜ und FEHLER auf dem Bildschirm.
 
 DEINE DATEN GEHÖREN DIR
@@ -433,7 +433,7 @@ COSA PUOI FARE
 COMANDI
 * UP: punto per me. DOWN: punto per l'avversario.
 * START: fallo di servizio. BACK: annulla.
-* Tenere premuto UP: menu con Pausa, Correggi punti e Termina partita.
+* Tenere premuto UP: menu con Pausa, Correggi punti e Fine partita.
 * Schermi touch: tocca la metà sinistra per il tuo punto e la metà destra per il punto dell'avversario. Gli orologi senza i tasti UP e DOWN mostrano i pulsanti MENU e FALLO sullo schermo.
 
 I TUOI DATI SONO TUOI

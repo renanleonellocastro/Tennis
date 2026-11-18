@@ -6,6 +6,23 @@ and the project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+* The bottom row of the match screen sits two percent of the height
+  higher on a round screen and its parts stand closer together. On the
+  Forerunner 55 a clock over one hour next to a heart rate of three digits
+  came within a pixel or two of the frame ring.
+* Shorter texts for menu rows that touched the edge of the Forerunner 55
+  screen on the row under the chosen one: Portuguese ("Quem saca",
+  "Voltar game", "Game p/ mim", "Game p/ adv."), Spanish ("Anular juego"),
+  French ("Lancer match", "1er service"), German ("Beenden", "Netzfehler",
+  "Ausfehler") and Italian ("No vantaggi", "Dettaglio", "Fine partita").
+* The longest game label of the report reads "Longest" in English and
+  "Maior" in Portuguese: on the Venu Sq 2 the longer labels touched a
+  game time of ten minutes or more on the same line.
+* Spanish: the change of ends notice reads "Cambio lado", so "Juego.
+  Cambio lado" fits the banner row of the Forerunner 55.
+
 ### Fixed
 
 * A game given by "Fix the score" logs four points or more at once, but

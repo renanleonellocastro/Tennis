@@ -5,9 +5,9 @@ import Toybox.WatchUi;
 // The final score: who won, the sets and the time played, with a mark at
 // the bottom for the report that waits one page down.
 class FinalScoreView extends WatchUi.View {
-    hidden const TITLE_Y = 28;
-    hidden const SETS_Y = 50;
-    hidden const CLOCK_Y = 72;
+    const TITLE_Y = 28;
+    const SETS_Y = 50;
+    const CLOCK_Y = 72;
     hidden const MORE_Y = 88;
     hidden const MORE_SIZE_DIVISOR = 30;
     hidden const CENTERED = Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER;

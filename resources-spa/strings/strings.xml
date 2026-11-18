@@ -40,7 +40,7 @@
     <string id="LabelMatchPoint">PUNTO DE PARTIDO</string>
     <string id="NoticeGame">Juego</string>
     <string id="NoticeSet">Set</string>
-    <string id="NoticeChangeEnds">Cambio de lado</string>
+    <string id="NoticeChangeEnds">Cambio lado</string>
     <string id="Paused">En pausa</string>
     <string id="ControlFault">FALTA</string>
 
@@ -50,7 +50,7 @@
     <string id="MatchMenuFix">Corregir</string>
     <string id="MatchMenuEnd">Terminar</string>
     <string id="EndMatchQ">¿Terminar el partido?</string>
-    <string id="FixUndoGame">Deshacer juego</string>
+    <string id="FixUndoGame">Anular juego</string>
     <string id="FixGameMe">Juego para mí</string>
     <string id="FixGameOpponent">Juego al rival</string>
 

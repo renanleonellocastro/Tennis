@@ -147,7 +147,7 @@ module MatchLayoutTests {
     }
 
     // A screen that is not round spreads its lower rows: 64, 78 and 92
-    // percent of the height instead of 65, 77 and 89.
+    // percent of the height instead of 65, 77 and 87.
     (:test)
     function testLowerRowsSpreadOnAScreenThatIsNotRound(logger as Test.Logger) as Boolean {
         var flat = new MatchLayout(320, 360, true, false);
@@ -157,7 +157,7 @@ module MatchLayoutTests {
         Test.assertEqual(flat.clockY(), 331);
         Test.assertEqual(round.labelsY(), 234);
         Test.assertEqual(round.controlsY(), 277);
-        Test.assertEqual(round.clockY(), 320);
+        Test.assertEqual(round.clockY(), 313);
         return true;
     }
 

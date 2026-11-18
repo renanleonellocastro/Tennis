@@ -7,10 +7,10 @@ module PracticeFlow {
     // The summary of a practice: the total, one row per block and the time.
     class PracticeSummaryView extends WatchUi.View {
         // Rows of the screen, as percentages of its height.
-        hidden const TOTAL_Y = 25;
-        hidden const FIRST_ROW_Y = 40;
-        hidden const ROW_STEP = 10;
-        hidden const FOOTER_Y = 84;
+        const TOTAL_Y = 25;
+        const FIRST_ROW_Y = 40;
+        const ROW_STEP = 10;
+        const FOOTER_Y = 84;
         hidden const CENTERED = Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER;
 
         hidden var _controller as PracticeController;

@@ -118,7 +118,7 @@ module ReportTests {
         match.games("M");
         match.play("MOMOMM");
         var pages = pagesOf(match, false, 3725, new FakeSensors());
-        Test.assertEqual(rowsText(pages[3]), "Match|1:02:05,Avg game|0:50,Long game|1:00,Per point|0:10");
+        Test.assertEqual(rowsText(pages[3]), "Match|1:02:05,Avg game|0:50,Longest|1:00,Per point|0:10");
         return true;
     }
 
@@ -126,7 +126,7 @@ module ReportTests {
     function testTimeAndBodyPagesSayWhenThereIsNothingToShow(logger as Test.Logger) as Boolean {
         var pages = pagesOf(newMatch(MatchFormat.BEST_OF_3), false, 0, new FakeSensors());
         Test.assertEqual(rowsText(pages[0]), "Set 1|0|0,Points|0|0");
-        Test.assertEqual(rowsText(pages[3]), "Match|0:00,Avg game|--,Long game|--,Per point|--");
+        Test.assertEqual(rowsText(pages[3]), "Match|0:00,Avg game|--,Longest|--,Per point|--");
         Test.assertEqual(rowsText(pages[4]), "Avg HR|--,Max HR|--,Key pts HR|--,Calories|--");
         return true;
     }

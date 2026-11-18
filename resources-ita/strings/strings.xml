@@ -18,10 +18,10 @@
     <string id="FormatOneSet">1 set</string>
     <string id="FormatProSet">Pro set a 8</string>
     <string id="FormatTieBreakOnly">Solo tie break</string>
-    <string id="SetupNoAd">Senza vantaggi</string>
+    <string id="SetupNoAd">No vantaggi</string>
     <string id="ValueOn">Attivo</string>
     <string id="ValueOff">Disattivo</string>
-    <string id="SetupDetail">Dettaglio punto</string>
+    <string id="SetupDetail">Dettaglio</string>
     <string id="DetailSimple">Semplice</string>
     <string id="DetailDetailed">Dettagliato</string>
     <string id="SetupFirstServe">Primo servizio</string>
@@ -48,7 +48,7 @@
     <string id="MatchMenuPause">Pausa</string>
     <string id="MatchMenuResume">Riprendi</string>
     <string id="MatchMenuFix">Correggi punti</string>
-    <string id="MatchMenuEnd">Termina partita</string>
+    <string id="MatchMenuEnd">Fine partita</string>
     <string id="EndMatchQ">Terminare la partita?</string>
     <string id="FixUndoGame">Annulla game</string>
     <string id="FixGameMe">Game per me</string>

@@ -104,7 +104,7 @@
     <string id="ReportTime">TIME</string>
     <string id="ReportMatchTime">Match</string>
     <string id="ReportAvgGame">Avg game</string>
-    <string id="ReportLongGame">Long game</string>
+    <string id="ReportLongGame">Longest</string>
     <string id="ReportPerPoint">Per point</string>
     <string id="ReportBody">BODY</string>
     <string id="ReportAvgHr">Avg HR</string>
