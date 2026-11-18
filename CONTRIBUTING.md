@@ -51,7 +51,10 @@ fixing the developer experience is a contribution too.
    `resources-<code>/strings/strings.xml` (por, spa, fre, deu, ita).
 2. Run `make strings` to regenerate `source/generated/Strings.mc` and the
    tables in `resources/texts/`.
-3. `make resources-check` confirms that nothing is missing or stale.
+3. After a change to a key name (the short words at the edge of the match,
+   ending and practice screens), run `make key-labels` to draw their images
+   in `keylabels/` again.
+4. `make resources-check` confirms that nothing is missing or stale.
 
 ## Adding a new language
 

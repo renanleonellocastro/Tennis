@@ -6,8 +6,33 @@ and the project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+* Key names at the edge of the screen. On a round watch that scores with
+  the keys, a small word next to each key says what it does on the match
+  screen (ME, FAULT, OPP, UNDO), on the practice screen (HIT, NEXT, MISS,
+  UNDO) and when the app asks how a point ended. They follow the curve of
+  the screen: watches with scalable fonts draw the text along the arc, the
+  18 older watches without them load small images made by
+  `tools/key_labels.py` (`make key-labels`), one set per screen size and
+  language. The inner content of those screens is 12 percent smaller so
+  the names have clear room.
+* Detailed mode: one press says how the point ended. UP is the out error,
+  DOWN the net error, START the winner, BACK cancels. When the winner of
+  the point served, START reads MORE and opens the full list, which also
+  holds the ace. Touch watches get one tap area per ending. The codes in
+  the point log are unchanged.
+* A distinct short vibration for a point, a fault, an undo, a game, and a
+  set, change of ends or end of match.
+
 ### Changed
 
+* A press on a score key or on the fault key during a pause ends the
+  pause, with a vibration, and logs nothing. The score turns amber while
+  the match is paused.
+* The change of ends notice stays until the next entry.
+* Discard on the offer to resume a stored match asks for confirmation.
+* The Settings entry of the menu, which opened nothing, is gone.
 * The bottom row of the match screen sits three percent of the height
   higher on a round screen with no touch controls, and its parts stand
   closer together on every watch. On the

@@ -41,9 +41,8 @@ The controls depend on the buttons of your watch.
 | Match menu | Hold UP | Hold UP | Tap **MENU** |
 
 * **Five buttons** (for example the Forerunner 55): everything is done with
-  the buttons. On round watches two short colored marks on the edge of the
-  screen, next to UP and DOWN, remind you which button belongs to which
-  player.
+  the buttons. On round watches a small word at the edge of the screen,
+  next to each button, says what the button does.
 * **Five buttons and touch**: the buttons work the same way and a tap on the
   left or right half of the screen also scores the point.
 * **Two buttons and touch** (watches with no UP and DOWN buttons, for
@@ -109,8 +108,18 @@ of ends. Version 1 is for singles.
 * **Bottom**: the match clock and, when the watch has a reading, your heart
   rate after a red dot.
 
+* **Edge**: on a round watch that scores with the keys, a small word next
+  to each key says what it does: **ME** next to UP, **OPP** next to DOWN,
+  **FAULT** next to START and **UNDO** next to BACK. They follow the curve
+  of the screen, like the names engraved on the bezel. Touch watches show
+  the **MENU** and **FAULT** controls instead.
+
 When it is time to change ends, the watch vibrates and shows **Change
-ends**.
+ends** until the next entry.
+
+Each entry has its own short vibration, so you can log without looking: a
+point, a fault, an undo, a game, and a longer one for a set, a change of
+ends or the end of the match.
 
 ## Logging a point
 
@@ -119,19 +128,35 @@ you, DOWN or a tap on the right half for the opponent.
 
 **Simple** needs nothing else. One press and the score moves.
 
-**Detailed** asks one more question. After you say who won, a short list
-named **Point** asks how the point ended:
+**Detailed** asks one more question. After you say who won, the screen
+shows **Point** and the name of the player who won it, and one more press
+says how the point ended. BACK cancels the point and nothing is logged.
 
-* **Winner**: a ball the other player could not reach.
-* **Ace**: offered only when the player who won the point was serving.
-* **Net error**
-* **Out error**
+On a round watch that scores with the keys, each key has its ending next
+to it:
 
-Under each choice the list shows who hit that last ball, **Me** or
-**Opponent**. For example, if you won the point, **Out error** is the
-opponent's error. The list opens on **Out error**, the most common ending,
-so that case is two presses. BACK on the list cancels the point and nothing
-is logged.
+| Key | The winner of the point did not serve | The winner of the point served |
+|---|---|---|
+| UP | **OUT**: out error | **OUT**: out error |
+| DOWN | **NET**: net error | **NET**: net error |
+| START | **WINNER** | **MORE**: opens the full list |
+| BACK | **BACK**: cancel | **BACK**: cancel |
+
+The two errors are the common endings, so they are always one press. When
+the winner of the point served, an ace is possible too and there is no key
+left for it: **MORE** opens the list with **Winner**, **Ace**, **Net**
+and **Out**. Under each choice the list shows who hit that
+last ball, **Me** or **Opponent**.
+
+On a watch that scores by touch (two buttons), every ending has its own
+area to tap: **Out**, **Net**, **Winner** and, when the winner of the
+point served, **Ace**. No list is needed. BACK, as a key or as a swipe, cancels.
+
+A watch with keys and a screen that is not round (no key names at the
+edge) shows the full list at once. It opens on **Out**.
+
+An error belongs to the player who lost the point: if you won the point,
+**OUT** is the opponent's ball that landed out.
 
 You can choose the detail level only when the match starts.
 
@@ -166,8 +191,10 @@ again from the list of points, so they stay right after any correction.
 Open the match menu: hold UP, or tap **MENU** on a two button watch.
 
 * **Pause** stops the clock and the activity. The screen shows **Paused**
-  and no point can be logged or undone. To go on, press START (**FAULT** on
-  a two button watch) or choose **Resume** in the menu.
+  and the score turns amber. To go on, press UP, DOWN or START (or tap the
+  score or **FAULT**), or choose **Resume** in the menu: the watch vibrates
+  and that press only ends the pause, it logs nothing. BACK does nothing
+  during a pause.
 * **End match** stops a match before it is decided. The watch asks **End
   the match?** first.
 
@@ -197,15 +224,15 @@ survives the app closing.
 * If the app closes during a match, what was recorded so far is saved as an
   activity.
 * The next time you open the app, a menu offers **Resume** or
-  **Discard**. BACK keeps the match for later. Starting a new
-  match replaces it.
+  **Discard**. Discard asks **Discard the activity?** first. BACK keeps
+  the match for later. Starting a new match replaces it.
 * **Resume** brings back the score, the server, the sides and the
   statistics exactly. The clock goes on from the time of the last entry.
 * A resumed match is recorded as a **new** activity, so a match that was
   resumed once has two activities in Garmin Connect, each with its own
   time, steps and distance. Every further resume adds one more.
 * A first serve fault that was waiting for its second serve comes back. A
-  point whose ending you were still choosing in the list is lost.
+  point whose ending you were still choosing is lost.
 * If the watch itself restarts or runs out of battery, the activity of that
   part is most likely lost, but the stored match can still be resumed.
 * If the app closes on the final score screen before you choose, the
@@ -335,7 +362,9 @@ GPS track.
 * BACK takes back the last entry of the open block. A closed block cannot
   be changed.
 * The screen shows the block number, the two counts, the success rate of
-  the block, the clock and the heart rate.
+  the block, the clock and the heart rate. A round watch that counts with
+  the keys also names them at the edge: **HIT**, **NEXT**, **MISS** and
+  **UNDO**.
 * The menu (hold UP, or tap **MENU**) has **Pause** or **Resume** and
   **End practice**.
 * After you end it, the summary shows the total and one line for each
