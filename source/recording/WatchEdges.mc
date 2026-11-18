@@ -1,11 +1,24 @@
 import Toybox.Activity;
 import Toybox.ActivityMonitor;
 import Toybox.Application;
+import Toybox.Attention;
 import Toybox.Lang;
 import Toybox.Position;
 import Toybox.Timer;
 
-// The real sensors, GPS and storage of the watch.
+// The real sensors, GPS, vibration and storage of the watch.
+
+class WatchBuzzer {
+    function buzz(steps as Array<Number>) as Void {
+        if (Attention has :vibrate) {
+            var profiles = [] as Array<Attention.VibeProfile>;
+            for (var i = 0; i < steps.size(); i += 2) {
+                profiles.add(new Attention.VibeProfile(steps[i], steps[i + 1]));
+            }
+            Attention.vibrate(profiles);
+        }
+    }
+}
 
 class WatchSensors {
     function heartRate() as Number? {

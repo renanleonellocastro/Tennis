@@ -33,7 +33,7 @@ class ReportPresenter {
     // The page at an index, counted from zero.
     function page(index as Number, isDetailed as Boolean, clockSeconds as Number, sensors as BodySensors) as Array {
         var kind = !isDetailed && index >= ENDINGS_PAGE ? index + 1 : index;
-        var titles = ["ReportScore", "ReportServe", "ReportEndings", "ReportPressure", "ReportTime", "ReportBody"];
+        var titles = [Str.ReportScore, Str.ReportServe, Str.ReportEndings, Str.ReportPressure, Str.ReportTime, Str.ReportBody];
         return [titles[kind], rows(kind, clockSeconds, sensors)];
     }
 
@@ -52,21 +52,21 @@ class ReportPresenter {
     // of pairs takes more of the little memory of the smallest watches.
     hidden function playerTable(kind as Number) as Array {
         if (kind == SERVE_PAGE) {
-            return ["ReportFirstIn", :firstIn, "ReportFirstWon", :firstWon,
-                    "ReportSecondWon", :secondWon, "ReportDoubleFaults", :doubleFaults];
+            return [Str.ReportFirstIn, :firstIn, Str.ReportFirstWon, :firstWon,
+                    Str.ReportSecondWon, :secondWon, Str.ReportDoubleFaults, :doubleFaults];
         }
         if (kind == ENDINGS_PAGE) {
-            return ["ReportAces", :aces, "ReportWinners", :winners,
-                    "ReportNetErrors", :netErrors, "ReportOutErrors", :outErrors];
+            return [Str.ReportAces, :aces, Str.ReportWinners, :winners,
+                    Str.ReportNetErrors, :netErrors, Str.ReportOutErrors, :outErrors];
         }
-        return ["ReportBreaks", :breaks, "ReportSaved", :saved, "ReportHolds", :holds, "ReportBestRun", :bestRun];
+        return [Str.ReportBreaks, :breaks, Str.ReportSaved, :saved, Str.ReportHolds, :holds, Str.ReportBestRun, :bestRun];
     }
 
     hidden function playerRows(table as Array) as Array<Array> {
         var rows = [] as Array<Array>;
         for (var i = 0; i < table.size(); i += 2) {
             var value = method(table[i + 1] as Symbol);
-            rows.add([Strings.t(table[i] as String), value.invoke(Player.ME), value.invoke(Player.OPPONENT)]);
+            rows.add([Strings.t(table[i] as Number), value.invoke(Player.ME), value.invoke(Player.OPPONENT)]);
         }
         return rows;
     }
@@ -81,12 +81,12 @@ class ReportPresenter {
         if (MatchSummary.hasOpenSet(_state)) {
             rows.add(setRow(rows.size(), MatchSummary.openSetScore(_state)));
         }
-        rows.add([Strings.t("ReportPoints"), count(Stat.POINTS_WON, Player.ME), count(Stat.POINTS_WON, Player.OPPONENT)]);
+        rows.add([Strings.t(Str.ReportPoints), count(Stat.POINTS_WON, Player.ME), count(Stat.POINTS_WON, Player.OPPONENT)]);
         return rows;
     }
 
     hidden function setRow(index as Number, score as Array<Number>) as Array {
-        var label = Strings.t("ReportSet") + " " + (index + 1);
+        var label = Strings.t(Str.ReportSet) + " " + (index + 1);
         return [label, setCell(score, Player.ME), setCell(score, Player.OPPONENT)];
     }
 
@@ -169,10 +169,10 @@ class ReportPresenter {
 
     hidden function timeRows(clockSeconds as Number) as Array<Array> {
         return [
-            [Strings.t("ReportMatchTime"), MatchPresenter.clockText(clockSeconds)],
-            [Strings.t("ReportAvgGame"), secondsText(_statistics.averageGameSeconds())],
-            [Strings.t("ReportLongGame"), secondsText(_statistics.longestGameSeconds())],
-            [Strings.t("ReportPerPoint"), secondsText(Math.round(_statistics.averageSecondsBetweenPoints()).toNumber())]
+            [Strings.t(Str.ReportMatchTime), MatchPresenter.clockText(clockSeconds)],
+            [Strings.t(Str.ReportAvgGame), secondsText(_statistics.averageGameSeconds())],
+            [Strings.t(Str.ReportLongGame), secondsText(_statistics.longestGameSeconds())],
+            [Strings.t(Str.ReportPerPoint), secondsText(Math.round(_statistics.averageSecondsBetweenPoints()).toNumber())]
         ] as Array<Array>;
     }
 
@@ -185,10 +185,10 @@ class ReportPresenter {
 
     hidden function bodyRows(sensors as BodySensors) as Array<Array> {
         return [
-            [Strings.t("ReportAvgHr"), numberText(sensors.averageHeartRate())],
-            [Strings.t("ReportMaxHr"), numberText(sensors.maxHeartRate())],
-            [Strings.t("ReportKeyHr"), numberText(_statistics.averageDecidingHeartRate())],
-            [Strings.t("ReportCalories"), numberText(sensors.calories())]
+            [Strings.t(Str.ReportAvgHr), numberText(sensors.averageHeartRate())],
+            [Strings.t(Str.ReportMaxHr), numberText(sensors.maxHeartRate())],
+            [Strings.t(Str.ReportKeyHr), numberText(_statistics.averageDecidingHeartRate())],
+            [Strings.t(Str.ReportCalories), numberText(sensors.calories())]
         ] as Array<Array>;
     }
 

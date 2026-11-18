@@ -109,42 +109,24 @@ class FixMenuDelegate extends WatchUi.Menu2InputDelegate {
     }
 
     function onSelect(item as WatchUi.MenuItem) as Void {
-        method(item.getId() as Symbol).invoke();
+        MatchAlert.play(Reaction.cueOf(method(item.getId() as Symbol).invoke() as Number));
         WatchUi.popView(WatchUi.SLIDE_DOWN);
     }
 
-    function undoGame() as Void {
-        _controller.undoGame();
+    function undoGame() as Number {
+        return _controller.undoGame();
     }
 
-    function gameForMe() as Void {
-        _controller.awardGame(Player.ME);
+    function gameForMe() as Number {
+        return _controller.awardGame(Player.ME);
     }
 
-    function gameForOpponent() as Void {
-        _controller.awardGame(Player.OPPONENT);
+    function gameForOpponent() as Number {
+        return _controller.awardGame(Player.OPPONENT);
     }
 
     function onBack() as Void {
         WatchUi.popView(WatchUi.SLIDE_DOWN);
-    }
-}
-
-// The confirmation closes itself after the answer and the match screen
-// shows again, which is where an ended match moves to the final score.
-class EndMatchConfirmDelegate extends WatchUi.ConfirmationDelegate {
-    hidden var _controller as MatchController;
-
-    function initialize(controller as MatchController) {
-        ConfirmationDelegate.initialize();
-        _controller = controller;
-    }
-
-    function onResponse(response as WatchUi.Confirm) as Boolean {
-        if (response == WatchUi.CONFIRM_YES) {
-            _controller.end();
-        }
-        return true;
     }
 }
 
@@ -179,22 +161,6 @@ class FinalMenuDelegate extends WatchUi.Menu2InputDelegate {
     }
 }
 
-class DiscardConfirmDelegate extends WatchUi.ConfirmationDelegate {
-    hidden var _controller as MatchController;
-
-    function initialize(controller as MatchController) {
-        ConfirmationDelegate.initialize();
-        _controller = controller;
-    }
-
-    function onResponse(response as WatchUi.Confirm) as Boolean {
-        if (response == WatchUi.CONFIRM_YES) {
-            _controller.discard();
-        }
-        return true;
-    }
-}
-
 // Offered at launch when the app closed during a match. BACK keeps the
 // stored match for the next launch.
 class ResumeMenuDelegate extends WatchUi.Menu2InputDelegate {
@@ -214,33 +180,10 @@ class ResumeMenuDelegate extends WatchUi.Menu2InputDelegate {
     }
 
     function discard() as Void {
-        _store.clear();
-        WatchUi.popView(WatchUi.SLIDE_DOWN);
+        MatchFlow.showResumeDiscardConfirmation(_store);
     }
 
     function onBack() as Void {
         WatchUi.popView(WatchUi.SLIDE_DOWN);
-    }
-}
-
-class EndingMenuDelegate extends WatchUi.Menu2InputDelegate {
-    hidden var _controller as MatchController;
-
-    function initialize(controller as MatchController) {
-        Menu2InputDelegate.initialize();
-        _controller = controller;
-    }
-
-    function onSelect(item as WatchUi.MenuItem) as Void {
-        var reaction = _controller.chooseEnding(item.getId() as Number);
-        if ((reaction & Reaction.VIBRATE) != 0) {
-            MatchAlert.changeEnds();
-        }
-        WatchUi.popView(WatchUi.SLIDE_IMMEDIATE);
-    }
-
-    function onBack() as Void {
-        _controller.cancelEnding();
-        WatchUi.popView(WatchUi.SLIDE_IMMEDIATE);
     }
 }

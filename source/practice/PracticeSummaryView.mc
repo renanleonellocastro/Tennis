@@ -35,7 +35,7 @@ module PracticeFlow {
             Theme.drawBrandArc(dc, Theme.COLOR_ACCENT);
             var isRound = System.getDeviceSettings().screenShape == System.SCREEN_SHAPE_ROUND;
             drawLine(dc, PracticePresenter.summaryTitleY(isRound), Graphics.FONT_XTINY, Theme.COLOR_TEXT_DIM,
-                     Strings.t("PracticeTotal"));
+                     Strings.t(Str.PracticeTotal));
             drawLine(dc, TOTAL_Y, Graphics.FONT_SMALL, Theme.COLOR_ACCENT, PracticePresenter.totalText(log));
             drawRows(dc, PracticePresenter.summaryRows(log, _pager.firstRow(), _pager.pageSize()));
             drawLine(dc, FOOTER_Y, Graphics.FONT_XTINY, Theme.COLOR_TEXT_DIM,

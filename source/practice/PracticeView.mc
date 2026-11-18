@@ -16,13 +16,16 @@ module PracticeFlow {
         // The widest count of two and of three digits, indexed by
         // PracticePresenter.digitSlot.
         hidden const WIDEST_COUNTS = ["88", "888"];
-        hidden const LABEL_KEYS = ["PracticeHit", "PracticeMiss"];
+        // What UP, START, DOWN and BACK do, in the order of KeySlot. The
+        // words of UP and DOWN are also the labels of the two counts.
+        hidden const KEY_TEXTS = [Str.PracticeHit, Str.PracticeNext, Str.PracticeMiss, Str.KeyUndo];
         hidden const CENTERED = Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER;
 
         hidden var _controller as PracticeController;
         hidden var _layout as MatchLayout;
         hidden var _countFonts as Array<Graphics.FontDefinition> =
             [Graphics.FONT_NUMBER_MILD, Graphics.FONT_NUMBER_MILD] as Array<Graphics.FontDefinition>;
+        hidden var _labelFont as Graphics.FontDefinition = Graphics.FONT_XTINY;
         hidden var _timer as Timer.Timer?;
 
         function initialize(controller as PracticeController, layout as MatchLayout) {
@@ -31,7 +34,12 @@ module PracticeFlow {
             _layout = layout;
         }
 
+        hidden function labelOf(side as Number) as String {
+            return Strings.t(KEY_TEXTS[side * KeySlot.PER_ROW] as Number);
+        }
+
         function onLayout(dc as Dc) as Void {
+            _labelFont = MatchDraw.labelFont(dc, _layout, labelOf(HIT_SIDE), labelOf(MISS_SIDE));
             for (var slot = 0; slot < WIDEST_COUNTS.size(); slot++) {
                 _countFonts[slot] = MatchDraw.numberFont(dc, _layout, WIDEST_COUNTS[slot] as String);
             }
@@ -40,12 +48,14 @@ module PracticeFlow {
         // The menu and its question change the practice while this screen is
         // hidden, so it looks at the result each time it comes back.
         function onShow() as Void {
+            MatchDraw.prepare(_layout, KEY_TEXTS);
             _timer = new Timer.Timer();
             (_timer as Timer.Timer).start(method(:onTick), CLOCK_TICK_MS, true);
             PracticeFlow.showSummaryIfOver(_controller);
         }
 
         function onHide() as Void {
+            MatchDraw.release();
             if (_timer != null) {
                 (_timer as Timer.Timer).stop();
                 _timer = null;
@@ -72,12 +82,14 @@ module PracticeFlow {
         // The block and, under it, the pause or the success rate of the block.
         hidden function drawHeader(dc as Dc, log as PracticeLog) as Void {
             var isPaused = _controller.isPaused();
+            var title = PracticePresenter.blockTitle(log.blockNumber());
+            var banner = PracticePresenter.bannerText(isPaused, log.hits(), log.misses());
             dc.setColor(Theme.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(_layout.centerX(), _layout.setsY(), Graphics.FONT_XTINY,
-                        PracticePresenter.blockTitle(log.blockNumber()), CENTERED);
+            dc.drawText(_layout.centerX(), _layout.setsY(),
+                        MatchDraw.textFont(dc, title, 1, _layout.roomOf(_layout.SETS_ROOM)), title, CENTERED);
             dc.setColor(isPaused ? Theme.COLOR_WARM : Theme.COLOR_ACCENT, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(_layout.centerX(), _layout.bannerY(), Graphics.FONT_XTINY,
-                        PracticePresenter.bannerText(isPaused, log.hits(), log.misses()), CENTERED);
+            dc.drawText(_layout.centerX(), _layout.bannerY(),
+                        MatchDraw.textFont(dc, banner, 1, _layout.roomOf(_layout.BANNER_ROOM)), banner, CENTERED);
         }
 
         // A quiet line between the two counts, where the match has its court.
@@ -90,17 +102,16 @@ module PracticeFlow {
         // The count of one side and its label.
         hidden function drawSide(dc as Dc, side as Number, count as Number,
                                  font as Graphics.FontDefinition) as Void {
-            dc.setColor(Theme.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
+            dc.setColor(_controller.isPaused() ? Theme.COLOR_WARM : Theme.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
             dc.drawText(_layout.playerX(side), _layout.pointsY(), font, count.toString(), CENTERED);
-            dc.setColor(MatchDraw.SIDE_COLORS[side] as Number, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(_layout.playerX(side), _layout.labelsY(), Graphics.FONT_XTINY,
-                        Strings.t(LABEL_KEYS[side] as String), CENTERED);
+            dc.setColor(MatchDraw.TONE_COLORS[side] as Number, Graphics.COLOR_TRANSPARENT);
+            dc.drawText(_layout.playerX(side), _layout.labelsY(), _labelFont, labelOf(side), CENTERED);
         }
 
         hidden function drawFooter(dc as Dc) as Void {
             MatchDraw.draw(dc, _layout,
                              [_controller.clockSeconds(), _controller.heartRate(), _controller.isPaused()],
-                             "PracticeNext");
+                             KEY_TEXTS);
         }
     }
 

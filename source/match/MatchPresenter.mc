@@ -12,15 +12,20 @@ module BannerTone {
 module MatchPresenter {
     // Tennis writes a score as two numbers joined by this sign.
     const SCORE_SEPARATOR = "-";
+    // How the points of a player are drawn: as usual, quieter while the
+    // other player has the advantage, and in the color of the pause banner
+    // during a pause.
+    const TONE_NORMAL = 0;
+    const TONE_BEHIND = 1;
+    const TONE_PAUSED = 2;
     const SET_GAP = "  ";
-    const NOTICE_GAP = ". ";
     const SECONDS_PER_MINUTE = 60;
     const MINUTES_PER_HOUR = 60;
     // Checked in this order for each player: the heaviest label wins.
     const PRESSURES = [
-        [:hasMatchPoint, "LabelMatchPoint"],
-        [:hasSetPoint, "LabelSetPoint"],
-        [:hasBreakPoint, "LabelBreakPoint"]
+        [:hasMatchPoint, Str.LabelMatchPoint],
+        [:hasSetPoint, Str.LabelSetPoint],
+        [:hasBreakPoint, Str.LabelBreakPoint]
     ];
 
     // The number fonts only have digits, so the screen needs to know when
@@ -31,9 +36,18 @@ module MatchPresenter {
 
     function pointsText(state as MatchState, player as Number) as String {
         if (!isPointsNumeric(state, player)) {
-            return Strings.t("LabelAdvantage");
+            return Strings.t(Str.LabelAdvantage);
         }
         return state.displayPoints(player).toString();
+    }
+
+    // The advantage is a small word next to large digits: the digits step
+    // back so the side that is ahead is the one that stands out.
+    function pointsTone(isPaused as Boolean, state as MatchState, player as Number) as Number {
+        if (isPaused) {
+            return TONE_PAUSED;
+        }
+        return isPointsNumeric(state, Player.opponentOf(player)) ? TONE_NORMAL : TONE_BEHIND;
     }
 
     function pair(mine as Number, theirs as Number) as String {
@@ -95,15 +109,15 @@ module MatchPresenter {
 
     // [text, BannerTone] of the line under the set score. A pause comes
     // first, then a fresh notice, then the point at stake.
-    function banner(isPaused as Boolean, noticeKeys as Array<String>, state as MatchState) as Array {
+    function banner(isPaused as Boolean, noticeKey as Number?, state as MatchState) as Array {
         if (isPaused) {
-            return [Strings.t("Paused"), BannerTone.NOTICE];
+            return [Strings.t(Str.Paused), BannerTone.NOTICE];
         }
-        if (noticeKeys.size() > 0) {
-            return [noticeText(noticeKeys), BannerTone.NOTICE];
+        if (noticeKey != null) {
+            return [Strings.t(noticeKey), BannerTone.NOTICE];
         }
         var stake = pressure(state);
-        return stake == null ? ["", BannerTone.NOTICE] : [Strings.t(stake[0] as String), stake[1]];
+        return stake == null ? ["", BannerTone.NOTICE] : [Strings.t(stake[0] as Number), stake[1]];
     }
 
     function twoDigits(value as Number) as String {
@@ -125,19 +139,10 @@ module MatchPresenter {
         return beats == null ? "" : beats.toString();
     }
 
-    // The notice keys as one translated line, or "" for no notice.
-    function noticeText(keys as Array<String>) as String {
-        var text = "";
-        for (var i = 0; i < keys.size(); i++) {
-            text += (i == 0 ? "" : NOTICE_GAP) + Strings.t(keys[i]);
-        }
-        return text;
-    }
-
-    function finalTitleKey(state as MatchState) as String {
+    function finalTitleKey(state as MatchState) as Number {
         if (!state.isFinished()) {
-            return "FinalMatchEnded";
+            return Str.FinalMatchEnded;
         }
-        return state.winner() == Player.ME ? "FinalYouWon" : "FinalYouLost";
+        return state.winner() == Player.ME ? Str.FinalYouWon : Str.FinalYouLost;
     }
 }

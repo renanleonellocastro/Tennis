@@ -12,47 +12,49 @@ module MatchFlow {
 
     // The match that is open, so the app can keep it when it closes.
     var active as MatchController? = null;
+    // The layout of the match screen, which the ending screen shares.
+    var layout as MatchLayout? = null;
 
     // Menu rows as [label key, id]. The id is the method of the menu
     // delegate that the row runs.
     function matchMenuRows(isPaused as Boolean) as Array {
         return [
-            [isPaused ? "MatchMenuResume" : "MatchMenuPause", :togglePause],
-            ["MatchMenuFix", :openFixMenu],
-            ["MatchMenuEnd", :askToEnd]
+            [isPaused ? Str.MatchMenuResume : Str.MatchMenuPause, :togglePause],
+            [Str.MatchMenuFix, :openFixMenu],
+            [Str.MatchMenuEnd, :askToEnd]
         ];
     }
 
     function fixMenuRows() as Array {
         return [
-            ["FixUndoGame", :undoGame],
-            ["FixGameMe", :gameForMe],
-            ["FixGameOpponent", :gameForOpponent]
+            [Str.FixUndoGame, :undoGame],
+            [Str.FixGameMe, :gameForMe],
+            [Str.FixGameOpponent, :gameForOpponent]
         ];
     }
 
     function finalMenuRows() as Array {
         return [
-            ["FinalSave", :askTags],
-            ["FinalReport", :openReport],
-            ["FinalDiscard", :askToDiscard]
+            [Str.FinalSave, :askTags],
+            [Str.FinalReport, :openReport],
+            [Str.FinalDiscard, :askToDiscard]
         ];
     }
 
     function resumeMenuRows() as Array {
         return [
-            ["MatchMenuResume", :resume],
-            ["FinalDiscard", :discard]
+            [Str.MatchMenuResume, :resume],
+            [Str.FinalDiscard, :discard]
         ];
     }
 
     // Every menu carries the app name: a longer title wraps and is cut on
     // the small round screens.
     function menuOf(rows as Array) as WatchUi.Menu2 {
-        var menu = new WatchUi.Menu2({:title => Strings.t("AppName")});
+        var menu = new WatchUi.Menu2({:title => Strings.t(Str.AppName)});
         for (var i = 0; i < rows.size(); i++) {
             var row = rows[i] as Array;
-            menu.addItem(new WatchUi.MenuItem(Strings.t(row[0] as String), null, row[1] as Symbol, null));
+            menu.addItem(new WatchUi.MenuItem(Strings.t(row[0] as Number), null, row[1] as Symbol, null));
         }
         return menu;
     }
@@ -61,8 +63,8 @@ module MatchFlow {
 
     // One row per field with its current option, then the row that goes
     // on. The id of a field row is the field; the last row has a symbol.
-    function optionMenu(options as OptionList, fields as Array<Number>, confirmKey as String) as WatchUi.Menu2 {
-        var menu = new WatchUi.Menu2({:title => Strings.t("AppName")});
+    function optionMenu(options as OptionList, fields as Array<Number>, confirmKey as Number) as WatchUi.Menu2 {
+        var menu = new WatchUi.Menu2({:title => Strings.t(Str.AppName)});
         for (var i = 0; i < fields.size(); i++) {
             menu.addItem(new WatchUi.MenuItem(Strings.t(options.labelKey(fields[i])),
                                               Strings.t(options.valueKey(fields[i])), fields[i], null));
@@ -72,7 +74,7 @@ module MatchFlow {
     }
 
     function setupMenu(setup as MatchSetup, fields as Array<Number>) as WatchUi.Menu2 {
-        return optionMenu(setup, fields, "SetupStart");
+        return optionMenu(setup, fields, Str.SetupStart);
     }
 
     // Opens with the start row selected, so a match with the remembered
@@ -108,7 +110,7 @@ module MatchFlow {
 
     function deviceRecorder(setup as MatchSetup) as MatchRecorder {
         var usesGps = setup.usesGps() && GpsLocator.isAvailable();
-        var session = new PacedSession(new FitSession(Strings.t("AppName"), RecordingFields.MATCH),
+        var session = new PacedSession(new FitSession(Strings.t(Str.AppName), RecordingFields.MATCH),
                                        (Application.getApp() as TennisApp).alarm);
         return new MatchRecorder(session, new WatchSensors(), usesGps ? new GpsLocator() : new NoLocator());
     }
@@ -121,6 +123,18 @@ module MatchFlow {
             WatchUi.pushView(menuOf(resumeMenuRows()), new ResumeMenuDelegate(store),
                              WatchUi.SLIDE_UP);
         }
+    }
+
+    // Replaces the resume offer. The stored match goes only on a yes; a no
+    // keeps it for the next launch, as leaving the offer with BACK does.
+    function showResumeDiscardConfirmation(store as MatchStore) as Void {
+        showQuestion(Str.DiscardQ, store.method(:clear));
+    }
+
+    // Replaces the menu on top with a question that runs the action on a yes.
+    function showQuestion(key as Number, action as Method() as Void) as Void {
+        WatchUi.switchToView(new WatchUi.Confirmation(Strings.t(key)),
+                             new PracticeFlow.PracticeConfirmDelegate(action), WatchUi.SLIDE_IMMEDIATE);
     }
 
     // The score comes back from the stored log and marks; the activity is a
@@ -138,7 +152,7 @@ module MatchFlow {
     }
 
     function showTouchNeeded() as Void {
-        WatchUi.switchToView(new MessageView(Strings.t("TouchNeededMsg"), Theme.COLOR_WARM, TOUCH_NEEDED_MS),
+        WatchUi.switchToView(new MessageView(Strings.t(Str.TouchNeededMsg), Theme.COLOR_WARM, TOUCH_NEEDED_MS),
                              new MessageDelegate(), WatchUi.SLIDE_LEFT);
     }
 
@@ -151,15 +165,14 @@ module MatchFlow {
     }
 
     function showMatch(controller as MatchController, slide as WatchUi.SlideType) as Void {
-        var layout = deviceLayout(MatchInput.profileOfDevice());
-        WatchUi.switchToView(new MatchView(controller, layout), new MatchDelegate(controller, layout), slide);
+        var shared = deviceLayout(MatchInput.profileOfDevice());
+        layout = shared;
+        WatchUi.switchToView(new MatchView(controller, shared), new MatchDelegate(controller, shared), slide);
     }
 
     // Carries out the Reaction flags of an input on the match screen.
     function react(reaction as Number, controller as MatchController) as Void {
-        if ((reaction & Reaction.VIBRATE) != 0) {
-            MatchAlert.changeEnds();
-        }
+        MatchAlert.play(Reaction.cueOf(reaction));
         if ((reaction & Reaction.ASK_ENDING) != 0) {
             pushEndingMenu(controller);
         }
@@ -173,6 +186,7 @@ module MatchFlow {
     // Replaces the match screen, which must be the one on top.
     function showFinalIfOver(controller as MatchController) as Void {
         if (controller.isOver()) {
+            layout = null;
             WatchUi.switchToView(new FinalScoreView(controller), new FinalScoreDelegate(controller),
                                  WatchUi.SLIDE_UP);
         }
@@ -189,7 +203,7 @@ module MatchFlow {
     // remembered tags is one press away. Replaces the final menu.
     function showSaveMenu(controller as MatchController) as Void {
         var tags = TagStore.load();
-        var menu = optionMenu(tags, tags.fields(), "FinalSave");
+        var menu = optionMenu(tags, tags.fields(), Str.FinalSave);
         menu.setFocus(tags.fields().size());
         WatchUi.switchToView(menu, new SaveMenuDelegate(controller, tags), WatchUi.SLIDE_LEFT);
     }
@@ -225,8 +239,7 @@ module MatchFlow {
     }
 
     function showDiscardConfirmation(controller as MatchController) as Void {
-        WatchUi.switchToView(new WatchUi.Confirmation(Strings.t("DiscardQ")),
-                             new DiscardConfirmDelegate(controller), WatchUi.SLIDE_IMMEDIATE);
+        showQuestion(Str.DiscardQ, controller.method(:discard));
     }
 
     // Replaces the final screen, which must be the one on top, once the
@@ -257,15 +270,14 @@ module MatchFlow {
     }
 
     function showEndConfirmation(controller as MatchController) as Void {
-        WatchUi.switchToView(new WatchUi.Confirmation(Strings.t("EndMatchQ")),
-                             new EndMatchConfirmDelegate(controller), WatchUi.SLIDE_IMMEDIATE);
+        showQuestion(Str.EndMatchQ, controller.method(:end));
     }
 
     // Detailed mode: how the point ended.
 
     function endingMenu(winner as Number, server as Number) as WatchUi.Menu2 {
         var endings = EndingChoices.endings(winner, server);
-        var menu = new WatchUi.Menu2({:title => Strings.t("EndingTitle")});
+        var menu = new WatchUi.Menu2({:title => Strings.t(Str.EndingTitle)});
         for (var i = 0; i < endings.size(); i++) {
             menu.addItem(new WatchUi.MenuItem(Strings.t(EndingChoices.labelKey(endings[i])),
                                               Strings.t(EndingChoices.authorKey(endings[i], winner)),
@@ -276,7 +288,6 @@ module MatchFlow {
     }
 
     function pushEndingMenu(controller as MatchController) as Void {
-        WatchUi.pushView(endingMenu(controller.pendingWinner(), controller.state().server()),
-                         new EndingMenuDelegate(controller), WatchUi.SLIDE_IMMEDIATE);
+        EndingScreen.show(controller, layout as MatchLayout);
     }
 }

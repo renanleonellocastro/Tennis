@@ -6,10 +6,7 @@
 
     <string id="MenuStartMatch">Iniciar partido</string>
     <string id="MenuPractice">Práctica</string>
-    <string id="MenuSettings">Ajustes</string>
     <string id="MenuAbout">Acerca de</string>
-    <string id="ComingSoonMsg">Próximamente</string>
-    <string id="AboutText">Tennis 1.0.0 MIT</string>
 
     <!-- Match setup -->
     <string id="SetupFormat">Formato</string>
@@ -18,13 +15,13 @@
     <string id="FormatOneSet">1 set</string>
     <string id="FormatProSet">Pro set a 8</string>
     <string id="FormatTieBreakOnly">Solo tie break</string>
-    <string id="SetupNoAd">Sin ventaja</string>
-    <string id="ValueOn">Activado</string>
-    <string id="ValueOff">Desactivado</string>
+    <string id="SetupNoAd">Ventaja</string>
+    <string id="ValueOn">Sí</string>
+    <string id="ValueOff">No</string>
     <string id="SetupDetail">Detalle</string>
     <string id="DetailSimple">Simple</string>
     <string id="DetailDetailed">Detallado</string>
-    <string id="SetupFirstServe">Primer saque</string>
+    <string id="SetupFirstServe">Quién saca</string>
     <string id="PlayerMe">Yo</string>
     <string id="PlayerOpponent">Rival</string>
     <string id="SetupGps">GPS</string>
@@ -43,6 +40,9 @@
     <string id="NoticeChangeEnds">Cambio lado</string>
     <string id="Paused">En pausa</string>
     <string id="ControlFault">FALTA</string>
+    <string id="KeyUndo">DESH.</string>
+    <string id="KeyMore">MÁS</string>
+    <string id="KeyBack">VOLVER</string>
 
     <!-- Match menu -->
     <string id="MatchMenuPause">Pausar</string>
@@ -58,8 +58,8 @@
     <string id="EndingTitle">Punto</string>
     <string id="EndingWinner">Winner</string>
     <string id="EndingAce">Ace</string>
-    <string id="EndingErrorNet">Error en la red</string>
-    <string id="EndingErrorOut">Error fuera</string>
+    <string id="EndingErrorNet">Red</string>
+    <string id="EndingErrorOut">Fuera</string>
 
     <!-- Final score -->
     <string id="FinalYouWon">Ganaste</string>
@@ -123,7 +123,7 @@
 
     <!-- Practice -->
     <string id="PracticeBlock">Bloque</string>
-    <string id="PracticeHit">ACIERTO</string>
+    <string id="PracticeHit">BUENA</string>
     <string id="PracticeMiss">FALLO</string>
     <string id="PracticeNext">SIG.</string>
     <string id="PracticeMenuEnd">Terminar</string>

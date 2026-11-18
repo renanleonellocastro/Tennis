@@ -4,22 +4,137 @@
 // resources by system locale and cannot switch them at runtime,
 // so translations are chosen here by language code. The texts
 // of each language are a JSON resource (resources/texts), which
-// takes memory only while it is loaded.
+// takes memory only while it is loaded: a plain list, where the
+// place of a text is the number of its key in the Str module.
 import Toybox.Lang;
 import Toybox.WatchUi;
+
+// The keys of the texts. A key is a number, which takes far less
+// memory than its name.
+module Str {
+    const AppName = 0;
+    const HomeHint = 1;
+    const MenuStartMatch = 2;
+    const MenuPractice = 3;
+    const MenuAbout = 4;
+    const SetupFormat = 5;
+    const FormatBestOf3 = 6;
+    const FormatMatchTieBreak = 7;
+    const FormatOneSet = 8;
+    const FormatProSet = 9;
+    const FormatTieBreakOnly = 10;
+    const SetupNoAd = 11;
+    const ValueOn = 12;
+    const ValueOff = 13;
+    const SetupDetail = 14;
+    const DetailSimple = 15;
+    const DetailDetailed = 16;
+    const SetupFirstServe = 17;
+    const PlayerMe = 18;
+    const PlayerOpponent = 19;
+    const SetupGps = 20;
+    const SetupStart = 21;
+    const TouchNeededMsg = 22;
+    const LabelMe = 23;
+    const LabelOpponent = 24;
+    const LabelAdvantage = 25;
+    const LabelBreakPoint = 26;
+    const LabelSetPoint = 27;
+    const LabelMatchPoint = 28;
+    const NoticeGame = 29;
+    const NoticeSet = 30;
+    const NoticeChangeEnds = 31;
+    const Paused = 32;
+    const ControlFault = 33;
+    const KeyUndo = 34;
+    const KeyMore = 35;
+    const KeyBack = 36;
+    const MatchMenuPause = 37;
+    const MatchMenuResume = 38;
+    const MatchMenuFix = 39;
+    const MatchMenuEnd = 40;
+    const EndMatchQ = 41;
+    const FixUndoGame = 42;
+    const FixGameMe = 43;
+    const FixGameOpponent = 44;
+    const EndingTitle = 45;
+    const EndingWinner = 46;
+    const EndingAce = 47;
+    const EndingErrorNet = 48;
+    const EndingErrorOut = 49;
+    const FinalYouWon = 50;
+    const FinalYouLost = 51;
+    const FinalMatchEnded = 52;
+    const FinalSave = 53;
+    const FinalReport = 54;
+    const FinalDiscard = 55;
+    const DiscardQ = 56;
+    const SavedMsg = 57;
+    const DiscardedMsg = 58;
+    const TagSurface = 59;
+    const TagKind = 60;
+    const TagNotSet = 61;
+    const SurfaceClay = 62;
+    const SurfaceHard = 63;
+    const SurfaceGrass = 64;
+    const KindMatch = 65;
+    const KindFriendly = 66;
+    const ReportScore = 67;
+    const ReportSet = 68;
+    const ReportPoints = 69;
+    const ReportServe = 70;
+    const ReportFirstIn = 71;
+    const ReportFirstWon = 72;
+    const ReportSecondWon = 73;
+    const ReportDoubleFaults = 74;
+    const ReportEndings = 75;
+    const ReportAces = 76;
+    const ReportWinners = 77;
+    const ReportNetErrors = 78;
+    const ReportOutErrors = 79;
+    const ReportPressure = 80;
+    const ReportBreaks = 81;
+    const ReportSaved = 82;
+    const ReportHolds = 83;
+    const ReportBestRun = 84;
+    const ReportTime = 85;
+    const ReportMatchTime = 86;
+    const ReportAvgGame = 87;
+    const ReportLongGame = 88;
+    const ReportPerPoint = 89;
+    const ReportBody = 90;
+    const ReportAvgHr = 91;
+    const ReportMaxHr = 92;
+    const ReportKeyHr = 93;
+    const ReportCalories = 94;
+    const FitStepsLabel = 95;
+    const FitDistanceLabel = 96;
+    const FitStepsUnit = 97;
+    const FitMetersUnit = 98;
+    const FitHitsLabel = 99;
+    const FitMissesLabel = 100;
+    const FitShotsUnit = 101;
+    const PracticeBlock = 102;
+    const PracticeHit = 103;
+    const PracticeMiss = 104;
+    const PracticeNext = 105;
+    const PracticeMenuEnd = 106;
+    const EndPracticeQ = 107;
+    const PracticeTotal = 108;
+}
 
 module I18n {
     const CODES = ["eng", "por", "spa", "fre", "deu", "ita"];
 
-    // Reads the {key=>value} dictionary of ONE code, so only the
-    // chosen language is allocated. An unknown code gives eng.
-    function table(code as Lang.String) as Lang.Dictionary {
+    // Reads the list of texts of ONE code, so only the chosen
+    // language is allocated. An unknown code gives eng.
+    function table(code as Lang.String) as Lang.Array<Lang.String> {
         var id = Rez.JsonData.TextsEng;
         if (code.equals("por")) { id = Rez.JsonData.TextsPor; }
         if (code.equals("spa")) { id = Rez.JsonData.TextsSpa; }
         if (code.equals("fre")) { id = Rez.JsonData.TextsFre; }
         if (code.equals("deu")) { id = Rez.JsonData.TextsDeu; }
         if (code.equals("ita")) { id = Rez.JsonData.TextsIta; }
-        return WatchUi.loadResource(id) as Lang.Dictionary;
+        return WatchUi.loadResource(id) as Lang.Array<Lang.String>;
     }
 }

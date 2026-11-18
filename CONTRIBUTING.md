@@ -51,7 +51,10 @@ fixing the developer experience is a contribution too.
    `resources-<code>/strings/strings.xml` (por, spa, fre, deu, ita).
 2. Run `make strings` to regenerate `source/generated/Strings.mc` and the
    tables in `resources/texts/`.
-3. `make resources-check` confirms that nothing is missing or stale.
+3. After a change to a key name (the short words at the edge of the match,
+   ending and practice screens), run `make key-labels` to draw their images
+   in `keylabels/` again.
+4. `make resources-check` confirms that nothing is missing or stale.
 
 ## Adding a new language
 
@@ -102,7 +105,7 @@ manual pass on a real watch before releases.
 
 ## Releasing (maintainers)
 
-1. Update the version in the `AboutText` strings, move the Unreleased
+1. Update `VERSION` in `source/ui/MenuKit.mc`, move the Unreleased
    section of `CHANGELOG.md` under the new version and run `make build-all`.
 2. Tag: `git tag v1.x.y && git push --tags`. CI attaches `Tennis.iq` to the
    GitHub release.

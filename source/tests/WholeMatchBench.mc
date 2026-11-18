@@ -15,7 +15,7 @@ module WholeMatchTests {
         const GAME = 1;
         const SET = 2;
         const MATCH = 3;
-        const STAKES = ["LabelBreakPoint", "LabelSetPoint", "LabelMatchPoint"];
+        const STAKES = [Str.LabelBreakPoint, Str.LabelSetPoint, Str.LabelMatchPoint];
 
         var format as Number;
         var isNoAd as Boolean;
@@ -166,15 +166,22 @@ module WholeMatchTests {
             return "";
         }
 
+        // The players read the change of ends alone; the end has no notice.
         function notice() as String {
-            var keys = [] as Array<String>;
-            if (closed == GAME || closed == SET) {
-                keys.add(closed == SET ? "NoticeSet" : "NoticeGame");
+            if (isChangeDue && winner == Player.NONE) {
+                return Str.NoticeChangeEnds.toString();
             }
-            if (isChangeDue) {
-                keys.add("NoticeChangeEnds");
+            var isClosed = (closed == GAME || closed == SET) && winner == Player.NONE;
+            return isClosed ? (closed == SET ? Str.NoticeSet : Str.NoticeGame).toString() : "";
+        }
+
+        // The cue of an entry: the long one for a set, a change of ends or
+        // the end, the game one for a game, or the one of the entry.
+        function cue(entryCue as Number) as Number {
+            if (isChangeDue || closed >= SET) {
+                return Cue.LONG;
             }
-            return joined(keys);
+            return closed == GAME ? Cue.GAME : entryCue;
         }
 
         // The closed sets and then the games of a set that is open.
@@ -334,18 +341,19 @@ module WholeMatchTests {
                 umpire.point(move.equals("M") ? Player.ME : Player.OPPONENT);
             }
             notice = umpire.notice();
-            Test.assertEqualMessage(reaction, Reaction.REFRESH | (umpire.isChangeDue ? Reaction.VIBRATE : 0), where());
+            var cue = umpire.cue(move.equals("F") ? Cue.FAULT : Cue.POINT);
+            Test.assertEqualMessage(reaction, Reaction.withCue(cue), where());
             check();
         }
 
         function undo() as Void {
-            Test.assertEqualMessage(controller.handle(MatchAction.UNDO), Reaction.REFRESH, where());
+            Test.assertEqualMessage(controller.handle(MatchAction.UNDO), Reaction.withCue(Cue.UNDO), where());
             corrected(moves.substring(0, moves.length() - 1) as String);
         }
 
         function undoGame() as Void {
-            Test.assertEqualMessage(controller.undoGame(), Reaction.REFRESH, where());
-            corrected(moves.substring(0, gameStart()) as String);
+            Test.assertEqualMessage(controller.undoGame(), Reaction.withCue(Cue.GAME), where());
+            fixed(moves.substring(0, gameStart()) as String);
         }
 
         function gameForMe() as Void {
@@ -358,14 +366,14 @@ module WholeMatchTests {
 
         // The fix adds plain points until the game closes.
         function award(player as Number) as Void {
-            Test.assertEqualMessage(controller.awardGame(player), Reaction.REFRESH, where());
+            Test.assertEqualMessage(controller.awardGame(player), Reaction.withCue(Cue.GAME), where());
             var fixed = moves;
             var closedBefore = umpire.gamesClosed;
             while (umpire.gamesClosed == closedBefore) {
                 umpire.point(player);
                 fixed += player == Player.ME ? "M" : "O";
             }
-            corrected(fixed);
+            fixed(fixed);
         }
 
         function pause() as Void {
@@ -373,20 +381,26 @@ module WholeMatchTests {
             check();
         }
 
-        // A pause from the menu: the clock stands, points and undo do
-        // nothing, and the fault button resumes without logging a fault.
-        function pausedPresses() as Void {
-            controller.togglePause();
-            Test.assertMessage(controller.isPaused(), "paused " + where());
+        // Twenty seconds on, only the change of ends notice still shows.
+        function waitOutNotice() as Void {
             wait();
-            notice = "";
-            Test.assertEqualMessage(controller.handle(MatchAction.POINT_ME), Reaction.NONE, "point while paused " + where());
-            Test.assertEqualMessage(controller.handle(MatchAction.POINT_OPPONENT), Reaction.NONE, "point while paused " + where());
-            Test.assertEqualMessage(controller.handle(MatchAction.UNDO), Reaction.NONE, "undo while paused " + where());
-            check();
-            Test.assertEqualMessage(controller.handle(MatchAction.FAULT), Reaction.REFRESH, "resume " + where());
-            Test.assertMessage(!controller.isPaused(), "resumed " + where());
-            check();
+            notice = notice.equals(Str.NoticeChangeEnds.toString()) ? notice : "";
+        }
+
+        // A pause from the menu: the clock stands and undo does nothing.
+        // A score press or the fault button only resumes, logging nothing.
+        function pausedPresses() as Void {
+            var presses = [MatchAction.POINT_ME, MatchAction.POINT_OPPONENT, MatchAction.FAULT];
+            for (var i = 0; i < presses.size(); i++) {
+                controller.togglePause();
+                Test.assertMessage(controller.isPaused(), "paused " + where());
+                waitOutNotice();
+                Test.assertEqualMessage(controller.handle(MatchAction.UNDO), Reaction.NONE, "undo while paused " + where());
+                check();
+                Test.assertEqualMessage(controller.handle(presses[i]), Reaction.withCue(Cue.GAME), "resume " + where());
+                Test.assertMessage(!controller.isPaused(), "resumed " + where());
+                check();
+            }
         }
 
         // Detailed mode: leaving the list of endings logs nothing.
@@ -429,8 +443,7 @@ module WholeMatchTests {
         }
 
         // A correction left these moves: the umpire starts over with them.
-        // A correction clears the notice and runs the clock of an open match.
-        function corrected(kept as String) as Void {
+        function replay(kept as String) as Void {
             moves = kept;
             umpire = new Umpire(format, isNoAd, first);
             var codes = kept.toCharArray();
@@ -438,6 +451,21 @@ module WholeMatchTests {
                 give(umpire, codes[i]);
             }
             notice = "";
+        }
+
+        // A correction clears the notice and runs the clock of an open match.
+        function corrected(kept as String) as Void {
+            replay(kept);
+            check();
+            checkStore();
+        }
+
+        // A fix of the score is a correction that says so with a notice.
+        function fixed(kept as String) as Void {
+            replay(kept);
+            if (umpire.winner == Player.NONE) {
+                notice = (umpire.isChangeDue ? Str.NoticeChangeEnds : Str.NoticeGame).toString();
+            }
             check();
             checkStore();
         }
@@ -449,7 +477,7 @@ module WholeMatchTests {
         // Compares the controller with the umpire.
         function check() as Void {
             Test.assertEqualMessage(seen(controller.state()), umpire.text(), where());
-            Test.assertEqualMessage(joined(controller.noticeKeys()), notice, "notice " + where());
+            Test.assertEqualMessage(noticeSeen(), notice, "notice " + where());
             Test.assertEqualMessage(controller.clockSeconds(), playedMs / 1000, "clock " + where());
             Test.assertEqualMessage(engine.log().size(), moves.length(), "log size " + where());
             Test.assertEqualMessage(newestSequence(), moves.length(), "point log field " + where());
@@ -457,6 +485,11 @@ module WholeMatchTests {
             if (umpire.closed != 0) {
                 checkStore();
             }
+        }
+
+        function noticeSeen() as String {
+            var key = controller.noticeKey();
+            return key == null ? "" : key.toString();
         }
 
         // The sequence number of the newest entry in the point log field.
@@ -520,8 +553,7 @@ module WholeMatchTests {
         function endEarly() as Void {
             controller.end();
             Test.assertMessage(controller.isOver() && !controller.isPaused(), "over " + where());
-            wait();
-            notice = "";
+            waitOutNotice();
             Test.assertEqualMessage(controller.handle(MatchAction.POINT_ME), Reaction.NONE, "point after the end " + where());
             Test.assertEqualMessage(controller.handle(MatchAction.FAULT), Reaction.NONE, "fault after the end " + where());
             check();
@@ -531,7 +563,7 @@ module WholeMatchTests {
         // and that the stored match is gone.
         function save(surface as Number, kind as Number, finalScore as String, counts as String) as Void {
             controller.save(new MatchTags([surface, kind]));
-            Test.assertEqualMessage(controller.farewellKey() as String, "SavedMsg", where());
+            Test.assertEqualMessage(controller.farewellKey() as Number, Str.SavedMsg, where());
             checkSummary(setupWord(surface, kind), finalScore, counts);
             checkClosed("S");
         }
@@ -566,7 +598,7 @@ module WholeMatchTests {
 
         function discard() as Void {
             controller.discard();
-            Test.assertEqualMessage(controller.farewellKey() as String, "DiscardedMsg", where());
+            Test.assertEqualMessage(controller.farewellKey() as Number, Str.DiscardedMsg, where());
             checkClosed("D");
         }
 

@@ -42,8 +42,11 @@ yet: no version tag, no GitHub release and no store entry exist.
   is on.
 * 🔄 **Change of ends**: a vibration and a notice when it is time.
 * 📝 **Point by point log**: one press for who won the point (simple) or a
-  second press for how it ended (detailed): winner, ace, error in the net
-  or error out. Serve faults and double faults take one button.
+  second press for how it ended (detailed): out and net sit on their own
+  keys, winner and ace one press away. Serve faults and double faults take
+  one button.
+* 🔘 **Key names at the edge**: a small word next to each key says what it
+  does, on the match, ending and practice screens.
 * ↩️ **Undo and fix**: take back the last entry, or correct the score from
   the menu.
 * ⏯ **Pause, end and resume**: a match interrupted when the app closes can
@@ -95,10 +98,12 @@ Project layout:
 * `source/`: the app (entry point, `model/`, `engine/`, `match/`,
   `recording/`, `ui/`, `i18n/`, generated string table and `tests/`)
 * `resources*/`: launcher icon and the strings of the six languages
+* `keylabels/`: the images of the key names for the watches that cannot
+  turn text, made by `make key-labels` from the strings
 * `scripts/`: string table and icon generators, resources check and device
   API audit
-* `tools/`: function length checker, the `tennis_export` converter and
-  their tests
+* `tools/`: function length checker, key name image generator, the
+  `tennis_export` converter and their tests
 * `docs/`: [plan](docs/PLAN.md), [user guide](docs/USER_GUIDE.md),
   [store listing](docs/STORE_LISTING.md), [quality bar](docs/QUALITY.md),
   [testing strategy](docs/TESTING.md), [recording](docs/RECORDING.md) and

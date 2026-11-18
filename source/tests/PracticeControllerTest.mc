@@ -41,8 +41,8 @@ module PracticeTests {
     (:test)
     function testHitAndMissCountAndRefresh(logger as Test.Logger) as Boolean {
         var bench = new PracticeBench();
-        Test.assertEqual(bench.play("H"), Reaction.REFRESH);
-        Test.assertEqual(bench.play("X"), Reaction.REFRESH);
+        Test.assertEqual(bench.play("H"), Reaction.withCue(Cue.POINT));
+        Test.assertEqual(bench.play("X"), Reaction.withCue(Cue.POINT));
         bench.play("H");
         Test.assertEqual(bench.tally(), "1 2-1");
         return true;
@@ -61,7 +61,7 @@ module PracticeTests {
     function testUndoTakesBackTheLastEntryAndItsField(logger as Test.Logger) as Boolean {
         var bench = new PracticeBench();
         bench.play("HX");
-        Test.assertEqual(bench.play("U"), Reaction.REFRESH);
+        Test.assertEqual(bench.play("U"), Reaction.withCue(Cue.UNDO));
         Test.assertEqual(bench.tally(), "1 1-0");
         Test.assertEqual(bench.field(RecordingFields.BLOCK_MISSES), 0);
         bench.play("U");
@@ -74,7 +74,7 @@ module PracticeTests {
     function testClosingABlockWritesItsLapAndVibrates(logger as Test.Logger) as Boolean {
         var bench = new PracticeBench();
         bench.play("HHX");
-        Test.assertEqual(bench.play("N"), Reaction.REFRESH | Reaction.VIBRATE);
+        Test.assertEqual(bench.play("N"), Reaction.withCue(Cue.LONG));
         Test.assertEqual(bench.session.calls, "sl");
         Test.assertEqual(bench.session.blocks[0][0], 2);
         Test.assertEqual(bench.session.blocks[0][1], 1);
@@ -168,14 +168,18 @@ module PracticeTests {
     }
 
     (:test)
-    function testNothingCountsDuringAPause(logger as Test.Logger) as Boolean {
+    function testAPressDuringAPauseOnlyResumes(logger as Test.Logger) as Boolean {
         var bench = new PracticeBench();
         bench.play("HX");
         bench.controller.togglePause();
-        Test.assertEqual(bench.play("H"), Reaction.NONE);
-        Test.assertEqual(bench.play("X"), Reaction.NONE);
         Test.assertEqual(bench.play("U"), Reaction.NONE);
+        Test.assertEqual(bench.play("H"), Reaction.withCue(Cue.GAME));
+        Test.assert(!bench.controller.isPaused());
+        bench.controller.togglePause();
+        Test.assertEqual(bench.play("X"), Reaction.withCue(Cue.GAME));
         Test.assertEqual(bench.tally(), "1 1-1");
+        Test.assertEqual(bench.play("X"), Reaction.withCue(Cue.POINT));
+        Test.assertEqual(bench.tally(), "1 1-2");
         return true;
     }
 
@@ -184,7 +188,7 @@ module PracticeTests {
         var bench = new PracticeBench();
         bench.play("H");
         bench.controller.togglePause();
-        Test.assertEqual(bench.play("N"), Reaction.REFRESH);
+        Test.assertEqual(bench.play("N"), Reaction.withCue(Cue.GAME));
         Test.assert(!bench.controller.isPaused());
         Test.assertEqual(bench.tally(), "1 1-0");
         Test.assertEqual(bench.session.calls, "sps");
@@ -239,7 +243,7 @@ module PracticeTests {
         Test.assert(!bench.controller.isOver());
         Test.assert(!bench.controller.isPaused());
         Test.assertEqual(bench.session.calls, "sps");
-        Test.assertEqual(bench.play("X"), Reaction.REFRESH);
+        Test.assertEqual(bench.play("X"), Reaction.withCue(Cue.POINT));
         Test.assertEqual(bench.tally(), "1 1-1");
         return true;
     }
@@ -255,7 +259,7 @@ module PracticeTests {
         Test.assertEqual(bench.locator.calls, "+-");
         Test.assertEqual(bench.field(RecordingFields.BLOCK_HITS), 2);
         Test.assertEqual(bench.field(RecordingFields.BLOCK_MISSES), 1);
-        Test.assertEqual(bench.controller.farewellKey() as String, "SavedMsg");
+        Test.assertEqual(bench.controller.farewellKey() as Number, Str.SavedMsg);
         return true;
     }
 
@@ -266,7 +270,7 @@ module PracticeTests {
         bench.controller.end();
         bench.controller.discard();
         Test.assertEqual(bench.session.calls, "spD");
-        Test.assertEqual(bench.controller.farewellKey() as String, "DiscardedMsg");
+        Test.assertEqual(bench.controller.farewellKey() as Number, Str.DiscardedMsg);
         return true;
     }
 

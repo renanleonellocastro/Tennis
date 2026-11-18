@@ -6,10 +6,7 @@
 
     <string id="MenuStartMatch">Inizia partita</string>
     <string id="MenuPractice">Allenamento</string>
-    <string id="MenuSettings">Impostazioni</string>
     <string id="MenuAbout">Info</string>
-    <string id="ComingSoonMsg">Prossimamente</string>
-    <string id="AboutText">Tennis 1.0.0 MIT</string>
 
     <!-- Match setup -->
     <string id="SetupFormat">Formato</string>
@@ -18,13 +15,13 @@
     <string id="FormatOneSet">1 set</string>
     <string id="FormatProSet">Pro set a 8</string>
     <string id="FormatTieBreakOnly">Solo tie break</string>
-    <string id="SetupNoAd">No vantaggi</string>
-    <string id="ValueOn">Attivo</string>
-    <string id="ValueOff">Disattivo</string>
+    <string id="SetupNoAd">Vantaggi</string>
+    <string id="ValueOn">Sì</string>
+    <string id="ValueOff">No</string>
     <string id="SetupDetail">Dettaglio</string>
     <string id="DetailSimple">Semplice</string>
     <string id="DetailDetailed">Dettagliato</string>
-    <string id="SetupFirstServe">Primo servizio</string>
+    <string id="SetupFirstServe">Chi serve</string>
     <string id="PlayerMe">Io</string>
     <string id="PlayerOpponent">Avversario</string>
     <string id="SetupGps">GPS</string>
@@ -43,6 +40,9 @@
     <string id="NoticeChangeEnds">Cambio campo</string>
     <string id="Paused">In pausa</string>
     <string id="ControlFault">FALLO</string>
+    <string id="KeyUndo">ANNUL.</string>
+    <string id="KeyMore">ALTRO</string>
+    <string id="KeyBack">INDIETRO</string>
 
     <!-- Match menu -->
     <string id="MatchMenuPause">Pausa</string>
@@ -58,8 +58,8 @@
     <string id="EndingTitle">Punto</string>
     <string id="EndingWinner">Vincente</string>
     <string id="EndingAce">Ace</string>
-    <string id="EndingErrorNet">Errore in rete</string>
-    <string id="EndingErrorOut">Errore fuori</string>
+    <string id="EndingErrorNet">Rete</string>
+    <string id="EndingErrorOut">Fuori</string>
 
     <!-- Final score -->
     <string id="FinalYouWon">Hai vinto</string>
@@ -123,7 +123,7 @@
 
     <!-- Practice -->
     <string id="PracticeBlock">Blocco</string>
-    <string id="PracticeHit">CENTRO</string>
+    <string id="PracticeHit">BUONA</string>
     <string id="PracticeMiss">ERRORE</string>
     <string id="PracticeNext">AVANTI</string>
     <string id="PracticeMenuEnd">Termina</string>

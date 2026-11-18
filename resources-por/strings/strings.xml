@@ -6,10 +6,7 @@
 
     <string id="MenuStartMatch">Iniciar partida</string>
     <string id="MenuPractice">Treino</string>
-    <string id="MenuSettings">Ajustes</string>
     <string id="MenuAbout">Sobre</string>
-    <string id="ComingSoonMsg">Em breve</string>
-    <string id="AboutText">Tennis 1.0.0 MIT</string>
 
     <!-- Match setup -->
     <string id="SetupFormat">Formato</string>
@@ -18,10 +15,10 @@
     <string id="FormatOneSet">1 set</string>
     <string id="FormatProSet">Pro set até 8</string>
     <string id="FormatTieBreakOnly">Só tie break</string>
-    <string id="SetupNoAd">Sem vantagem</string>
-    <string id="ValueOn">Ligado</string>
-    <string id="ValueOff">Desligado</string>
-    <string id="SetupDetail">Detalhe</string>
+    <string id="SetupNoAd">Vantagem</string>
+    <string id="ValueOn">Sim</string>
+    <string id="ValueOff">Não</string>
+    <string id="SetupDetail">Anotar ponto</string>
     <string id="DetailSimple">Simples</string>
     <string id="DetailDetailed">Detalhado</string>
     <string id="SetupFirstServe">Quem saca</string>
@@ -43,6 +40,9 @@
     <string id="NoticeChangeEnds">Troca de lado</string>
     <string id="Paused">Pausado</string>
     <string id="ControlFault">FALTA</string>
+    <string id="KeyUndo">DESF.</string>
+    <string id="KeyMore">MAIS</string>
+    <string id="KeyBack">VOLTAR</string>
 
     <!-- Match menu -->
     <string id="MatchMenuPause">Pausar</string>
@@ -58,8 +58,8 @@
     <string id="EndingTitle">Ponto</string>
     <string id="EndingWinner">Winner</string>
     <string id="EndingAce">Ace</string>
-    <string id="EndingErrorNet">Erro na rede</string>
-    <string id="EndingErrorOut">Erro fora</string>
+    <string id="EndingErrorNet">Rede</string>
+    <string id="EndingErrorOut">Fora</string>
 
     <!-- Final score -->
     <string id="FinalYouWon">Você venceu</string>

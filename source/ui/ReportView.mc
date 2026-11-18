@@ -31,7 +31,7 @@ class ReportView extends WatchUi.View {
         dc.setColor(Theme.COLOR_TEXT, Theme.COLOR_BG);
         dc.clear();
         Theme.drawBrandArc(dc, Theme.COLOR_ACCENT);
-        drawText(dc, _layout.centerX(), _layout.titleY(), Theme.COLOR_ACCENT, Strings.t(page[0] as String), CENTERED);
+        drawText(dc, _layout.centerX(), _layout.titleY(), Theme.COLOR_ACCENT, Strings.t(page[0] as Number), CENTERED);
         drawHeader(dc, rows[0].size());
         for (var i = 0; i < rows.size(); i++) {
             drawCells(dc, _layout.rowY(i), rows[i], Theme.COLOR_TEXT);
@@ -42,7 +42,7 @@ class ReportView extends WatchUi.View {
     // Whose column is whose, on the pages that compare the players.
     hidden function drawHeader(dc as Dc, cellCount as Number) as Void {
         if (cellCount == PLAYER_CELLS) {
-            drawCells(dc, _layout.headerY(), ["", Strings.t("LabelMe"), Strings.t("LabelOpponent")],
+            drawCells(dc, _layout.headerY(), ["", Strings.t(Str.LabelMe), Strings.t(Str.LabelOpponent)],
                       Theme.COLOR_ACCENT);
         }
     }

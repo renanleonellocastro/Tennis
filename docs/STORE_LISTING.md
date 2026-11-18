@@ -470,7 +470,8 @@ alone. Upload them in this order, so the preview tells the whole story:
    on top, large game points, serve ball, mini court and clock.
 2. `break-point.png`: match screen with the BREAK POINT label.
 3. `setup.png`: match setup, on the Format row.
-4. `ending.png`: detailed mode, the list that asks how the point ended.
+4. `ending.png`: detailed mode, the screen that asks how the point ended,
+   with one ending next to each key.
 5. `final.png`: final score with You won, the sets and the time played.
 6. `report.png`: the SERVE page of the statistics.
 7. `practice.png`: practice mode with a block in progress.

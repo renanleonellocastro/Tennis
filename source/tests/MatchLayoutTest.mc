@@ -11,7 +11,7 @@ module MatchLayoutTests {
 
     function assertRowsDoNotOverlap(layout as MatchLayout) as Void {
         var court = layout.courtRect();
-        var markerReach = layout.markerRadius() * 3;
+        var markerReach = layout.markerRadius() * 5 / 2;
         Test.assert(layout.setsY() < layout.bannerY());
         Test.assert(layout.bannerY() < court[1] - markerReach);
         Test.assert(court[1] + court[3] + markerReach < layout.labelsY());
@@ -66,11 +66,49 @@ module MatchLayoutTests {
     (:test)
     function testFirstFittingPicksTheLargestFontThatFits(logger as Test.Logger) as Boolean {
         var layout = new MatchLayout(208, 208, false, true);
-        Test.assertEqual(layout.pointsMaxWidth(), 72);
-        Test.assertEqual(layout.pointsMaxHeight(), 83);
-        Test.assertEqual(layout.firstFitting([[72, 83], [10, 10]] as Array< Array<Number> >), 0);
-        Test.assertEqual(layout.firstFitting([[73, 60], [60, 84], [60, 60]] as Array< Array<Number> >), 2);
+        Test.assertEqual(layout.pointsMaxWidth(), 64);
+        Test.assertEqual(layout.pointsMaxHeight(), 73);
+        Test.assertEqual(layout.firstFitting([[64, 73], [10, 10]] as Array< Array<Number> >), 0);
+        Test.assertEqual(layout.firstFitting([[65, 60], [60, 74], [60, 60], [9, 9]] as Array< Array<Number> >), 2);
         Test.assertEqual(layout.firstFitting([[90, 90], [80, 90]] as Array< Array<Number> >), 1);
+        return true;
+    }
+
+    // The numbers of the Forerunner 55: the step under the font that fits
+    // the whole screen is less than half its size, so that font stays.
+    (:test)
+    function testAWatchWithFewFontStepsKeepsTheFontThatFitsTheScreen(logger as Test.Logger) as Boolean {
+        var sizes = [[78, 90], [78, 90], [70, 79], [32, 37]] as Array< Array<Number> >;
+        Test.assertEqual(new MatchLayout(208, 208, false, true).firstFitting(sizes), 2);
+        Test.assertEqual(new MatchLayout(208, 208, true, true).firstFitting(sizes), 2);
+        Test.assertEqual(new MatchLayout(416, 416, false, true).firstFitting(sizes), 0);
+        return true;
+    }
+
+    // The names sit two percent lower next to the key labels, clear of the
+    // score digits, which a watch with few font steps cannot shrink.
+    (:test)
+    function testTheNamesSitLowerNextToTheKeyLabels(logger as Test.Logger) as Boolean {
+        Test.assertEqual(new MatchLayout(208, 208, true, true).labelsY(), 135);
+        Test.assertEqual(new MatchLayout(208, 208, false, true).labelsY(), 134);
+        Test.assertEqual(new MatchLayout(208, 208, false, true).labelsY(), 12 + 183 * 67 / 100);
+        return true;
+    }
+
+    // Next to the key labels everything but the labels is 12 percent
+    // smaller around the middle of the screen; elsewhere nothing changes.
+    (:test)
+    function testTheContentShrinksAroundTheMiddleNextToTheKeyLabels(logger as Test.Logger) as Boolean {
+        var keys = new MatchLayout(208, 208, false, true);
+        var touch = new MatchLayout(208, 208, true, true);
+        Test.assertEqual(touch.roomOf([100, 100] as Array<Number>).toString(), "[208, 208]");
+        Test.assertEqual(keys.roomOf([100, 100] as Array<Number>).toString(), "[183, 183]");
+        Test.assertEqual(touch.playerX(Player.ME), 47);
+        Test.assertEqual(keys.playerX(Player.ME), 54);
+        Test.assertEqual(touch.setsY(), 27);
+        Test.assertEqual(keys.setsY(), 35);
+        Test.assertEqual(keys.courtRect().toString(), "[94, 78, 20, 36]");
+        Test.assertEqual(keys.centerX(), touch.centerX());
         return true;
     }
 
@@ -119,15 +157,139 @@ module MatchLayoutTests {
     }
 
     (:test)
-    function testKeyHintsOnlyOnRoundWatchesThatScoreWithKeys(logger as Test.Logger) as Boolean {
+    function testKeyLabelsOnlyOnRoundWatchesThatScoreWithKeys(logger as Test.Logger) as Boolean {
         var layout = new MatchLayout(208, 208, false, true);
         Test.assert(layout.hasKeyHints());
         Test.assert(!new MatchLayout(416, 416, true, true).hasKeyHints());
         Test.assert(!new MatchLayout(320, 360, false, false).hasKeyHints());
-        Test.assertEqual(layout.keyHintDegrees(Player.ME)[0], 175);
-        Test.assertEqual(layout.keyHintDegrees(Player.ME)[1], 185);
-        Test.assertEqual(layout.keyHintDegrees(Player.OPPONENT)[0], 205);
-        Test.assertEqual(layout.keyHintDegrees(Player.OPPONENT)[1], 215);
+        Test.assert(!new MatchLayout(320, 360, true, false).hasKeyHints());
+        return true;
+    }
+
+    (:test, :keyArc)
+    function testTheLayoutKnowsARoundScreen(logger as Test.Logger) as Boolean {
+        Test.assert(new MatchLayout(416, 416, true, true).isRound());
+        Test.assert(!new MatchLayout(320, 360, true, false).isRound());
+        return true;
+    }
+
+    // UP and START are at their keys; DOWN and BACK a little below theirs,
+    // away from the serve ball.
+    (:test)
+    function testEveryKeyLabelSitsAtItsKey(logger as Test.Logger) as Boolean {
+        var layout = new MatchLayout(208, 208, false, true);
+        Test.assertEqual(layout.keyDegrees(KeySlot.UP), 180);
+        Test.assertEqual(layout.keyDegrees(KeySlot.START), 30);
+        Test.assertEqual(layout.keyDegrees(KeySlot.DOWN), 213);
+        Test.assertEqual(layout.keyDegrees(KeySlot.BACK), 327);
+        Test.assertEqual(layout.keyPoint(KeySlot.UP).toString(), "[4, 104]");
+        Test.assertEqual(layout.keyPoint(KeySlot.START).toString(), "[191, 54]");
+        Test.assertEqual(layout.keyPoint(KeySlot.DOWN).toString(), "[20, 158]");
+        Test.assertEqual(layout.keyPoint(KeySlot.BACK).toString(), "[188, 158]");
+        return true;
+    }
+
+    // The two labels of the left keys, which are close, get less room than
+    // the two of the right keys.
+    (:test)
+    function testTheLabelsOfOneSideShareItsRoom(logger as Test.Logger) as Boolean {
+        var layout = new MatchLayout(208, 208, false, true);
+        Test.assertEqual(layout.keyRoom(KeySlot.UP), 89);
+        Test.assertEqual(layout.keyRoom(KeySlot.DOWN), 89);
+        Test.assertEqual(layout.keyRoom(KeySlot.START), 124);
+        Test.assertEqual(layout.keyRoom(KeySlot.BACK), 124);
+        return true;
+    }
+
+    const ROUND_SIZES = [208, 218, 240, 260, 280, 390, 416, 454];
+
+    // The inner radius of the ring the key labels live in.
+    function ringInside(layout as MatchLayout) as Number {
+        return layout.keyArc()[0] - layout.keyArc()[1] / 2;
+    }
+
+    // The labels are capitals of about 3 percent of the screen in a ring
+    // that ends within 2 percent of the edge.
+    (:test)
+    function testTheKeyLabelRingIsThinAndHugsTheEdge(logger as Test.Logger) as Boolean {
+        for (var i = 0; i < ROUND_SIZES.size(); i++) {
+            var size = ROUND_SIZES[i];
+            var arc = new MatchLayout(size, size, false, true).keyArc();
+            var outside = arc[0] + (arc[1] + 1) / 2;
+            Test.assert(arc[1] * 1000 <= size * 35 && arc[1] * 1000 >= size * 25);
+            Test.assert(outside < size / 2);
+            Test.assert(outside >= size / 2 - size / 50 - 1);
+        }
+        return true;
+    }
+
+    // Squared distance from the middle of the screen.
+    function reach(layout as MatchLayout, x as Number, y as Number) as Number {
+        var dx = x - layout.centerX();
+        var dy = y - layout.centerY();
+        return dx * dx + dy * dy;
+    }
+
+    // The numbers of the score, as wide as the whole screen lets them be,
+    // the serve ball and the ink of the banner all end at least the gap
+    // inside the ring of the key labels. The set score is at the top, where
+    // no key is.
+    function assertScoreClearsTheRing(layout as MatchLayout, gap as Number) as Void {
+        var limit = ringInside(layout) - gap;
+        var ballEdge = layout.ballX(Player.ME) - layout.ballRadius();
+        var banner = layout.roomOf(layout.BANNER_ROOM);
+        var halfPoints = layout.centerX() * 35 / 100;
+        Test.assert(layout.centerX() - (layout.playerX(Player.ME) - halfPoints) <= limit);
+        Test.assert(reach(layout, ballEdge, layout.labelsY() + layout.ballRadius() / 2) <= limit * limit);
+        Test.assert(reach(layout, layout.centerX() + banner[0] / 2, layout.bannerY() - banner[1] / 3) <= limit * limit);
+    }
+
+    // The clear band between the labels and the content is at least 3
+    // percent of the screen on every round size.
+    (:test)
+    function testTheKeyLabelRingNeverMeetsTheScore(logger as Test.Logger) as Boolean {
+        for (var i = 0; i < ROUND_SIZES.size(); i++) {
+            var size = ROUND_SIZES[i];
+            assertScoreClearsTheRing(new MatchLayout(size, size, false, true), size * 3 / 100);
+        }
+        return true;
+    }
+
+    // A screen that is not round and a watch that scores by touch have no
+    // ring: the score has the whole width.
+    (:test)
+    function testScreensWithoutKeyLabelsKeepTheWideBanner(logger as Test.Logger) as Boolean {
+        var flat = new MatchLayout(320, 360, true, false);
+        var keys = new MatchLayout(260, 260, false, true);
+        Test.assert(!flat.hasKeyHints());
+        Test.assertEqual(flat.roomOf(flat.BANNER_ROOM).toString(), "[243, 46]");
+        Test.assertEqual(new MatchLayout(260, 260, true, true).roomOf(flat.BANNER_ROOM).toString(), "[197, 33]");
+        Test.assertEqual(keys.roomOf(keys.BANNER_ROOM).toString(), "[173, 29]");
+        Test.assertEqual(flat.roomOf([50, 10] as Array<Number>).toString(), "[160, 36]");
+        return true;
+    }
+
+    // Next to the key labels the ball is smaller and closer to the middle,
+    // and so is the label of the player.
+    (:test)
+    function testTheServeBallSitsBetweenTheEdgeAndTheLabel(logger as Test.Logger) as Boolean {
+        var layout = new MatchLayout(208, 208, false, true);
+        Test.assertEqual(layout.labelX(Player.ME), 46);
+        Test.assertEqual(layout.labelX(Player.OPPONENT), 162);
+        Test.assertEqual(layout.ballRadius(), 8);
+        Test.assertEqual(layout.ballX(Player.ME), 33);
+        Test.assertEqual(layout.ballX(Player.OPPONENT), 175);
+        var touch = new MatchLayout(208, 208, true, true);
+        Test.assertEqual(touch.labelX(Player.ME), 39);
+        Test.assertEqual(touch.ballRadius(), 9);
+        Test.assertEqual(touch.ballX(Player.ME), 24);
+        return true;
+    }
+
+    (:test)
+    function testTouchControlsAreWiderOnAScreenThatIsNotRound(logger as Test.Logger) as Boolean {
+        Test.assertEqual(new MatchLayout(416, 416, true, true).controlRoom().toString(), "[124, 37]");
+        Test.assertEqual(new MatchLayout(320, 360, true, false).controlRoom().toString(), "[121, 39]");
         return true;
     }
 
@@ -136,36 +298,36 @@ module MatchLayoutTests {
         var touch = new MatchLayout(416, 416, true, true);
         var keys = new MatchLayout(208, 208, false, true);
         Test.assert(touch.hasTouchControls());
-        Test.assert(!touch.isOnControls(294));
-        Test.assert(touch.isOnControls(295));
+        Test.assert(!touch.isOnControls(302));
+        Test.assert(touch.isOnControls(303));
         Test.assert(touch.isOnControls(348));
         Test.assert(!touch.isOnControls(349));
-        Test.assert(touch.controlsY() >= 295 && touch.controlsY() < 349);
+        Test.assert(touch.controlsY() >= 303 && touch.controlsY() < 349);
         Test.assert(!keys.hasTouchControls());
         Test.assert(!keys.isOnControls(keys.controlsY()));
         return true;
     }
 
-    // A screen that is not round spreads its lower rows: 64, 78 and 92
-    // percent of the height instead of 65, 77 and 89.
+    // A screen that is not round spreads its lower rows: 64, 79 and 92
+    // percent of the height instead of 65, 78 and 89.
     (:test)
     function testLowerRowsSpreadOnAScreenThatIsNotRound(logger as Test.Logger) as Boolean {
         var flat = new MatchLayout(320, 360, true, false);
         var round = new MatchLayout(360, 360, true, true);
         Test.assertEqual(flat.labelsY(), 230);
-        Test.assertEqual(flat.controlsY(), 280);
+        Test.assertEqual(flat.controlsY(), 284);
         Test.assertEqual(flat.clockY(), 331);
         Test.assertEqual(round.labelsY(), 234);
-        Test.assertEqual(round.controlsY(), 277);
+        Test.assertEqual(round.controlsY(), 280);
         Test.assertEqual(round.clockY(), 320);
         return true;
     }
 
     // With no touch controls above it, the clock of a round screen sits at
-    // 86 percent of the height, where the screen is wider.
+    // 86 percent of the height of its content, where the screen is wider.
     (:test)
     function testClockSitsHigherOnARoundScreenWithoutTouchControls(logger as Test.Logger) as Boolean {
-        Test.assertEqual(new MatchLayout(208, 208, false, true).clockY(), 178);
+        Test.assertEqual(new MatchLayout(208, 208, false, true).clockY(), 169);
         Test.assertEqual(new MatchLayout(208, 208, true, true).clockY(), 185);
         return true;
     }
@@ -173,8 +335,8 @@ module MatchLayoutTests {
     (:test)
     function testControlBandFollowsTheControlsOnAScreenThatIsNotRound(logger as Test.Logger) as Boolean {
         var flat = new MatchLayout(320, 360, true, false);
-        Test.assert(!flat.isOnControls(258));
-        Test.assert(flat.isOnControls(259));
+        Test.assert(!flat.isOnControls(265));
+        Test.assert(flat.isOnControls(266));
         Test.assert(flat.isOnControls(flat.controlsY()));
         Test.assert(flat.isOnControls(305));
         Test.assert(!flat.isOnControls(306));

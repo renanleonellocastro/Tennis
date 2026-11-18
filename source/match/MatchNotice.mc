@@ -1,26 +1,29 @@
 import Toybox.Lang;
 
-// The short notice shown after a game, a set or a change of ends. It holds
-// the text keys and goes away by itself after a few seconds.
+// The notice shown after a game, a set or a change of ends, as its text
+// key. It goes away by itself after a few seconds unless it was asked to
+// stay.
 class MatchNotice {
     static const VISIBLE_MS = 4000;
 
-    hidden var _keys as Array<String> = [] as Array<String>;
+    hidden var _key as Number? = null;
     hidden var _shownAtMs as Number = 0;
+    hidden var _stays as Boolean = false;
 
-    function show(keys as Array<String>, nowMs as Number) as Void {
-        _keys = keys;
+    function show(key as Number?, nowMs as Number, stays as Boolean) as Void {
+        _key = key;
         _shownAtMs = nowMs;
+        _stays = stays;
     }
 
     function clear() as Void {
-        _keys = [] as Array<String>;
+        _key = null;
     }
 
-    function keys(nowMs as Number) as Array<String> {
-        if (nowMs - _shownAtMs >= VISIBLE_MS) {
+    function key(nowMs as Number) as Number? {
+        if (!_stays && nowMs - _shownAtMs >= VISIBLE_MS) {
             clear();
         }
-        return _keys;
+        return _key;
     }
 }

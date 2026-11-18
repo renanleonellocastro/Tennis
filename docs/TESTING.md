@@ -178,9 +178,9 @@ The few hundred bytes that the script itself takes are subtracted. 1 kB is
 
 | Watch | Release build, highest | Debug build, highest |
 |---|---|---|
-| Forerunner 55 (`fr55`), measured again after the paced point log | not measured again | 107.9 kB |
-| Forerunner 245 (`fr245`) | 92.8 kB | 107.7 kB |
-| fenix 6 (`fenix6`) | 92.8 kB | 107.7 kB |
+| Forerunner 55 (`fr55`), measured again after the key names | not measured again | 107.3 kB |
+| Forerunner 245 (`fr245`), measured again after the key names | not measured again | 107.6 kB |
+| fenix 6 (`fenix6`), measured again after the key names | not measured again | 107.9 kB |
 | fenix 6S (`fenix6s`) | 92.8 kB | 107.7 kB |
 | Venu Sq (`venusq`) | 92.8 kB | 107.7 kB |
 | Venu 2 (`venu2`), a touch watch with more memory | 81.3 kB | 81.8 kB |
@@ -206,6 +206,17 @@ the format rules, the empty point log field and the report tables were
 packed tighter, which gave back about 0.4 kB. The other rows of the table
 and the steps listed above are from the first measurement.
 
+The key names at the edge of the match, ending and practice screens came
+later. On the watches that cannot turn text they are four small images,
+loaded by the screen that shows them and let go when it closes. The three
+watches with the least memory that use images were measured again at the
+paced rhythm, in the debug build. Forerunner 55: match screen after 300
+entries 106.7 kB, screen of how the point ended 107.3 kB, save menu
+107.3 kB. Forerunner 245: 107.0 kB, 107.6 kB and 107.2 kB. fenix 6, whose
+images are the largest: 107.1 kB, 107.7 kB and 107.3 kB, with 107.9 kB right
+after the ending is chosen. The fenix 6S, the Venu Sq and the first Venu 2
+row were not measured again.
+
 The readings are taken between the steps, so memory that a screen takes
 and gives back while it draws is not in them, and nothing was measured on
 a real watch. Keep the debug build under 108 kB: measure again after a
@@ -222,9 +233,7 @@ build (see [Memory](#memory)).
 
 * [ ] The app opens on the home screen: frame ring, brand arc, app name and
       MENU pill, nothing clipped.
-* [ ] START opens the menu with Start match, Practice, Settings and About.
-* [ ] Settings shows the coming soon message and returns to the menu by
-      itself.
+* [ ] START opens the menu with Start match, Practice and About.
 * [ ] Practice opens the practice screen: block 1, 0 and 0, clock running.
       UP adds a hit, DOWN a miss, BACK takes the last entry back, START
       closes the block with a vibration and opens block 2. An empty block

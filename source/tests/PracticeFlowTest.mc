@@ -11,9 +11,9 @@ module PracticeTests {
         var running = PracticeFlow.practiceMenuRows(false);
         var paused = PracticeFlow.practiceMenuRows(true);
         Test.assertEqual(running.size(), 2);
-        Test.assertEqual((running[0] as Array)[0] as String, "MatchMenuPause");
-        Test.assertEqual((paused[0] as Array)[0] as String, "MatchMenuResume");
-        Test.assertEqual((running[1] as Array)[0] as String, "PracticeMenuEnd");
+        Test.assertEqual((running[0] as Array)[0] as Number, Str.MatchMenuPause);
+        Test.assertEqual((paused[0] as Array)[0] as Number, Str.MatchMenuResume);
+        Test.assertEqual((running[1] as Array)[0] as Number, Str.PracticeMenuEnd);
         return true;
     }
 
@@ -21,8 +21,8 @@ module PracticeTests {
     function testSaveMenuOffersSaveThenDiscard(logger as Test.Logger) as Boolean {
         var rows = PracticeFlow.saveMenuRows();
         Test.assertEqual(rows.size(), 2);
-        Test.assertEqual((rows[0] as Array)[0] as String, "FinalSave");
-        Test.assertEqual((rows[1] as Array)[0] as String, "FinalDiscard");
+        Test.assertEqual((rows[0] as Array)[0] as Number, Str.FinalSave);
+        Test.assertEqual((rows[1] as Array)[0] as Number, Str.FinalDiscard);
         return true;
     }
 
@@ -37,9 +37,9 @@ module PracticeTests {
 
     (:test)
     function testEveryPracticeTextExistsInEveryLanguage(logger as Test.Logger) as Boolean {
-        var keys = ["MenuPractice", "PracticeBlock", "PracticeHit", "PracticeMiss", "PracticeNext",
-                    "PracticeTotal", "EndPracticeQ", "DiscardQ", "Paused", "HomeHint",
-                    "TouchNeededMsg", "SavedMsg", "DiscardedMsg", "FitHitsLabel", "FitMissesLabel", "FitShotsUnit"];
+        var keys = [Str.MenuPractice, Str.PracticeBlock, Str.PracticeHit, Str.PracticeMiss, Str.PracticeNext,
+                    Str.PracticeTotal, Str.EndPracticeQ, Str.DiscardQ, Str.Paused, Str.HomeHint,
+                    Str.TouchNeededMsg, Str.SavedMsg, Str.DiscardedMsg, Str.FitHitsLabel, Str.FitMissesLabel, Str.FitShotsUnit];
         for (var i = 0; i < keys.size(); i++) {
             assertKeyInEveryLanguage(keys[i]);
         }
@@ -73,7 +73,7 @@ module PracticeTests {
         Test.assert(confirm.onResponse(WatchUi.CONFIRM_NO));
         Test.assert(bench.controller.farewellKey() == null);
         Test.assert(confirm.onResponse(WatchUi.CONFIRM_YES));
-        Test.assertEqual(bench.controller.farewellKey() as String, "DiscardedMsg");
+        Test.assertEqual(bench.controller.farewellKey() as Number, Str.DiscardedMsg);
         Test.assertEqual(bench.session.calls, "spD");
         return true;
     }

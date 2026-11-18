@@ -6,16 +6,14 @@ using Toybox.Lang;
 module Strings {
     // Module scope vars cannot be `hidden` in Monkey C; treat as private.
     var _code as Lang.String? = null;       // current effective code
-    var _table as Lang.Dictionary? = null;  // cached dict for _code
+    var _table as Lang.Array<Lang.String>? = null;  // texts of _code
 
-    // Look a key up in the active language, falling back to the key itself
-    // so a missing text is still debuggable on screen. The generator gives
-    // every language every key (the English text where a translation is
-    // missing), so one table in memory is enough.
-    function t(key as Lang.String) as Lang.String {
+    // The text of a key of the Str module in the active language. The
+    // generator gives every language every key (the English text where a
+    // translation is missing), so one table in memory is enough.
+    function t(key as Lang.Number) as Lang.String {
         ensureInit();
-        var value = (_table as Lang.Dictionary).get(key);
-        return value != null ? value as Lang.String : key;
+        return (_table as Lang.Array<Lang.String>)[key];
     }
 
     // Current effective code (never null).

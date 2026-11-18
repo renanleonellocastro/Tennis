@@ -55,22 +55,27 @@ HEADER_LINES = [
     "// resources by system locale and cannot switch them at runtime,",
     "// so translations are chosen here by language code. The texts",
     "// of each language are a JSON resource (resources/texts), which",
-    "// takes memory only while it is loaded.",
+    "// takes memory only while it is loaded: a plain list, where the",
+    "// place of a text is the number of its key in the Str module.",
     "import Toybox.Lang;",
     "import Toybox.WatchUi;",
+    "",
+]
+
+MODULE_OPENING_LINES = [
     "",
     "module I18n {",
 ]
 
 TABLE_OPENING_LINES = [
     "",
-    "    // Reads the {key=>value} dictionary of ONE code, so only the",
-    "    // chosen language is allocated. An unknown code gives eng.",
-    "    function table(code as Lang.String) as Lang.Dictionary {",
+    "    // Reads the list of texts of ONE code, so only the chosen",
+    "    // language is allocated. An unknown code gives eng.",
+    "    function table(code as Lang.String) as Lang.Array<Lang.String> {",
 ]
 
 TABLE_CLOSING_LINES = [
-    "        return WatchUi.loadResource(id) as Lang.Dictionary;",
+    "        return WatchUi.loadResource(id) as Lang.Array<Lang.String>;",
     "    }",
     "}",
     "",
@@ -91,8 +96,15 @@ def constant_lines(codes):
 
 
 def translated_entries(tables, code):
-    """Every base key in base order, falling back to the eng value when a translation lacks it."""
-    return {key: tables[code].get(key, value) for key, value in tables[BASE_CODE].items()}
+    """The text of every base key in base order, the eng one when a translation lacks it."""
+    return [tables[code].get(key, value) for key, value in tables[BASE_CODE].items()]
+
+
+def key_lines(keys):
+    """One number per key, in base order: the place of its text in every table."""
+    lines = ["// The keys of the texts. A key is a number, which takes far less", "// memory than its name.", "module Str {"]
+    lines += ["    const %s = %d;" % (key, index) for index, key in enumerate(keys)]
+    return lines + ["}"]
 
 
 def choice_lines(codes):
@@ -104,9 +116,10 @@ def choice_lines(codes):
     return lines
 
 
-def render_module():
+def render_module(keys):
     codes = language_codes()
-    lines = HEADER_LINES + constant_lines(codes) + TABLE_OPENING_LINES + choice_lines(codes) + TABLE_CLOSING_LINES
+    lines = HEADER_LINES + key_lines(keys) + MODULE_OPENING_LINES + constant_lines(codes)
+    lines += TABLE_OPENING_LINES + choice_lines(codes) + TABLE_CLOSING_LINES
     return "\n".join(lines)
 
 
@@ -124,7 +137,7 @@ def render_table(tables, code):
 
 def outputs(tables):
     """Every generated file as {path from the repository root: content}."""
-    files = {OUTPUT_PATH: render_module(), INDEX_PATH: render_index()}
+    files = {OUTPUT_PATH: render_module(list(tables[BASE_CODE])), INDEX_PATH: render_index()}
     for code in language_codes():
         files[os.path.join(TEXTS_FOLDER, code + ".json")] = render_table(tables, code)
     return files

@@ -9,14 +9,15 @@ class MatchView extends WatchUi.View {
     hidden const CLOCK_TICK_MS = 1000;
     hidden const WIDEST_SCORE = "40";
     hidden const SECOND_SERVE_MARK = "2";
-    // Indexed by Player, which is also the BannerTone of a point at stake.
-    hidden const TONE_COLORS = [Theme.COLOR_ACCENT, Theme.COLOR_TEXT_DIM, Theme.COLOR_WARM];
-    hidden const LABEL_KEYS = ["LabelMe", "LabelOpponent"];
+    // What UP, START, DOWN and BACK do, in the order of KeySlot. The words
+    // of UP and DOWN are also the labels of the two players.
+    hidden const KEY_TEXTS = [Str.LabelMe, Str.ControlFault, Str.LabelOpponent, Str.KeyUndo];
     hidden const CENTERED = Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER;
 
     hidden var _controller as MatchController;
     hidden var _layout as MatchLayout;
     hidden var _pointsFont as Graphics.FontDefinition = Graphics.FONT_NUMBER_MILD;
+    hidden var _labelFont as Graphics.FontDefinition = Graphics.FONT_XTINY;
     hidden var _timer as Timer.Timer?;
 
     function initialize(controller as MatchController, layout as MatchLayout) {
@@ -27,17 +28,20 @@ class MatchView extends WatchUi.View {
 
     function onLayout(dc as Dc) as Void {
         _pointsFont = MatchDraw.numberFont(dc, _layout, WIDEST_SCORE);
+        _labelFont = MatchDraw.labelFont(dc, _layout, labelOf(Player.ME), labelOf(Player.OPPONENT));
     }
 
     // Menus and dialogs change the match while this screen is hidden, so it
     // looks at the result each time it comes back.
     function onShow() as Void {
+        MatchDraw.prepare(_layout, KEY_TEXTS);
         _timer = new Timer.Timer();
         (_timer as Timer.Timer).start(method(:onTick), CLOCK_TICK_MS, true);
         MatchFlow.showFinalIfOver(_controller);
     }
 
     function onHide() as Void {
+        MatchDraw.release();
         if (_timer != null) {
             (_timer as Timer.Timer).stop();
             _timer = null;
@@ -62,16 +66,24 @@ class MatchView extends WatchUi.View {
         drawFooter(dc);
     }
 
+    hidden function labelOf(player as Number) as String {
+        return Strings.t(KEY_TEXTS[player * KeySlot.PER_ROW] as Number);
+    }
+
+    // The set score, in the largest font that holds it.
     hidden function drawSets(dc as Dc, state as MatchState) as Void {
+        var text = MatchPresenter.setsText(state);
         dc.setColor(Theme.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(_layout.centerX(), _layout.setsY(), Graphics.FONT_XTINY,
-                    MatchPresenter.setsText(state), CENTERED);
+        dc.drawText(_layout.centerX(), _layout.setsY(),
+                    MatchDraw.textFont(dc, text, 0, _layout.roomOf(_layout.SETS_ROOM)), text, CENTERED);
     }
 
     hidden function drawBanner(dc as Dc, state as MatchState) as Void {
-        var banner = MatchPresenter.banner(_controller.isPaused(), _controller.noticeKeys(), state);
-        dc.setColor(TONE_COLORS[banner[1] as Number] as Number, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(_layout.centerX(), _layout.bannerY(), Graphics.FONT_XTINY, banner[0] as String, CENTERED);
+        var banner = MatchPresenter.banner(_controller.isPaused(), _controller.noticeKey(), state);
+        var text = banner[0] as String;
+        dc.setColor(MatchDraw.TONE_COLORS[banner[1] as Number] as Number, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(_layout.centerX(), _layout.bannerY(),
+                    MatchDraw.textFont(dc, text, 1, _layout.roomOf(_layout.BANNER_ROOM)), text, CENTERED);
     }
 
     // Points, label, serve ball and court marker of one player.
@@ -86,16 +98,17 @@ class MatchView extends WatchUi.View {
 
     hidden function drawPoints(dc as Dc, state as MatchState, player as Number) as Void {
         var font = MatchPresenter.isPointsNumeric(state, player) ? _pointsFont : Graphics.FONT_LARGE;
-        dc.setColor(Theme.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
+        var tone = MatchPresenter.pointsTone(_controller.isPaused(), state, player);
+        dc.setColor(MatchDraw.POINTS_COLORS[tone] as Number, Graphics.COLOR_TRANSPARENT);
         dc.drawText(_layout.playerX(player), _layout.pointsY(), font,
                     MatchPresenter.pointsText(state, player), CENTERED);
     }
 
     hidden function drawLabel(dc as Dc, player as Number) as Void {
         var justify = player == Player.ME ? Graphics.TEXT_JUSTIFY_LEFT : Graphics.TEXT_JUSTIFY_RIGHT;
-        dc.setColor(TONE_COLORS[player] as Number, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(_layout.labelX(player), _layout.labelsY(), Graphics.FONT_XTINY,
-                    Strings.t(LABEL_KEYS[player] as String), justify | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.setColor(MatchDraw.TONE_COLORS[player] as Number, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(_layout.labelX(player), _layout.labelsY(), _labelFont, labelOf(player),
+                    justify | Graphics.TEXT_JUSTIFY_VCENTER);
     }
 
     // The ball sits next to the server and carries a 2 on a second serve.
@@ -118,20 +131,21 @@ class MatchView extends WatchUi.View {
         dc.setColor(Theme.COLOR_FRAME, Graphics.COLOR_TRANSPARENT);
         dc.drawRectangle(court[0], court[1], court[2], court[3]);
         dc.setColor(Theme.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
-        dc.drawLine(court[0] - _layout.markerRadius(), netY, court[0] + court[2] + _layout.markerRadius(), netY);
+        var post = _layout.markerRadius() / 2;
+        dc.drawLine(court[0] - post, netY, court[0] + court[2] + post, netY);
     }
 
     // Both players stand on the side the point is served from.
     hidden function drawMarker(dc as Dc, state as MatchState, player as Number) as Void {
         var end = state.endOf(player);
         var point = _layout.markerPoint(end, _layout.isOnRight(end, state.serveSide()));
-        dc.setColor(TONE_COLORS[player] as Number, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(MatchDraw.TONE_COLORS[player] as Number, Graphics.COLOR_TRANSPARENT);
         dc.fillCircle(point[0], point[1], _layout.markerRadius());
     }
 
     hidden function drawFooter(dc as Dc) as Void {
         MatchDraw.draw(dc, _layout, [_controller.clockSeconds(), _controller.heartRate(), _controller.isPaused()],
-                         "ControlFault");
+                         KEY_TEXTS);
     }
 }
 

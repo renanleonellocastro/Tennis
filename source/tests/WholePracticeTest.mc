@@ -35,8 +35,7 @@ module PracticeTests {
         practise(bench, "HHXHHHXHUHN");
         practise(bench, "XXHUUHXN");
         bench.controller.togglePause();
-        practise(bench, "HXU");
-        practise(bench, "N");
+        practise(bench, "UN");
         practise(bench, "HHHHHHHHHHHHNN");
         practise(bench, "HXX");
         return bench;
@@ -45,13 +44,13 @@ module PracticeTests {
     (:test)
     function testWholePracticeCountsEveryBlock(logger as Test.Logger) as Boolean {
         var bench = benchWithSteps();
-        Test.assertEqual(practise(bench, "HHXHHHXHUH"), Reaction.REFRESH);
+        Test.assertEqual(practise(bench, "HHXHHHXHUH"), Reaction.withCue(Cue.POINT));
         Test.assertEqual(bench.tally(), "1 6-2");
         Test.assertEqual(bench.field(RecordingFields.BLOCK_HITS), 6);
         Test.assertEqual(bench.field(RecordingFields.BLOCK_MISSES), 2);
-        Test.assertEqual(practise(bench, "N"), Reaction.REFRESH | Reaction.VIBRATE);
+        Test.assertEqual(practise(bench, "N"), Reaction.withCue(Cue.LONG));
         Test.assertEqual(bench.tally(), "2 0-0");
-        Test.assertEqual(practise(bench, "XXHUUHX"), Reaction.REFRESH);
+        Test.assertEqual(practise(bench, "XXHUUHX"), Reaction.withCue(Cue.POINT));
         Test.assertEqual(bench.tally(), "2 1-2");
         practise(bench, "N");
         Test.assertEqual(bench.session.blocks.toString(), "[[6, 2], [1, 2]]");
@@ -61,19 +60,21 @@ module PracticeTests {
     }
 
     (:test)
-    function testWholePracticePauseSwallowsThePresses(logger as Test.Logger) as Boolean {
+    function testWholePracticePauseTurnsAPressIntoAResume(logger as Test.Logger) as Boolean {
         var bench = benchWithSteps();
         practise(bench, "HHXHHHXHUHN");
         practise(bench, "XXHUUHXN");
         bench.controller.togglePause();
-        Test.assertEqual(practise(bench, "HXU"), Reaction.NONE);
+        Test.assertEqual(practise(bench, "U"), Reaction.NONE);
+        Test.assertEqual(practise(bench, "H"), Reaction.withCue(Cue.GAME));
+        bench.controller.togglePause();
         Test.assertEqual(bench.tally(), "3 0-0");
         Test.assertEqual(bench.controller.clockSeconds(), 140);
-        Test.assertEqual(practise(bench, "N"), Reaction.REFRESH);
+        Test.assertEqual(practise(bench, "N"), Reaction.withCue(Cue.GAME));
         Test.assert(!bench.controller.isPaused());
         Test.assertEqual(bench.session.laps.size(), 2);
-        Test.assertEqual(bench.session.calls, "sllps");
-        Test.assertEqual(practise(bench, "HHHHHHHHHHHHN"), Reaction.REFRESH | Reaction.VIBRATE);
+        Test.assertEqual(bench.session.calls, "sllpsps");
+        Test.assertEqual(practise(bench, "HHHHHHHHHHHHN"), Reaction.withCue(Cue.LONG));
         Test.assertEqual(practise(bench, "N"), Reaction.NONE);
         Test.assertEqual(bench.session.blocks.toString(), "[[6, 2], [1, 2], [12, 0]]");
         Test.assertEqual(bench.session.laps.toString(), "[[90, 72], [50, 40], [120, 96]]");
@@ -101,7 +102,7 @@ module PracticeTests {
         bench.controller.end();
         practise(bench, "HX");
         bench.controller.reopen();
-        Test.assertEqual(practise(bench, "H"), Reaction.REFRESH);
+        Test.assertEqual(practise(bench, "H"), Reaction.withCue(Cue.POINT));
         Test.assertEqual(bench.tally(), "4 2-2");
         bench.controller.end();
         bench.controller.save();
@@ -116,7 +117,7 @@ module PracticeTests {
         Test.assertEqual(bench.field(RecordingFields.DISTANCE), 240);
         Test.assertEqual(bench.controller.clockSeconds(), 300);
         Test.assertEqual(PracticePresenter.totalText(bench.controller.log()), "21/27  78%");
-        Test.assertEqual(bench.controller.farewellKey() as String, "SavedMsg");
+        Test.assertEqual(bench.controller.farewellKey() as Number, Str.SavedMsg);
         return true;
     }
 }

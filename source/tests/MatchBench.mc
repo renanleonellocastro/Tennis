@@ -72,7 +72,8 @@ class MatchBench {
     }
 
     function notice() as String {
-        return joined(controller.noticeKeys());
+        var key = controller.noticeKey();
+        return key == null ? "" : key.toString();
     }
 }
 
@@ -80,10 +81,11 @@ function simpleBench(format as Number) as MatchBench {
     return new MatchBench(format, false);
 }
 
-function joined(texts as Array<String>) as String {
+// The items, texts or text keys, with a comma between them.
+function joined(texts as Array<String> or Array<Number>) as String {
     var text = "";
     for (var i = 0; i < texts.size(); i++) {
-        text += (i == 0 ? "" : ",") + texts[i];
+        text += (i == 0 ? "" : ",") + texts[i].toString();
     }
     return text;
 }
@@ -95,18 +97,18 @@ function scoreOf(state as MatchState) as String {
         + state.displayPoints(Player.ME) + "-" + state.displayPoints(Player.OPPONENT);
 }
 
-function assertKeyInEveryLanguage(key as String) as Void {
+function assertKeyInEveryLanguage(key as Number) as Void {
     var codes = I18n.CODES;
     for (var i = 0; i < codes.size(); i++) {
         var code = codes[i] as String;
-        Test.assertMessage(I18n.table(code).hasKey(key), "no text " + key + " in " + code);
+        Test.assertMessage(I18n.table(code)[key].length() > 0, "no text " + key + " in " + code);
     }
 }
 
 function assertRowsAreMethodsOf(rows as Array, delegate as Object) as Void {
     for (var i = 0; i < rows.size(); i++) {
         var row = rows[i] as Array;
-        assertKeyInEveryLanguage(row[0] as String);
+        assertKeyInEveryLanguage(row[0] as Number);
         Test.assert(delegate has (row[1] as Symbol));
     }
 }
