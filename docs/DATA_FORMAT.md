@@ -177,6 +177,15 @@ them.
 * **Entries between two records.** A record holds three entries, so up to
   three entries marked within one second all reach the file. Two entries a
   second, kept up for a whole match, lost nothing.
+* **More than three entries at once.** "Fix the score, give game" logs
+  four points or more in one step (seven or more in a tie break). The app
+  hands them to the field three at a time, each value 1.5 seconds after
+  the one before, so every entry reaches a record. A stop of the timer
+  waits for the last value. Before this pacing the oldest of those entries
+  never reached the file. When the app is closed inside that wait, the
+  values that still wait are skipped: `missing_sequences` of that file
+  shows it, and the file of the resumed match starts with the newest
+  three entries.
 * **Undo.** An undo sets the field again with a lower newest sequence
   number, and the numbers above it are used again by the next entries.
   An entry that was written and then undone stays in older records and is
@@ -369,6 +378,36 @@ saved 50 to 800 ms after the last point.
 
 An ace by the receiver is refused by the watch, so such a step of a script
 is not an entry.
+
+A second round played eleven more scripted matches and one practice the
+same way (fr55), each one compared entry by entry with its script and with
+the 21 checks of the comparison: rows, statistics, summary fields and
+integrity.
+
+| Match | Entries | Result |
+|---|---|---|
+| Best of 3, simple, undo and pause | 286 | `6-4 3-6 7-6(7-5)`, every check true |
+| Best of 3, no advantage, detailed, app closed once, two files | 228 | `6-7(4-7) 6-1 6-0`, every check true |
+| Best of 3, no advantage, simple, undo across the end of a set | 126 | `6-3 6-2`, every check true |
+| Match tie break, detailed | 168 | `3-6 6-2 0-1(11-13)`, every check true |
+| One set, no advantage, detailed | 89 | `5-7`, every check true |
+| Pro set, no advantage, simple, resumed, two files | 144 | `9-8(7-4)`, every check true |
+| Tie break only, detailed, games given by "Fix the score" | 7 | `0-1(0-7)`, every check true after the pacing of the point log |
+| Best of 3, detailed, long | 385 | `7-6(9-7) 6-7(6-8) 7-5`, every check true, run twice |
+| Best of 3, simple, ended early, reopened | 115 | `6-4 2-1`, every check true |
+| Discarded | 0 | No file, as expected |
+| Best of 3, simple, app closed at every set break, four files | 195 | `4-6 6-3 2-6`, rows equal; `set_scores_match` was false until the converter stopped comparing a lap with no game |
+| Practice: 5 blocks with undo, pause and a reopened end | 32 shots | 23 hits, 9 misses, 72%, every block row equal |
+
+Two defects came out of this round and are fixed: a game given by "Fix the
+score" lost its oldest entries in the file, and the converter took the
+short lap after an app close for the lap that closed a set.
+
+The storage of the simulator keeps a journal that grows with every stored
+entry and is only made small again when the app exits cleanly. After
+several runs that were killed, `Application.Storage.setValue` raised an out
+of memory error with the journal near 141 kB. One match of 385 entries
+takes 56 kB of it. Whether a real watch behaves the same is not known.
 
 ### Still to be confirmed on the watch
 
@@ -670,7 +709,7 @@ empty cell (`points.csv` has no ratio column today).
 |-----|---------|
 | `score_mismatches` | Sequence numbers whose stored header or score differs from the replay |
 | `statistics_match` | Whether the `statistics` field equals the replayed counts, null without the field |
-| `set_scores_match` | Whether the `set_score` of the last lap of each closed set equals the replayed set, null without the field or when the laps could not be placed |
+| `set_scores_match` | Whether the `set_score` of the last lap of each closed set equals the replayed set, null without the field or when the laps could not be placed. A lap whose `set_score` is all zeros is skipped: it belongs to a set with no game yet (the app closed right after a set ended) |
 
 `watch_summary` holds what the watch stored, untouched, and does not depend
 on the point log:

@@ -4,7 +4,7 @@
 
     <string id="HomeHint">MENU</string>
 
-    <string id="MenuStartMatch">Nouveau match</string>
+    <string id="MenuStartMatch">Lancer match</string>
     <string id="MenuPractice">Entraînement</string>
     <string id="MenuSettings">Réglages</string>
     <string id="MenuAbout">À propos</string>
@@ -24,7 +24,7 @@
     <string id="SetupDetail">Détail du point</string>
     <string id="DetailSimple">Simple</string>
     <string id="DetailDetailed">Détaillé</string>
-    <string id="SetupFirstServe">Premier service</string>
+    <string id="SetupFirstServe">1er service</string>
     <string id="PlayerMe">Moi</string>
     <string id="PlayerOpponent">Adversaire</string>
     <string id="SetupGps">GPS</string>

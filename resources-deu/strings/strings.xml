@@ -48,7 +48,7 @@
     <string id="MatchMenuPause">Pause</string>
     <string id="MatchMenuResume">Fortsetzen</string>
     <string id="MatchMenuFix">Korrigieren</string>
-    <string id="MatchMenuEnd">Match beenden</string>
+    <string id="MatchMenuEnd">Beenden</string>
     <string id="EndMatchQ">Match beenden?</string>
     <string id="FixUndoGame">Spiel zurück</string>
     <string id="FixGameMe">Spiel für mich</string>
@@ -58,8 +58,8 @@
     <string id="EndingTitle">Punkt</string>
     <string id="EndingWinner">Winner</string>
     <string id="EndingAce">Ass</string>
-    <string id="EndingErrorNet">Fehler ins Netz</string>
-    <string id="EndingErrorOut">Fehler ins Aus</string>
+    <string id="EndingErrorNet">Netzfehler</string>
+    <string id="EndingErrorOut">Ausfehler</string>
 
     <!-- Final score -->
     <string id="FinalYouWon">Gewonnen</string>

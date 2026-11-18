@@ -24,7 +24,7 @@
     <string id="SetupDetail">Detalhe</string>
     <string id="DetailSimple">Simples</string>
     <string id="DetailDetailed">Detalhado</string>
-    <string id="SetupFirstServe">Primeiro saque</string>
+    <string id="SetupFirstServe">Quem saca</string>
     <string id="PlayerMe">Eu</string>
     <string id="PlayerOpponent">Adversário</string>
     <string id="SetupGps">GPS</string>
@@ -50,9 +50,9 @@
     <string id="MatchMenuFix">Corrigir placar</string>
     <string id="MatchMenuEnd">Encerrar</string>
     <string id="EndMatchQ">Encerrar a partida?</string>
-    <string id="FixUndoGame">Desfazer game</string>
-    <string id="FixGameMe">Game para mim</string>
-    <string id="FixGameOpponent">Game para adv.</string>
+    <string id="FixUndoGame">Voltar game</string>
+    <string id="FixGameMe">Game p/ mim</string>
+    <string id="FixGameOpponent">Game p/ adv.</string>
 
     <!-- How a point ended (detailed mode) -->
     <string id="EndingTitle">Ponto</string>
@@ -104,7 +104,7 @@
     <string id="ReportTime">TEMPO</string>
     <string id="ReportMatchTime">Partida</string>
     <string id="ReportAvgGame">Por game</string>
-    <string id="ReportLongGame">Game máx.</string>
+    <string id="ReportLongGame">Maior</string>
     <string id="ReportPerPoint">Por ponto</string>
     <string id="ReportBody">CORPO</string>
     <string id="ReportAvgHr">FC média</string>

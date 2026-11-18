@@ -6,7 +6,38 @@ and the project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-Nothing yet.
+### Changed
+
+* The bottom row of the match screen sits three percent of the height
+  higher on a round screen with no touch controls, and its parts stand
+  closer together on every watch. On the
+  Forerunner 55 a clock over one hour next to a heart rate of three digits
+  came within a pixel or two of the frame ring.
+* Shorter texts for menu rows that touched the edge of the Forerunner 55
+  screen on the row under the chosen one: Portuguese ("Quem saca",
+  "Voltar game", "Game p/ mim", "Game p/ adv."), Spanish ("Anular juego"),
+  French ("Lancer match", "1er service"), German ("Beenden", "Netzfehler",
+  "Ausfehler") and Italian ("No vantaggi", "Dettaglio", "Fine partita").
+* The longest game label of the report reads "Longest" in English and
+  "Maior" in Portuguese: on the Venu Sq 2 the longer labels touched a
+  game time of ten minutes or more on the same line.
+* The format rules, the empty point log field and the report tables take
+  about 0.4 kB less memory, so the debug build stays under 108 kB on the
+  Forerunner 55 with the paced point log (`docs/TESTING.md`, Memory).
+* Spanish: the change of ends notice reads "Cambio lado", so "Juego.
+  Cambio lado" fits the banner row of the Forerunner 55.
+
+### Fixed
+
+* A game given by "Fix the score" logs four points or more at once, but
+  the activity file takes three entries per record: the oldest of them
+  never reached the file, and the converter stopped the replay there. The
+  point log field is now paced, so those entries reach the file three at
+  a time.
+* Converter: when the app closed within the second a set ended, the short
+  lap that followed was taken for the lap that closed the set and
+  `set_scores_match` came out false for a file that was right. A lap with
+  no game is no longer compared.
 
 ## [1.0.0] - not released yet
 

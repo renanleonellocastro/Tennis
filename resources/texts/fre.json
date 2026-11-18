@@ -1,7 +1,7 @@
 {
 "AppName": "Tennis",
 "HomeHint": "MENU",
-"MenuStartMatch": "Nouveau match",
+"MenuStartMatch": "Lancer match",
 "MenuPractice": "Entraînement",
 "MenuSettings": "Réglages",
 "MenuAbout": "À propos",
@@ -19,7 +19,7 @@
 "SetupDetail": "Détail du point",
 "DetailSimple": "Simple",
 "DetailDetailed": "Détaillé",
-"SetupFirstServe": "Premier service",
+"SetupFirstServe": "1er service",
 "PlayerMe": "Moi",
 "PlayerOpponent": "Adversaire",
 "SetupGps": "GPS",

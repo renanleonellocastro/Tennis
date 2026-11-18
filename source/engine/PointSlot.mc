@@ -22,7 +22,16 @@ module PointSlot {
 
     // The field before the first entry: every slot empty.
     function none() as Array<Number> {
-        return [0, 0, 0, 0, 0, 0, 0, 0, 0] as Array<Number>;
+        var field = [] as Array<Number>;
+        for (var i = 0; i < SLOTS * WORDS; i++) {
+            field.add(0);
+        }
+        return field;
+    }
+
+    // The sequence number of the newest entry of a field, 0 when it has none.
+    function newest(field as Array<Number>) as Number {
+        return field[0] & SEQUENCE_MASK;
     }
 
     // Built from the state right before the entry. The sequence number is

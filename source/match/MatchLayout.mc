@@ -21,7 +21,11 @@ class MatchLayout {
     hidden const FLAT_LABELS_SHIFT = -1;
     hidden const FLAT_CONTROLS_SHIFT = 1;
     hidden const FLAT_CLOCK_SHIFT = 3;
-    hidden const FOOTER_GAP = 3;
+    // A round screen with no touch controls has free room above the clock:
+    // it sits higher, where the screen is wider, so a clock over an hour
+    // with a heart rate of three digits stays clear of the edge.
+    hidden const KEYS_CLOCK_SHIFT = -3;
+    hidden const FOOTER_GAP = 2;
     hidden const HEART_DOT_DIVISOR = 60;
     hidden const PLAYER_X = 23;
     hidden const BALL_X = 12;
@@ -87,6 +91,9 @@ class MatchLayout {
     }
 
     function clockY() as Number {
+        if (_isRound && !_hasTouchControls) {
+            return row(CLOCK_Y + KEYS_CLOCK_SHIFT);
+        }
         return lowRow(CLOCK_Y, FLAT_CLOCK_SHIFT);
     }
 

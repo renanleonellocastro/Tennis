@@ -91,6 +91,14 @@ def test_a_set_that_was_played_again_is_compared_with_its_last_lap() -> None:
     assert set_scores_match(match, [laps(played_again, undone)]) is False
 
 
+def test_a_lap_with_an_empty_score_never_closed_a_set() -> None:
+    match = match_of(WatchLog().play(TWO_SETS[: 4 * 7]))
+    closing, after_the_set = {"set_score": [6, 0, 0, 0]}, {"set_score": [0, 0, 0, 0]}
+
+    assert set_scores_match(match, [laps(closing, after_the_set)]) is True
+    assert set_scores_match(match, [laps({"set_score": [6, 1, 0, 0]}, after_the_set)]) is False
+
+
 def test_a_closed_set_without_a_lap_score_does_not_match() -> None:
     match = match_of(WatchLog().play(TWO_SETS))
     first_set = laps({"set_score": [6, 0, 0, 0]})

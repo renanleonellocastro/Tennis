@@ -227,7 +227,7 @@ the opponent:
 | **SERVE** | **1st in**, **1st won**, **2nd won**, **Dbl faults** |
 | **POINTS** | **Aces**, **Winners**, **Net errors**, **Out errors** |
 | **PRESSURE** | **Breaks**, **Saved** (break points saved), **Holds**, **Best run** |
-| **TIME** | **Match**, **Avg game**, **Long game**, **Per point** |
+| **TIME** | **Match**, **Avg game**, **Longest**, **Per point** |
 | **BODY** | **Avg HR**, **Max HR**, **Key pts HR**, **Calories** |
 
 The **POINTS** page needs the **Detailed** point detail, so a match logged

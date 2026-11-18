@@ -161,6 +161,15 @@ module MatchLayoutTests {
         return true;
     }
 
+    // With no touch controls above it, the clock of a round screen sits at
+    // 86 percent of the height, where the screen is wider.
+    (:test)
+    function testClockSitsHigherOnARoundScreenWithoutTouchControls(logger as Test.Logger) as Boolean {
+        Test.assertEqual(new MatchLayout(208, 208, false, true).clockY(), 178);
+        Test.assertEqual(new MatchLayout(208, 208, true, true).clockY(), 185);
+        return true;
+    }
+
     (:test)
     function testControlBandFollowsTheControlsOnAScreenThatIsNotRound(logger as Test.Logger) as Boolean {
         var flat = new MatchLayout(320, 360, true, false);
