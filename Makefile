@@ -24,7 +24,7 @@ UV ?= uv
 RUN = $(UV) run --frozen
 TOOLS_COVERAGE = --cov=tools --cov-branch --cov-report=term-missing --cov-fail-under=100
 
-.PHONY: help key build build-shapes build-all test-build test sim package strings icon clean \
+.PHONY: help key build build-shapes build-all test-build test sim package strings icon key-labels clean \
 	resources-check audit lint-tools test-tools function-length function-length-gate check
 
 help:
@@ -39,6 +39,7 @@ help:
 	@echo "  package        Build the store ready .iq package (all devices)"
 	@echo "  strings        Regenerate the string tables from the strings.xml files"
 	@echo "  icon           Regenerate the launcher icon"
+	@echo "  key-labels     Regenerate the images of the key labels"
 	@echo "  check          Run every local quality gate (see docs/QUALITY.md)"
 	@echo "  function-length  List functions over 12 lines, longest first"
 	@echo "  clean          Remove build output"
@@ -95,9 +96,16 @@ icon:
 clean:
 	rm -rf bin dist
 
-# XML validity, string catalogs in sync and the generated table up to date.
+# The images of the key labels, for the watches that cannot draw text along
+# the round edge. Run it after changing the text or the place of a label.
+key-labels:
+	$(RUN) python tools/key_labels.py
+
+# XML validity, string catalogs in sync, the generated table and the images
+# of the key labels up to date.
 resources-check:
 	python3 scripts/check_resources.py
+	$(RUN) python tools/key_labels.py --check
 
 audit:
 	python3 scripts/audit_api_usage.py

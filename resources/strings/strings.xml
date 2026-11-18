@@ -15,13 +15,13 @@
     <string id="FormatOneSet">1 set</string>
     <string id="FormatProSet">Pro set to 8</string>
     <string id="FormatTieBreakOnly">Tie break only</string>
-    <string id="SetupNoAd">No advantage</string>
-    <string id="ValueOn">On</string>
-    <string id="ValueOff">Off</string>
+    <string id="SetupNoAd">Advantage</string>
+    <string id="ValueOn">Yes</string>
+    <string id="ValueOff">No</string>
     <string id="SetupDetail">Point detail</string>
     <string id="DetailSimple">Simple</string>
     <string id="DetailDetailed">Detailed</string>
-    <string id="SetupFirstServe">First serve</string>
+    <string id="SetupFirstServe">Serves first</string>
     <string id="PlayerMe">Me</string>
     <string id="PlayerOpponent">Opponent</string>
     <string id="SetupGps">GPS</string>
@@ -40,6 +40,9 @@
     <string id="NoticeChangeEnds">Change ends</string>
     <string id="Paused">Paused</string>
     <string id="ControlFault">FAULT</string>
+    <string id="KeyUndo">UNDO</string>
+    <string id="KeyMore">MORE</string>
+    <string id="KeyBack">BACK</string>
 
     <!-- Match menu -->
     <string id="MatchMenuPause">Pause</string>
@@ -55,8 +58,8 @@
     <string id="EndingTitle">Point</string>
     <string id="EndingWinner">Winner</string>
     <string id="EndingAce">Ace</string>
-    <string id="EndingErrorNet">Net error</string>
-    <string id="EndingErrorOut">Out error</string>
+    <string id="EndingErrorNet">Net</string>
+    <string id="EndingErrorOut">Out</string>
 
     <!-- Final score -->
     <string id="FinalYouWon">You won</string>

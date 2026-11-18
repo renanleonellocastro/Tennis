@@ -60,6 +60,7 @@ def strip_type_annotations(text):
 # alongside the guard (e.g. TONE_* constants exist iff playTone does).
 GUARD_FAMILIES = {
     ("Attention", "playTone"): re.compile(r"^TONE_"),
+    ("Graphics", "getVectorFont"): re.compile(r"^RADIAL_TEXT_DIRECTION_"),
 }
 GUARD_PATTERN = r'\b(\w+) has :(\w+)'
 SYMBOL_PATTERN = r'\b([A-Z][A-Za-z]+)\.(\w+)'

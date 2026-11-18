@@ -26,7 +26,7 @@ module MatchSetupTests {
         var setup = new MatchSetup([4, 1, 1, 1, 1]);
         Test.assertEqual(joinedNumbers(setup.toArray()), "4,1,1,1,1");
         Test.assertEqual(setup.valueKey(MatchSetup.FORMAT), Str.FormatTieBreakOnly);
-        Test.assertEqual(setup.valueKey(MatchSetup.NO_ADVANTAGE), Str.ValueOn);
+        Test.assertEqual(setup.valueKey(MatchSetup.NO_ADVANTAGE), Str.ValueOff);
         Test.assertEqual(setup.valueKey(MatchSetup.DETAIL), Str.DetailDetailed);
         Test.assertEqual(setup.valueKey(MatchSetup.FIRST_SERVER), Str.PlayerOpponent);
         Test.assertEqual(setup.valueKey(MatchSetup.GPS), Str.ValueOn);

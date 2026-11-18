@@ -1,0 +1,14 @@
+<drawables>
+    <bitmap id="LabelMe" filename="LabelMe.png" dithering="none"><palette disableTransparency="false"><color>222222</color><color>444444</color><color>666666</color><color>888888</color><color>AAAAAA</color></palette></bitmap>
+    <bitmap id="ControlFault" filename="ControlFault.png" dithering="none"><palette disableTransparency="false"><color>222222</color><color>444444</color><color>666666</color><color>888888</color><color>AAAAAA</color></palette></bitmap>
+    <bitmap id="LabelOpponent" filename="LabelOpponent.png" dithering="none"><palette disableTransparency="false"><color>222222</color><color>444444</color><color>666666</color><color>888888</color><color>AAAAAA</color></palette></bitmap>
+    <bitmap id="KeyUndo" filename="KeyUndo.png" dithering="none"><palette disableTransparency="false"><color>222222</color><color>444444</color><color>666666</color><color>888888</color><color>AAAAAA</color></palette></bitmap>
+    <bitmap id="PracticeHit" filename="PracticeHit.png" dithering="none"><palette disableTransparency="false"><color>222222</color><color>444444</color><color>666666</color><color>888888</color><color>AAAAAA</color></palette></bitmap>
+    <bitmap id="PracticeNext" filename="PracticeNext.png" dithering="none"><palette disableTransparency="false"><color>222222</color><color>444444</color><color>666666</color><color>888888</color><color>AAAAAA</color></palette></bitmap>
+    <bitmap id="PracticeMiss" filename="PracticeMiss.png" dithering="none"><palette disableTransparency="false"><color>222222</color><color>444444</color><color>666666</color><color>888888</color><color>AAAAAA</color></palette></bitmap>
+    <bitmap id="EndingErrorOut" filename="EndingErrorOut.png" dithering="none"><palette disableTransparency="false"><color>222222</color><color>444444</color><color>666666</color><color>888888</color><color>AAAAAA</color></palette></bitmap>
+    <bitmap id="EndingWinner" filename="EndingWinner.png" dithering="none"><palette disableTransparency="false"><color>222222</color><color>444444</color><color>666666</color><color>888888</color><color>AAAAAA</color></palette></bitmap>
+    <bitmap id="EndingErrorNet" filename="EndingErrorNet.png" dithering="none"><palette disableTransparency="false"><color>222222</color><color>444444</color><color>666666</color><color>888888</color><color>AAAAAA</color></palette></bitmap>
+    <bitmap id="KeyBack" filename="KeyBack.png" dithering="none"><palette disableTransparency="false"><color>222222</color><color>444444</color><color>666666</color><color>888888</color><color>AAAAAA</color></palette></bitmap>
+    <bitmap id="KeyMore" filename="KeyMore.png" dithering="none"><palette disableTransparency="false"><color>222222</color><color>444444</color><color>666666</color><color>888888</color><color>AAAAAA</color></palette></bitmap>
+</drawables>

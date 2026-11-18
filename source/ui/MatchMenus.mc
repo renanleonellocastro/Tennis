@@ -187,22 +187,3 @@ class ResumeMenuDelegate extends WatchUi.Menu2InputDelegate {
         WatchUi.popView(WatchUi.SLIDE_DOWN);
     }
 }
-
-class EndingMenuDelegate extends WatchUi.Menu2InputDelegate {
-    hidden var _controller as MatchController;
-
-    function initialize(controller as MatchController) {
-        Menu2InputDelegate.initialize();
-        _controller = controller;
-    }
-
-    function onSelect(item as WatchUi.MenuItem) as Void {
-        MatchAlert.play(Reaction.cueOf(_controller.chooseEnding(item.getId() as Number)));
-        WatchUi.popView(WatchUi.SLIDE_IMMEDIATE);
-    }
-
-    function onBack() as Void {
-        _controller.cancelEnding();
-        WatchUi.popView(WatchUi.SLIDE_IMMEDIATE);
-    }
-}

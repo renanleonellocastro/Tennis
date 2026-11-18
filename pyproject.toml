@@ -36,6 +36,7 @@ known-first-party = [
   "function_length_model",
   "function_length_monkeyc",
   "function_length_python",
+  "key_labels",
   "tennis_export",
   "fit_builder",
   "match_script",

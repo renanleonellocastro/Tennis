@@ -15,13 +15,13 @@
     <string id="FormatOneSet">1 set</string>
     <string id="FormatProSet">Pro set à 8</string>
     <string id="FormatTieBreakOnly">Tie break seul</string>
-    <string id="SetupNoAd">Sans avantage</string>
-    <string id="ValueOn">Activé</string>
-    <string id="ValueOff">Désactivé</string>
+    <string id="SetupNoAd">Avantage</string>
+    <string id="ValueOn">Oui</string>
+    <string id="ValueOff">Non</string>
     <string id="SetupDetail">Détail du point</string>
     <string id="DetailSimple">Simple</string>
     <string id="DetailDetailed">Détaillé</string>
-    <string id="SetupFirstServe">1er service</string>
+    <string id="SetupFirstServe">Qui sert</string>
     <string id="PlayerMe">Moi</string>
     <string id="PlayerOpponent">Adversaire</string>
     <string id="SetupGps">GPS</string>
@@ -40,6 +40,9 @@
     <string id="NoticeChangeEnds">Changez de côté</string>
     <string id="Paused">En pause</string>
     <string id="ControlFault">FAUTE</string>
+    <string id="KeyUndo">ANNUL.</string>
+    <string id="KeyMore">PLUS</string>
+    <string id="KeyBack">RETOUR</string>
 
     <!-- Match menu -->
     <string id="MatchMenuPause">Pause</string>
@@ -53,10 +56,10 @@
 
     <!-- How a point ended (detailed mode) -->
     <string id="EndingTitle">Point</string>
-    <string id="EndingWinner">Coup gagnant</string>
+    <string id="EndingWinner">Gagnant</string>
     <string id="EndingAce">Ace</string>
-    <string id="EndingErrorNet">Faute au filet</string>
-    <string id="EndingErrorOut">Faute dehors</string>
+    <string id="EndingErrorNet">Filet</string>
+    <string id="EndingErrorOut">Dehors</string>
 
     <!-- Final score -->
     <string id="FinalYouWon">Victoire</string>

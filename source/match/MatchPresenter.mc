@@ -12,6 +12,12 @@ module BannerTone {
 module MatchPresenter {
     // Tennis writes a score as two numbers joined by this sign.
     const SCORE_SEPARATOR = "-";
+    // How the points of a player are drawn: as usual, quieter while the
+    // other player has the advantage, and in the color of the pause banner
+    // during a pause.
+    const TONE_NORMAL = 0;
+    const TONE_BEHIND = 1;
+    const TONE_PAUSED = 2;
     const SET_GAP = "  ";
     const SECONDS_PER_MINUTE = 60;
     const MINUTES_PER_HOUR = 60;
@@ -33,6 +39,15 @@ module MatchPresenter {
             return Strings.t(Str.LabelAdvantage);
         }
         return state.displayPoints(player).toString();
+    }
+
+    // The advantage is a small word next to large digits: the digits step
+    // back so the side that is ahead is the one that stands out.
+    function pointsTone(isPaused as Boolean, state as MatchState, player as Number) as Number {
+        if (isPaused) {
+            return TONE_PAUSED;
+        }
+        return isPointsNumeric(state, Player.opponentOf(player)) ? TONE_NORMAL : TONE_BEHIND;
     }
 
     function pair(mine as Number, theirs as Number) as String {

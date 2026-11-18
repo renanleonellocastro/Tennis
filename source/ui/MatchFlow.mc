@@ -12,6 +12,8 @@ module MatchFlow {
 
     // The match that is open, so the app can keep it when it closes.
     var active as MatchController? = null;
+    // The layout of the match screen, which the ending screen shares.
+    var layout as MatchLayout? = null;
 
     // Menu rows as [label key, id]. The id is the method of the menu
     // delegate that the row runs.
@@ -163,8 +165,9 @@ module MatchFlow {
     }
 
     function showMatch(controller as MatchController, slide as WatchUi.SlideType) as Void {
-        var layout = deviceLayout(MatchInput.profileOfDevice());
-        WatchUi.switchToView(new MatchView(controller, layout), new MatchDelegate(controller, layout), slide);
+        var shared = deviceLayout(MatchInput.profileOfDevice());
+        layout = shared;
+        WatchUi.switchToView(new MatchView(controller, shared), new MatchDelegate(controller, shared), slide);
     }
 
     // Carries out the Reaction flags of an input on the match screen.
@@ -183,6 +186,7 @@ module MatchFlow {
     // Replaces the match screen, which must be the one on top.
     function showFinalIfOver(controller as MatchController) as Void {
         if (controller.isOver()) {
+            layout = null;
             WatchUi.switchToView(new FinalScoreView(controller), new FinalScoreDelegate(controller),
                                  WatchUi.SLIDE_UP);
         }
@@ -284,7 +288,6 @@ module MatchFlow {
     }
 
     function pushEndingMenu(controller as MatchController) as Void {
-        WatchUi.pushView(endingMenu(controller.pendingWinner(), controller.state().server()),
-                         new EndingMenuDelegate(controller), WatchUi.SLIDE_IMMEDIATE);
+        EndingScreen.show(controller, layout as MatchLayout);
     }
 }

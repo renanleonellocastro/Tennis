@@ -11,14 +11,14 @@ class MatchSetup extends OptionList {
     static const FIELD_COUNT = 5;
 
     // Rows follow the field ids; the options of each row follow the values
-    // the engine uses (MatchFormat, off then on, simple then detailed, Player,
-    // off then on).
+    // the engine uses (MatchFormat, advantage then none, simple then detailed,
+    // Player, off then on).
     function initialize(stored as Object?) {
         OptionList.initialize(
             [Str.SetupFormat, Str.SetupNoAd, Str.SetupDetail, Str.SetupFirstServe, Str.SetupGps] as Array<Number>,
             [
                 [Str.FormatBestOf3, Str.FormatMatchTieBreak, Str.FormatOneSet, Str.FormatProSet, Str.FormatTieBreakOnly],
-                [Str.ValueOff, Str.ValueOn],
+                [Str.ValueOn, Str.ValueOff],
                 [Str.DetailSimple, Str.DetailDetailed],
                 [Str.PlayerMe, Str.PlayerOpponent],
                 [Str.ValueOff, Str.ValueOn]

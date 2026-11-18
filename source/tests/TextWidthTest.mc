@@ -29,7 +29,6 @@ module TextFitTests {
                                Str.ReportBody];
     const COUNT_LABEL_KEYS = [Str.ReportPoints, Str.ReportDoubleFaults, Str.ReportAces, Str.ReportWinners,
                               Str.ReportNetErrors, Str.ReportOutErrors, Str.ReportBestRun];
-    const CONTROL_KEYS = [Str.ControlFault, Str.PracticeNext];
     // The lowest row a kind of value can take on a report page.
     const LAST_RATIO_ROW = 2;
     const LAST_REPORT_ROW = 3;
@@ -188,27 +187,22 @@ module TextFitTests {
         return true;
     }
 
-    // The outline of a touch control, as Theme.drawPill sizes it.
-    function pillSize(text as String) as Array<Number> {
-        var height = canvas().getFontHeight(Graphics.FONT_XTINY);
-        return [widthOf(text, Graphics.FONT_XTINY) + (height / 2 + 2) * 2, height + (height / 6) * 2] as Array<Number>;
-    }
-
+    // The outlines of the two touch controls stay apart and on the screen,
+    // and every word fits its outline, clear of the round ends, in the
+    // smallest font.
     (:test)
     function testTheTouchControlsStayApartAndOnTheScreen(logger as Test.Logger) as Boolean {
         var at = layout();
         if (!at.hasTouchControls()) {
             return true;
         }
-        var menus = textsOf([Str.HomeHint]);
-        var others = textsOf(CONTROL_KEYS);
-        for (var i = 0; i < others.size(); i++) {
-            var menu = pillSize(menus[i / CONTROL_KEYS.size()]);
-            var other = pillSize(others[i]);
-            Test.assert(isInside(menu[0], at.menuControlX(), at.controlsY(), menu[1] / 2));
-            Test.assert(isInside(other[0], at.faultControlX(), at.controlsY(), other[1] / 2));
-            Test.assert(at.menuControlX() + menu[0] / 2 + CLEARANCE <= at.faultControlX() - other[0] / 2);
-        }
+        var box = at.controlRoom();
+        var words = textsOf([Str.HomeHint, Str.ControlFault, Str.PracticeNext]);
+        Test.assert(widest(words, Graphics.FONT_XTINY) <= box[0] - box[1] / 2);
+        Test.assert(canvas().getFontHeight(Graphics.FONT_XTINY) <= box[1]);
+        Test.assert(isInside(box[0], at.menuControlX(), at.controlsY(), box[1] / 2));
+        Test.assert(isInside(box[0], at.faultControlX(), at.controlsY(), box[1] / 2));
+        Test.assert(at.menuControlX() + box[0] / 2 + CLEARANCE <= at.faultControlX() - box[0] / 2);
         return true;
     }
 
@@ -339,6 +333,35 @@ module TextFitTests {
         Test.assert(edgeAt(middle, 0) <= edgeAt(middle / 4, 0));
         Test.assert(isInside(settings.screenWidth / 2, settings.screenWidth / 2, middle, 0));
         Test.assert(!isInside(settings.screenWidth, settings.screenWidth / 2, middle, 0));
+        return true;
+    }
+
+    // The ending screen with tap areas: every ending fits its area in the
+    // smallest font and the title and the name fit their rows, in every
+    // language. Not in the builds for the watches without a touch screen.
+    (:test, :keyArc)
+    function testTheEndingTapAreasHoldTheirTexts(logger as Test.Logger) as Boolean {
+        var settings = System.getDeviceSettings();
+        var box = EndingChoices.tapRect(0, 4, [settings.screenWidth, settings.screenHeight] as Array<Number>,
+                                        settings.screenShape == System.SCREEN_SHAPE_ROUND);
+        var endings = textsOf([Str.EndingWinner, Str.EndingAce, Str.EndingErrorNet, Str.EndingErrorOut]);
+        Test.assert(widest(endings, Graphics.FONT_XTINY) <= EndingChoices.textRoom(box)[0]);
+        Test.assert(canvas().getFontHeight(Graphics.FONT_XTINY) <= box[3]);
+        Test.assert(isLineInside(textsOf([Str.EndingTitle]), Graphics.FONT_XTINY, EndingScreen.TAP_ROWS[0]));
+        Test.assert(isLineInside(textsOf([Str.PlayerMe, Str.PlayerOpponent]), Graphics.FONT_XTINY,
+                                 EndingScreen.TAP_ROWS[1]));
+        return true;
+    }
+
+    // The ending screen with key labels: the title and the name of who won
+    // fit their rows in every language.
+    (:test)
+    function testTheEndingHeaderFitsBetweenTheKeys(logger as Test.Logger) as Boolean {
+        var settings = System.getDeviceSettings();
+        var names = textsOf([Str.PlayerMe, Str.PlayerOpponent]);
+        Test.assert(isLineInside(textsOf([Str.EndingTitle]), Graphics.FONT_XTINY, EndingScreen.KEY_ROWS[0]));
+        Test.assert(isLineInside(names, Graphics.FONT_XTINY, EndingScreen.KEY_ROWS[1]));
+        Test.assert(widest(names, Graphics.FONT_XTINY) <= settings.screenWidth * EndingScreen.NAME_ROOM[0] / 100);
         return true;
     }
 }
