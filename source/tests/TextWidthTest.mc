@@ -187,14 +187,15 @@ module TextFitTests {
         return true;
     }
 
-    // The clock of a long match with a heart rate of three digits.
+    // The clock of a long match with a heart rate of three digits. The
+    // digits sit low on their line, so the row is checked a little lower.
     (:test)
     function testTheBottomRowFitsALongClockAndAFastHeart(logger as Test.Logger) as Boolean {
         var at = layout();
         var font = Graphics.FONT_TINY;
         var heart = widthOf(LONGEST_HEART_RATE, font);
         var xs = at.footerXs(widthOf(LONGEST_CLOCK, font), heart);
-        var edge = edgeAt(at.clockY(), inkHalf(font));
+        var edge = edgeAt(at.clockY(), inkHalf(font) + CLEARANCE);
         Test.assert(xs[0] >= edge);
         Test.assert(xs[2] + heart <= screenWidth() - edge);
         return true;

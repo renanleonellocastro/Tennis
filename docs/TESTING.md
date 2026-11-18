@@ -130,7 +130,7 @@ passes only when it reads `PASSED` and no test failed or errored.
   practice text in every language, and a short real activity recorded and
   discarded.
 
-The practice suites run with the rest in `make test`. The suite has 494
+The practice suites run with the rest in `make test`. The suite has 495
 tests and passes with no failure on the Forerunner 55
 (`fr55`), the Venu 2 (`venu2`) and the Venu Sq 2 (`venusq2`).
 

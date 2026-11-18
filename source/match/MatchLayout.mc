@@ -13,16 +13,18 @@ class MatchLayout {
     hidden const CONTROLS_TOP = 71;
     hidden const CONTROLS_BOTTOM = 84;
     // The bottom row is sized for the clock and, from the recording
-    // milestone on, the heart rate next to it: a clock over an hour with a
-    // heart rate of three digits stays clear of the edge of the smallest
-    // round screen.
-    hidden const CLOCK_Y = 87;
+    // milestone on, the heart rate next to it.
+    hidden const CLOCK_Y = 89;
     // A screen that is not round has free room at the bottom: its labels
     // sit a little higher and its controls and clock lower, so the three
     // rows do not touch.
     hidden const FLAT_LABELS_SHIFT = -1;
     hidden const FLAT_CONTROLS_SHIFT = 1;
-    hidden const FLAT_CLOCK_SHIFT = 5;
+    hidden const FLAT_CLOCK_SHIFT = 3;
+    // A round screen with no touch controls has free room above the clock:
+    // it sits higher, where the screen is wider, so a clock over an hour
+    // with a heart rate of three digits stays clear of the edge.
+    hidden const KEYS_CLOCK_SHIFT = -3;
     hidden const FOOTER_GAP = 2;
     hidden const HEART_DOT_DIVISOR = 60;
     hidden const PLAYER_X = 23;
@@ -89,6 +91,9 @@ class MatchLayout {
     }
 
     function clockY() as Number {
+        if (_isRound && !_hasTouchControls) {
+            return row(CLOCK_Y + KEYS_CLOCK_SHIFT);
+        }
         return lowRow(CLOCK_Y, FLAT_CLOCK_SHIFT);
     }
 

@@ -8,8 +8,9 @@ and the project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
-* The bottom row of the match screen sits two percent of the height
-  higher on a round screen and its parts stand closer together. On the
+* The bottom row of the match screen sits three percent of the height
+  higher on a round screen with no touch controls, and its parts stand
+  closer together on every watch. On the
   Forerunner 55 a clock over one hour next to a heart rate of three digits
   came within a pixel or two of the frame ring.
 * Shorter texts for menu rows that touched the edge of the Forerunner 55

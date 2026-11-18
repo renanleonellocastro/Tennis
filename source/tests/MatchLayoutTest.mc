@@ -147,7 +147,7 @@ module MatchLayoutTests {
     }
 
     // A screen that is not round spreads its lower rows: 64, 78 and 92
-    // percent of the height instead of 65, 77 and 87.
+    // percent of the height instead of 65, 77 and 89.
     (:test)
     function testLowerRowsSpreadOnAScreenThatIsNotRound(logger as Test.Logger) as Boolean {
         var flat = new MatchLayout(320, 360, true, false);
@@ -157,7 +157,16 @@ module MatchLayoutTests {
         Test.assertEqual(flat.clockY(), 331);
         Test.assertEqual(round.labelsY(), 234);
         Test.assertEqual(round.controlsY(), 277);
-        Test.assertEqual(round.clockY(), 313);
+        Test.assertEqual(round.clockY(), 320);
+        return true;
+    }
+
+    // With no touch controls above it, the clock of a round screen sits at
+    // 86 percent of the height, where the screen is wider.
+    (:test)
+    function testClockSitsHigherOnARoundScreenWithoutTouchControls(logger as Test.Logger) as Boolean {
+        Test.assertEqual(new MatchLayout(208, 208, false, true).clockY(), 178);
+        Test.assertEqual(new MatchLayout(208, 208, true, true).clockY(), 185);
         return true;
     }
 
