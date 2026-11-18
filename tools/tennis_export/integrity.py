@@ -48,7 +48,17 @@ def stored_set_form(score: SetScore) -> list[int]:
 
 
 def set_scores_match(set_laps: Sequence[SetLaps] | None, scores: Sequence[SetScore]) -> bool | None:
-    """Each closed set is compared with the lap that closed it, the last of its laps."""
-    closing = [laps[-1] for laps in set_laps or () if laps]
+    """Each closed set is compared with the lap that closed it, the last of its laps that saw a game."""
+    closing = [played[-1] for laps in set_laps or () if (played := [lap for lap in laps if not is_empty(lap)])]
     stored = [list(lap.developer[SET_SCORE_FIELD]) for lap in closing if SET_SCORE_FIELD in lap.developer]
     return stored == [stored_set_form(score) for score in scores] if stored else None
+
+
+def is_empty(lap: Message) -> bool:
+    """True for a lap of a set that has no game yet.
+
+    When the app closes within the second a set ended, the short lap that follows is placed with that set,
+    but it never closed one: a closed set has games.
+    """
+    score = lap.developer.get(SET_SCORE_FIELD)
+    return score is not None and not any(score)

@@ -679,7 +679,7 @@ empty cell (`points.csv` has no ratio column today).
 |-----|---------|
 | `score_mismatches` | Sequence numbers whose stored header or score differs from the replay |
 | `statistics_match` | Whether the `statistics` field equals the replayed counts, null without the field |
-| `set_scores_match` | Whether the `set_score` of the last lap of each closed set equals the replayed set, null without the field or when the laps could not be placed |
+| `set_scores_match` | Whether the `set_score` of the last lap of each closed set equals the replayed set, null without the field or when the laps could not be placed. A lap whose `set_score` is all zeros is skipped: it belongs to a set with no game yet (the app closed right after a set ended) |
 
 `watch_summary` holds what the watch stored, untouched, and does not depend
 on the point log:

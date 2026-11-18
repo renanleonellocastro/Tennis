@@ -13,6 +13,10 @@ and the project adheres to [Semantic Versioning](https://semver.org/).
   never reached the file, and the converter stopped the replay there. The
   point log field is now paced, so those entries reach the file three at
   a time.
+* Converter: when the app closed within the second a set ended, the short
+  lap that followed was taken for the lap that closed the set and
+  `set_scores_match` came out false for a file that was right. A lap with
+  no game is no longer compared.
 
 ## [1.0.0] - not released yet
 
