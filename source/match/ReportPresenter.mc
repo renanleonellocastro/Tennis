@@ -47,26 +47,26 @@ class ReportPresenter {
         return kind == BODY_PAGE ? bodyRows(sensors) : playerRows(playerTable(kind));
     }
 
-    // [label key, method that gives the value of a player] for each row of
-    // a page that compares the players.
+    // Label key, then the method that gives the value of a player, for
+    // each row of a page that compares the players. One flat list: a list
+    // of pairs takes more of the little memory of the smallest watches.
     hidden function playerTable(kind as Number) as Array {
         if (kind == SERVE_PAGE) {
-            return [["ReportFirstIn", :firstIn], ["ReportFirstWon", :firstWon],
-                    ["ReportSecondWon", :secondWon], ["ReportDoubleFaults", :doubleFaults]];
+            return ["ReportFirstIn", :firstIn, "ReportFirstWon", :firstWon,
+                    "ReportSecondWon", :secondWon, "ReportDoubleFaults", :doubleFaults];
         }
         if (kind == ENDINGS_PAGE) {
-            return [["ReportAces", :aces], ["ReportWinners", :winners],
-                    ["ReportNetErrors", :netErrors], ["ReportOutErrors", :outErrors]];
+            return ["ReportAces", :aces, "ReportWinners", :winners,
+                    "ReportNetErrors", :netErrors, "ReportOutErrors", :outErrors];
         }
-        return [["ReportBreaks", :breaks], ["ReportSaved", :saved], ["ReportHolds", :holds], ["ReportBestRun", :bestRun]];
+        return ["ReportBreaks", :breaks, "ReportSaved", :saved, "ReportHolds", :holds, "ReportBestRun", :bestRun];
     }
 
     hidden function playerRows(table as Array) as Array<Array> {
         var rows = [] as Array<Array>;
-        for (var i = 0; i < table.size(); i++) {
-            var row = table[i] as Array;
-            var value = method(row[1] as Symbol);
-            rows.add([Strings.t(row[0] as String), value.invoke(Player.ME), value.invoke(Player.OPPONENT)]);
+        for (var i = 0; i < table.size(); i += 2) {
+            var value = method(table[i + 1] as Symbol);
+            rows.add([Strings.t(table[i] as String), value.invoke(Player.ME), value.invoke(Player.OPPONENT)]);
         }
         return rows;
     }

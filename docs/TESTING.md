@@ -178,7 +178,7 @@ The few hundred bytes that the script itself takes are subtracted. 1 kB is
 
 | Watch | Release build, highest | Debug build, highest |
 |---|---|---|
-| Forerunner 55 (`fr55`) | 92.8 kB | 107.7 kB |
+| Forerunner 55 (`fr55`), measured again after the paced point log | not measured again | 107.9 kB |
 | Forerunner 245 (`fr245`) | 92.8 kB | 107.7 kB |
 | fenix 6 (`fenix6`) | 92.8 kB | 107.7 kB |
 | fenix 6S (`fenix6s`) | 92.8 kB | 107.7 kB |
@@ -194,6 +194,17 @@ the steps read, within half a kB: home screen 94.5 kB, main menu 96.0 kB, match 
 ending list 106.5 kB, match menu 106.4 kB, final score 106.0 kB,
 statistics 106.6 kB, save menu 107.7 kB. A practice of 12 closed blocks with its
 summary and save menu stays at 99.2 kB in the debug build.
+
+The point log field is paced since then (`PacedSession`): a value waits
+about 1.5 seconds for its turn, and each value that waits takes about 70
+bytes. The first measurement played 20 entries in 0.7 seconds, a pace no
+player reaches, and at that pace the waiting values alone add about 7 kB.
+So the Forerunner 55 debug build was measured again with one serve fault
+and one point every 1.6 seconds, 300 entries in all: home screen 94.7 kB,
+after 300 entries 106.2 kB, save menu 107.9 kB. To stay under the bar,
+the format rules, the empty point log field and the report tables were
+packed tighter, which gave back about 0.4 kB. The other rows of the table
+and the steps listed above are from the first measurement.
 
 The readings are taken between the steps, so memory that a screen takes
 and gives back while it draws is not in them, and nothing was measured on

@@ -21,6 +21,9 @@ and the project adheres to [Semantic Versioning](https://semver.org/).
 * The longest game label of the report reads "Longest" in English and
   "Maior" in Portuguese: on the Venu Sq 2 the longer labels touched a
   game time of ten minutes or more on the same line.
+* The format rules, the empty point log field and the report tables take
+  about 0.4 kB less memory, so the debug build stays under 108 kB on the
+  Forerunner 55 with the paced point log (`docs/TESTING.md`, Memory).
 * Spanish: the change of ends notice reads "Cambio lado", so "Juego.
   Cambio lado" fits the banner row of the Forerunner 55.
 
