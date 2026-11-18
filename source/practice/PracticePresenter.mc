@@ -29,12 +29,12 @@ module PracticePresenter {
 
     // "Block 2"
     function blockTitle(number as Number) as String {
-        return Strings.t("PracticeBlock") + WORD_GAP + number;
+        return Strings.t(Str.PracticeBlock) + WORD_GAP + number;
     }
 
     // The line under the block title: the pause, or the rate of the block.
     function bannerText(isPaused as Boolean, hits as Number, misses as Number) as String {
-        return isPaused ? Strings.t("Paused") : rateText(hits, misses);
+        return isPaused ? Strings.t(Str.Paused) : rateText(hits, misses);
     }
 
     // Which of the two digit fonts the counts need: 0 while both have at

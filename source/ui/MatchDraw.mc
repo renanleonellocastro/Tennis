@@ -25,10 +25,10 @@ module MatchDraw {
 
     // clock is [seconds, heart rate or null, is paused]; controlKey is the
     // text of the second touch control.
-    function draw(dc as Dc, layout as MatchLayout, clock as Array, controlKey as String) as Void {
+    function draw(dc as Dc, layout as MatchLayout, clock as Array, controlKey as Number) as Void {
         drawClock(dc, layout, clock);
         if (layout.hasTouchControls()) {
-            drawControl(dc, layout.menuControlX(), layout.controlsY(), "HomeHint");
+            drawControl(dc, layout.menuControlX(), layout.controlsY(), Str.HomeHint);
             drawControl(dc, layout.faultControlX(), layout.controlsY(), controlKey);
         }
         if (layout.hasKeyHints()) {
@@ -52,7 +52,7 @@ module MatchDraw {
         }
     }
 
-    function drawControl(dc as Dc, x as Number, y as Number, key as String) as Void {
+    function drawControl(dc as Dc, x as Number, y as Number, key as Number) as Void {
         Theme.drawPill(dc, x, y, Strings.t(key), Graphics.FONT_XTINY, Theme.COLOR_TEXT_DIM);
     }
 

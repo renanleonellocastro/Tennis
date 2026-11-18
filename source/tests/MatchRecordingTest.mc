@@ -106,7 +106,7 @@ module MatchRecordingTests {
         bench.controller.save(new MatchTags(null));
         Test.assertEqual(bench.session.calls, "spS");
         Test.assertEqual(bench.locator.calls, "+-");
-        Test.assertEqual(bench.controller.farewellKey() as String, "SavedMsg");
+        Test.assertEqual(bench.controller.farewellKey() as Number, Str.SavedMsg);
         Test.assert(!bench.store.hasMatch());
         return true;
     }
@@ -175,15 +175,15 @@ module MatchRecordingTests {
         bench.controller.end();
         bench.controller.discard();
         Test.assertEqual(bench.session.calls, "spD");
-        Test.assertEqual(bench.controller.farewellKey() as String, "DiscardedMsg");
+        Test.assertEqual(bench.controller.farewellKey() as Number, Str.DiscardedMsg);
         Test.assertEqual(bench.memory.values.size(), 0);
         return true;
     }
 
     (:test)
     function testFarewellTextsExistInEveryLanguage(logger as Test.Logger) as Boolean {
-        assertKeyInEveryLanguage("SavedMsg");
-        assertKeyInEveryLanguage("DiscardedMsg");
+        assertKeyInEveryLanguage(Str.SavedMsg);
+        assertKeyInEveryLanguage(Str.DiscardedMsg);
         return true;
     }
 

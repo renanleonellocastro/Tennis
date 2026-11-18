@@ -9,11 +9,11 @@ class MatchTags extends OptionList {
 
     function initialize(stored as Object?) {
         OptionList.initialize(
-            ["TagSurface", "TagKind"] as Array<String>,
+            [Str.TagSurface, Str.TagKind] as Array<Number>,
             [
-                ["TagNotSet", "SurfaceClay", "SurfaceHard", "SurfaceGrass"],
-                ["TagNotSet", "KindMatch", "KindFriendly"]
-            ] as Array< Array<String> >,
+                [Str.TagNotSet, Str.SurfaceClay, Str.SurfaceHard, Str.SurfaceGrass],
+                [Str.TagNotSet, Str.KindMatch, Str.KindFriendly]
+            ] as Array< Array<Number> >,
             stored);
     }
 

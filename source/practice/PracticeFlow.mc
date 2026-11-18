@@ -14,15 +14,15 @@ module PracticeFlow {
     // delegate that the row runs.
     function practiceMenuRows(isPaused as Boolean) as Array {
         return [
-            [isPaused ? "MatchMenuResume" : "MatchMenuPause", :togglePause],
-            ["PracticeMenuEnd", :askToEnd]
+            [isPaused ? Str.MatchMenuResume : Str.MatchMenuPause, :togglePause],
+            [Str.PracticeMenuEnd, :askToEnd]
         ];
     }
 
     function saveMenuRows() as Array {
         return [
-            ["FinalSave", :save],
-            ["FinalDiscard", :askToDiscard]
+            [Str.FinalSave, :save],
+            [Str.FinalDiscard, :askToDiscard]
         ];
     }
 
@@ -41,12 +41,12 @@ module PracticeFlow {
     }
 
     function deviceRecorder() as PracticeRecorder {
-        return new PracticeRecorder(new FitSession(Strings.t("AppName"), RecordingFields.PRACTICE),
+        return new PracticeRecorder(new FitSession(Strings.t(Str.AppName), RecordingFields.PRACTICE),
                                     new WatchSensors(), new NoLocator());
     }
 
     function pushTouchNeeded() as Void {
-        WatchUi.pushView(new MessageView(Strings.t("TouchNeededMsg"), Theme.COLOR_WARM, MatchFlow.TOUCH_NEEDED_MS),
+        WatchUi.pushView(new MessageView(Strings.t(Str.TouchNeededMsg), Theme.COLOR_WARM, MatchFlow.TOUCH_NEEDED_MS),
                          new MessageDelegate(), WatchUi.SLIDE_LEFT);
     }
 
@@ -74,7 +74,7 @@ module PracticeFlow {
     }
 
     function showEndConfirmation(controller as PracticeController) as Void {
-        WatchUi.switchToView(new WatchUi.Confirmation(Strings.t("EndPracticeQ")),
+        WatchUi.switchToView(new WatchUi.Confirmation(Strings.t(Str.EndPracticeQ)),
                              new PracticeConfirmDelegate(controller.method(:end)), WatchUi.SLIDE_IMMEDIATE);
     }
 
@@ -95,7 +95,7 @@ module PracticeFlow {
     }
 
     function showDiscardConfirmation(controller as PracticeController) as Void {
-        WatchUi.switchToView(new WatchUi.Confirmation(Strings.t("DiscardQ")),
+        WatchUi.switchToView(new WatchUi.Confirmation(Strings.t(Str.DiscardQ)),
                              new PracticeConfirmDelegate(controller.method(:discard)), WatchUi.SLIDE_IMMEDIATE);
     }
 

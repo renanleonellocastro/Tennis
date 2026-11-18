@@ -16,7 +16,7 @@ module PracticeFlow {
         // The widest count of two and of three digits, indexed by
         // PracticePresenter.digitSlot.
         hidden const WIDEST_COUNTS = ["88", "888"];
-        hidden const LABEL_KEYS = ["PracticeHit", "PracticeMiss"];
+        hidden const LABEL_KEYS = [Str.PracticeHit, Str.PracticeMiss];
         hidden const CENTERED = Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER;
 
         hidden var _controller as PracticeController;
@@ -94,13 +94,13 @@ module PracticeFlow {
             dc.drawText(_layout.playerX(side), _layout.pointsY(), font, count.toString(), CENTERED);
             dc.setColor(MatchDraw.SIDE_COLORS[side] as Number, Graphics.COLOR_TRANSPARENT);
             dc.drawText(_layout.playerX(side), _layout.labelsY(), Graphics.FONT_XTINY,
-                        Strings.t(LABEL_KEYS[side] as String), CENTERED);
+                        Strings.t(LABEL_KEYS[side] as Number), CENTERED);
         }
 
         hidden function drawFooter(dc as Dc) as Void {
             MatchDraw.draw(dc, _layout,
                              [_controller.clockSeconds(), _controller.heartRate(), _controller.isPaused()],
-                             "PracticeNext");
+                             Str.PracticeNext);
         }
     }
 

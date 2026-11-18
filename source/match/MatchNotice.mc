@@ -5,19 +5,19 @@ import Toybox.Lang;
 class MatchNotice {
     static const VISIBLE_MS = 4000;
 
-    hidden var _keys as Array<String> = [] as Array<String>;
+    hidden var _keys as Array<Number> = [] as Array<Number>;
     hidden var _shownAtMs as Number = 0;
 
-    function show(keys as Array<String>, nowMs as Number) as Void {
+    function show(keys as Array<Number>, nowMs as Number) as Void {
         _keys = keys;
         _shownAtMs = nowMs;
     }
 
     function clear() as Void {
-        _keys = [] as Array<String>;
+        _keys = [] as Array<Number>;
     }
 
-    function keys(nowMs as Number) as Array<String> {
+    function keys(nowMs as Number) as Array<Number> {
         if (nowMs - _shownAtMs >= VISIBLE_MS) {
             clear();
         }

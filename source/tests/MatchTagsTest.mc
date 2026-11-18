@@ -23,10 +23,10 @@ module MatchTagsTests {
     function testTagsKeepValidStoredChoices(logger as Test.Logger) as Boolean {
         var tags = new MatchTags([3, 2]);
         Test.assertEqual(joinedNumbers(tags.toArray()), "3,2");
-        Test.assertEqual(tags.labelKey(MatchTags.SURFACE), "TagSurface");
-        Test.assertEqual(tags.valueKey(MatchTags.SURFACE), "SurfaceGrass");
-        Test.assertEqual(tags.labelKey(MatchTags.KIND), "TagKind");
-        Test.assertEqual(tags.valueKey(MatchTags.KIND), "KindFriendly");
+        Test.assertEqual(tags.labelKey(MatchTags.SURFACE), Str.TagSurface);
+        Test.assertEqual(tags.valueKey(MatchTags.SURFACE), Str.SurfaceGrass);
+        Test.assertEqual(tags.labelKey(MatchTags.KIND), Str.TagKind);
+        Test.assertEqual(tags.valueKey(MatchTags.KIND), Str.KindFriendly);
         return true;
     }
 
@@ -34,14 +34,14 @@ module MatchTagsTests {
     (:test)
     function testTagOptionsFollowTheCodesOfTheFile(logger as Test.Logger) as Boolean {
         var tags = new MatchTags(null);
-        var surfaces = ["TagNotSet", "SurfaceClay", "SurfaceHard", "SurfaceGrass"];
+        var surfaces = [Str.TagNotSet, Str.SurfaceClay, Str.SurfaceHard, Str.SurfaceGrass];
         for (var i = 0; i < surfaces.size(); i++) {
             Test.assertEqual(tags.valueKey(MatchTags.SURFACE), surfaces[i]);
             tags.cycle(MatchTags.SURFACE);
         }
-        Test.assertEqual(tags.valueKey(MatchTags.SURFACE), "TagNotSet");
+        Test.assertEqual(tags.valueKey(MatchTags.SURFACE), Str.TagNotSet);
         tags.cycle(MatchTags.KIND);
-        Test.assertEqual(tags.valueKey(MatchTags.KIND), "KindMatch");
+        Test.assertEqual(tags.valueKey(MatchTags.KIND), Str.KindMatch);
         Test.assertEqual(tags.optionCount(MatchTags.KIND), 3);
         return true;
     }

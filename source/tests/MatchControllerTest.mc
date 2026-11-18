@@ -114,9 +114,9 @@ module MatchControllerTests {
         Test.assertEqual(bench.play("MMM"), Reaction.REFRESH);
         Test.assertEqual(bench.notice(), "");
         Test.assertEqual(bench.play("M"), CHANGE_ENDS);
-        Test.assertEqual(bench.notice(), "NoticeGame,NoticeChangeEnds");
+        Test.assertEqual(bench.notice(), joined([Str.NoticeGame, Str.NoticeChangeEnds]));
         Test.assertEqual(bench.games("O"), Reaction.REFRESH);
-        Test.assertEqual(bench.notice(), "NoticeGame");
+        Test.assertEqual(bench.notice(), joined([Str.NoticeGame]));
         return true;
     }
 
@@ -136,9 +136,9 @@ module MatchControllerTests {
     function testSetNoticeReplacesTheGameNotice(logger as Test.Logger) as Boolean {
         var bench = simpleBench(MatchFormat.BEST_OF_3);
         Test.assertEqual(bench.games("MMMMMM"), Reaction.REFRESH);
-        Test.assertEqual(bench.notice(), "NoticeSet");
+        Test.assertEqual(bench.notice(), joined([Str.NoticeSet]));
         bench.games("MMMOOOOOO");
-        Test.assertEqual(bench.notice(), "NoticeSet,NoticeChangeEnds");
+        Test.assertEqual(bench.notice(), joined([Str.NoticeSet, Str.NoticeChangeEnds]));
         return true;
     }
 
@@ -147,7 +147,7 @@ module MatchControllerTests {
         var bench = simpleBench(MatchFormat.TIE_BREAK_ONLY);
         Test.assertEqual(bench.play("MMMOO"), Reaction.REFRESH);
         Test.assertEqual(bench.play("O"), CHANGE_ENDS);
-        Test.assertEqual(bench.notice(), "NoticeChangeEnds");
+        Test.assertEqual(bench.notice(), joined([Str.NoticeChangeEnds]));
         return true;
     }
 
@@ -155,7 +155,7 @@ module MatchControllerTests {
     function testFaultThatClosesAGameShowsTheNotice(logger as Test.Logger) as Boolean {
         var bench = simpleBench(MatchFormat.BEST_OF_3);
         Test.assertEqual(bench.play("OOOFF"), CHANGE_ENDS);
-        Test.assertEqual(bench.notice(), "NoticeGame,NoticeChangeEnds");
+        Test.assertEqual(bench.notice(), joined([Str.NoticeGame, Str.NoticeChangeEnds]));
         return true;
     }
 

@@ -25,7 +25,7 @@ class PracticeController {
     hidden var _clock as MatchClock;
     hidden var _recorder as PracticeRecorder;
     hidden var _isEnded as Boolean = false;
-    hidden var _farewellKey as String? = null;
+    hidden var _farewellKey as Number? = null;
     hidden var _isSuspended as Boolean = false;
 
     function initialize(time as TimeSource, recorder as PracticeRecorder) {
@@ -124,17 +124,17 @@ class PracticeController {
     // Save, discard and the app closing.
 
     function save() as Void {
-        _farewellKey = "SavedMsg";
+        _farewellKey = Str.SavedMsg;
         _recorder.save();
     }
 
     function discard() as Void {
-        _farewellKey = "DiscardedMsg";
+        _farewellKey = Str.DiscardedMsg;
         _recorder.discard();
     }
 
     // The message to leave with once the practice was saved or discarded.
-    function farewellKey() as String? {
+    function farewellKey() as Number? {
         return _farewellKey;
     }
 

@@ -18,9 +18,9 @@ module MatchPresenter {
     const MINUTES_PER_HOUR = 60;
     // Checked in this order for each player: the heaviest label wins.
     const PRESSURES = [
-        [:hasMatchPoint, "LabelMatchPoint"],
-        [:hasSetPoint, "LabelSetPoint"],
-        [:hasBreakPoint, "LabelBreakPoint"]
+        [:hasMatchPoint, Str.LabelMatchPoint],
+        [:hasSetPoint, Str.LabelSetPoint],
+        [:hasBreakPoint, Str.LabelBreakPoint]
     ];
 
     // The number fonts only have digits, so the screen needs to know when
@@ -31,7 +31,7 @@ module MatchPresenter {
 
     function pointsText(state as MatchState, player as Number) as String {
         if (!isPointsNumeric(state, player)) {
-            return Strings.t("LabelAdvantage");
+            return Strings.t(Str.LabelAdvantage);
         }
         return state.displayPoints(player).toString();
     }
@@ -95,15 +95,15 @@ module MatchPresenter {
 
     // [text, BannerTone] of the line under the set score. A pause comes
     // first, then a fresh notice, then the point at stake.
-    function banner(isPaused as Boolean, noticeKeys as Array<String>, state as MatchState) as Array {
+    function banner(isPaused as Boolean, noticeKeys as Array<Number>, state as MatchState) as Array {
         if (isPaused) {
-            return [Strings.t("Paused"), BannerTone.NOTICE];
+            return [Strings.t(Str.Paused), BannerTone.NOTICE];
         }
         if (noticeKeys.size() > 0) {
             return [noticeText(noticeKeys), BannerTone.NOTICE];
         }
         var stake = pressure(state);
-        return stake == null ? ["", BannerTone.NOTICE] : [Strings.t(stake[0] as String), stake[1]];
+        return stake == null ? ["", BannerTone.NOTICE] : [Strings.t(stake[0] as Number), stake[1]];
     }
 
     function twoDigits(value as Number) as String {
@@ -126,7 +126,7 @@ module MatchPresenter {
     }
 
     // The notice keys as one translated line, or "" for no notice.
-    function noticeText(keys as Array<String>) as String {
+    function noticeText(keys as Array<Number>) as String {
         var text = "";
         for (var i = 0; i < keys.size(); i++) {
             text += (i == 0 ? "" : NOTICE_GAP) + Strings.t(keys[i]);
@@ -134,10 +134,10 @@ module MatchPresenter {
         return text;
     }
 
-    function finalTitleKey(state as MatchState) as String {
+    function finalTitleKey(state as MatchState) as Number {
         if (!state.isFinished()) {
-            return "FinalMatchEnded";
+            return Str.FinalMatchEnded;
         }
-        return state.winner() == Player.ME ? "FinalYouWon" : "FinalYouLost";
+        return state.winner() == Player.ME ? Str.FinalYouWon : Str.FinalYouLost;
     }
 }

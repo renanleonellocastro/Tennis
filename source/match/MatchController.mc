@@ -28,7 +28,7 @@ class MatchController {
     hidden var _isEnded as Boolean = false;
     hidden var _recorder as MatchRecorder;
     hidden var _store as MatchStore;
-    hidden var _farewellKey as String? = null;
+    hidden var _farewellKey as Number? = null;
     hidden var _isSuspended as Boolean = false;
 
     // An engine that already has entries resumes that match: the clock
@@ -169,24 +169,24 @@ class MatchController {
 
     // The end of the match has its own screen, so it needs no notice, and
     // the engine never asks for a change of ends after it.
-    hidden function noticeKeysSince(gamesBefore as Number, setsBefore as Number) as Array<String> {
-        var keys = [] as Array<String>;
+    hidden function noticeKeysSince(gamesBefore as Number, setsBefore as Number) as Array<Number> {
+        var keys = [] as Array<Number>;
         var closed = closedKey(gamesBefore, setsBefore);
         if (closed != null && !state().isFinished()) {
             keys.add(closed);
         }
         if (state().isChangeOfEndsDue()) {
-            keys.add("NoticeChangeEnds");
+            keys.add(Str.NoticeChangeEnds);
         }
         return keys;
     }
 
     // What the last entry closed: a set, a game or nothing.
-    hidden function closedKey(gamesBefore as Number, setsBefore as Number) as String? {
+    hidden function closedKey(gamesBefore as Number, setsBefore as Number) as Number? {
         if (state().finishedSets() > setsBefore) {
-            return "NoticeSet";
+            return Str.NoticeSet;
         }
-        return ScoreFixer.gamesPlayed(state()) > gamesBefore ? "NoticeGame" : null;
+        return ScoreFixer.gamesPlayed(state()) > gamesBefore ? Str.NoticeGame : null;
     }
 
     // Removes the last entry. Nothing is scored or undone during a pause.
@@ -245,23 +245,23 @@ class MatchController {
     // Keeps the activity, with the tags the player gave it, and forgets the
     // stored match.
     function save(tags as MatchTags) as Void {
-        close("SavedMsg");
+        close(Str.SavedMsg);
         writeSummary(tags);
         _recorder.save();
     }
 
     function discard() as Void {
-        close("DiscardedMsg");
+        close(Str.DiscardedMsg);
         _recorder.discard();
     }
 
-    hidden function close(farewellKey as String) as Void {
+    hidden function close(farewellKey as Number) as Void {
         _farewellKey = farewellKey;
         _store.clear();
     }
 
     // The message to leave with once the match was saved or discarded.
-    function farewellKey() as String? {
+    function farewellKey() as Number? {
         return _farewellKey;
     }
 
@@ -335,7 +335,7 @@ class MatchController {
         return _clock.seconds(_time.now());
     }
 
-    function noticeKeys() as Array<String> {
+    function noticeKeys() as Array<Number> {
         return _notice.keys(_time.now());
     }
 }

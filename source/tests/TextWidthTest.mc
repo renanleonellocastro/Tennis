@@ -23,13 +23,13 @@ module TextFitTests {
     const LONGEST_CLOCK = "9:59:59";
     const LONGEST_GAME_TIME = "59:59";
     const LONGEST_HEART_RATE = "188";
-    const BANNER_KEYS = ["Paused", "LabelMatchPoint", "LabelSetPoint", "LabelBreakPoint", "NoticeChangeEnds"];
-    const FINAL_TITLE_KEYS = ["FinalYouWon", "FinalYouLost", "FinalMatchEnded"];
-    const REPORT_TITLE_KEYS = ["ReportScore", "ReportServe", "ReportEndings", "ReportPressure", "ReportTime",
-                               "ReportBody"];
-    const COUNT_LABEL_KEYS = ["ReportPoints", "ReportDoubleFaults", "ReportAces", "ReportWinners",
-                              "ReportNetErrors", "ReportOutErrors", "ReportBestRun"];
-    const CONTROL_KEYS = ["ControlFault", "PracticeNext"];
+    const BANNER_KEYS = [Str.Paused, Str.LabelMatchPoint, Str.LabelSetPoint, Str.LabelBreakPoint, Str.NoticeChangeEnds];
+    const FINAL_TITLE_KEYS = [Str.FinalYouWon, Str.FinalYouLost, Str.FinalMatchEnded];
+    const REPORT_TITLE_KEYS = [Str.ReportScore, Str.ReportServe, Str.ReportEndings, Str.ReportPressure, Str.ReportTime,
+                               Str.ReportBody];
+    const COUNT_LABEL_KEYS = [Str.ReportPoints, Str.ReportDoubleFaults, Str.ReportAces, Str.ReportWinners,
+                              Str.ReportNetErrors, Str.ReportOutErrors, Str.ReportBestRun];
+    const CONTROL_KEYS = [Str.ControlFault, Str.PracticeNext];
     // The lowest row a kind of value can take on a report page.
     const LAST_RATIO_ROW = 2;
     const LAST_REPORT_ROW = 3;
@@ -81,19 +81,19 @@ module TextFitTests {
     }
 
     // The texts of the keys in every language.
-    function textsOf(keys as Array<String>) as Array<String> {
+    function textsOf(keys as Array<Number>) as Array<String> {
         var texts = [] as Array<String>;
         for (var c = 0; c < I18n.CODES.size(); c++) {
             var table = I18n.table(I18n.CODES[c] as String);
             for (var i = 0; i < keys.size(); i++) {
-                texts.add(table.get(keys[i]) as String);
+                texts.add(table[keys[i]]);
             }
         }
         return texts;
     }
 
     // Each text of the first keys followed by the tail, in every language.
-    function textsWithTail(keys as Array<String>, tail as String) as Array<String> {
+    function textsWithTail(keys as Array<Number>, tail as String) as Array<String> {
         var texts = textsOf(keys);
         for (var i = 0; i < texts.size(); i++) {
             texts[i] = texts[i] + tail;
@@ -106,9 +106,9 @@ module TextFitTests {
         var texts = [] as Array<String>;
         for (var c = 0; c < I18n.CODES.size(); c++) {
             var table = I18n.table(I18n.CODES[c] as String);
-            var ends = MatchPresenter.NOTICE_GAP + (table.get("NoticeChangeEnds") as String);
-            texts.add((table.get("NoticeGame") as String) + ends);
-            texts.add((table.get("NoticeSet") as String) + ends);
+            var ends = MatchPresenter.NOTICE_GAP + (table[Str.NoticeChangeEnds]);
+            texts.add((table[Str.NoticeGame]) + ends);
+            texts.add((table[Str.NoticeSet]) + ends);
         }
         return texts;
     }
@@ -144,7 +144,7 @@ module TextFitTests {
         var font = Graphics.FONT_XTINY;
         var at = layout();
         Test.assert(isInside(widthOf(LONGEST_SETS, font), at.centerX(), at.setsY(), inkHalf(font)));
-        Test.assert(isInside(widest(textsWithTail(["PracticeBlock"], " 88"), font), at.centerX(), at.setsY(),
+        Test.assert(isInside(widest(textsWithTail([Str.PracticeBlock], " 88"), font), at.centerX(), at.setsY(),
                              inkHalf(font)));
         Test.assert(isInside(widest(textsOf(BANNER_KEYS), font), at.centerX(), at.bannerY(), inkHalf(font)));
         Test.assert(isInside(widest(doubleNotices(), font), at.centerX(), at.bannerY(), inkHalf(font)));
@@ -158,7 +158,7 @@ module TextFitTests {
         var at = layout();
         var court = at.courtRect();
         var room = at.centerX() - court[2] / 4 - at.markerRadius() - CLEARANCE - at.labelX(Player.ME);
-        Test.assert(widest(textsOf(["LabelMe", "LabelOpponent"]), Graphics.FONT_XTINY) <= room);
+        Test.assert(widest(textsOf([Str.LabelMe, Str.LabelOpponent]), Graphics.FONT_XTINY) <= room);
         return true;
     }
 
@@ -168,7 +168,7 @@ module TextFitTests {
     function testTheAdvantageFitsBesideTheCourt(logger as Test.Logger) as Boolean {
         var at = layout();
         var font = Graphics.FONT_LARGE;
-        var half = (widest(textsOf(["LabelAdvantage"]), font) + 1) / 2;
+        var half = (widest(textsOf([Str.LabelAdvantage]), font) + 1) / 2;
         var x = at.playerX(Player.ME);
         Test.assert(x - half >= edgeAt(at.pointsY(), inkHalf(font)));
         Test.assert(x + half <= at.courtRect()[0] - at.markerRadius() - CLEARANCE);
@@ -180,7 +180,7 @@ module TextFitTests {
     function testThePracticeLabelsStayOnTheirHalf(logger as Test.Logger) as Boolean {
         var at = layout();
         var font = Graphics.FONT_XTINY;
-        var half = (widest(textsOf(["PracticeHit", "PracticeMiss"]), font) + 1) / 2;
+        var half = (widest(textsOf([Str.PracticeHit, Str.PracticeMiss]), font) + 1) / 2;
         var x = at.playerX(Player.ME);
         Test.assert(x - half >= edgeAt(at.labelsY(), inkHalf(font)));
         Test.assert(x + half <= at.centerX() - CLEARANCE);
@@ -213,7 +213,7 @@ module TextFitTests {
         if (!at.hasTouchControls()) {
             return true;
         }
-        var menus = textsOf(["HomeHint"]);
+        var menus = textsOf([Str.HomeHint]);
         var others = textsOf(CONTROL_KEYS);
         for (var i = 0; i < others.size(); i++) {
             var menu = pillSize(menus[i / CONTROL_KEYS.size()]);
@@ -254,9 +254,9 @@ module TextFitTests {
     (:test)
     function testTheRowsThatCompareThePlayersKeepTheirColumnsApart(logger as Test.Logger) as Boolean {
         Test.assert(isPlayerRowClear(textsOf(RATIO_LABEL_KEYS), "88/88", LAST_RATIO_ROW));
-        Test.assert(isPlayerRowClear(textsOf(["ReportFirstIn"]), "100%", 0));
+        Test.assert(isPlayerRowClear(textsOf([Str.ReportFirstIn]), "100%", 0));
         Test.assert(isPlayerRowClear(textsOf(COUNT_LABEL_KEYS), "188", LAST_REPORT_ROW));
-        Test.assert(isPlayerRowClear(textsWithTail(["ReportSet"], " 3"), "7(18)", LAST_RATIO_ROW));
+        Test.assert(isPlayerRowClear(textsWithTail([Str.ReportSet], " 3"), "7(18)", LAST_RATIO_ROW));
         return true;
     }
 
@@ -265,7 +265,7 @@ module TextFitTests {
         var at = reportLayout();
         var font = Graphics.FONT_XTINY;
         Test.assert(isInside(widest(textsOf(REPORT_TITLE_KEYS), font), at.centerX(), at.titleY(), inkHalf(font)));
-        Test.assert(isInside(widest(textsOf(["LabelMe", "LabelOpponent"]), font), at.cellXs(3)[1], at.headerY(),
+        Test.assert(isInside(widest(textsOf([Str.LabelMe, Str.LabelOpponent]), font), at.cellXs(3)[1], at.headerY(),
                              inkHalf(font)));
         Test.assert(isInside(widthOf("6/6", font), at.centerX(), at.pagerY(), inkHalf(font)));
         return true;
@@ -314,7 +314,7 @@ module TextFitTests {
         var bench = new PracticeTests.PracticeBench();
         var view = new PracticeFlow.PracticeSummaryView(bench.controller, new SummaryPager(1, 4));
         var isRound = System.getDeviceSettings().screenShape == System.SCREEN_SHAPE_ROUND;
-        Test.assert(isLineInside(textsOf(["PracticeTotal"]), Graphics.FONT_XTINY,
+        Test.assert(isLineInside(textsOf([Str.PracticeTotal]), Graphics.FONT_XTINY,
                                  PracticePresenter.summaryTitleY(isRound)));
         Test.assert(isLineInside(["888/999  89%"], Graphics.FONT_SMALL, view.TOTAL_Y));
         Test.assert(isLineInside(["12  88/100  88%"], Graphics.FONT_XTINY, view.FIRST_ROW_Y));

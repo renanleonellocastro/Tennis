@@ -6,20 +6,16 @@ import Toybox.Test;
 // translated values pins the language first with Strings.loadTables.
 
 (:test)
-function testEveryLanguageHasEveryEngKey(logger as Test.Logger) as Boolean {
-    var eng = I18n.table("eng");
-    var engKeys = eng.keys();
-    Test.assert(engKeys.size() > 0);
+function testEveryLanguageHasATextForEveryKey(logger as Test.Logger) as Boolean {
+    var count = I18n.table("eng").size();
+    Test.assert(count > 0);
     var codes = I18n.CODES;
     for (var c = 0; c < codes.size(); c++) {
         var code = codes[c] as String;
         var table = I18n.table(code);
-        Test.assertEqualMessage(table.size(), eng.size(), "key count mismatch for " + code);
-        for (var k = 0; k < engKeys.size(); k++) {
-            var key = engKeys[k] as String;
-            var value = table.get(key);
-            Test.assertMessage(value != null, "missing " + key + " in " + code);
-            Test.assertMessage((value as String).length() > 0, "empty " + key + " in " + code);
+        Test.assertEqualMessage(table.size(), count, "key count mismatch for " + code);
+        for (var key = 0; key < count; key++) {
+            Test.assertMessage(table[key].length() > 0, "empty " + key + " in " + code);
         }
     }
     return true;
@@ -38,7 +34,7 @@ function testStringsLoadTablesSwitchesLanguage(logger as Test.Logger) as Boolean
         var code = codes[c] as String;
         Strings.loadTables(code);
         Test.assertEqual(Strings.language(), code);
-        Test.assertEqual(Strings.t("MenuAbout"), I18n.table(code).get("MenuAbout") as String);
+        Test.assertEqual(Strings.t(Str.MenuAbout), I18n.table(code)[Str.MenuAbout]);
     }
     return true;
 }
@@ -46,16 +42,9 @@ function testStringsLoadTablesSwitchesLanguage(logger as Test.Logger) as Boolean
 (:test)
 function testStringsTranslateKnownKeys(logger as Test.Logger) as Boolean {
     Strings.loadTables("eng");
-    Test.assertEqual(Strings.t("AppName"), "Tennis");
+    Test.assertEqual(Strings.t(Str.AppName), "Tennis");
     Strings.loadTables("por");
-    Test.assertEqual(Strings.t("MenuPractice"), I18n.table("por").get("MenuPractice") as String);
-    return true;
-}
-
-(:test)
-function testStringsUnknownKeyReturnsKeyItself(logger as Test.Logger) as Boolean {
-    Strings.loadTables("por");
-    Test.assertEqual(Strings.t("NoSuchKey_123"), "NoSuchKey_123");
+    Test.assertEqual(Strings.t(Str.MenuPractice), "Treino");
     return true;
 }
 
@@ -71,6 +60,6 @@ function testStringsFollowSystemWhenNothingIsLoaded(logger as Test.Logger) as Bo
     Strings._code = null;
     Strings._table = null;
     Test.assertEqual(Strings.language(), Strings.systemDefault());
-    Test.assert(Strings.t("AppName").length() > 0);
+    Test.assert(Strings.t(Str.AppName).length() > 0);
     return true;
 }

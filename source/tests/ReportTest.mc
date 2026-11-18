@@ -5,12 +5,12 @@ import Toybox.Test;
 // layout on the three screen shapes.
 module ReportTests {
     const ROW_LABEL_KEYS = [
-        "ReportSet", "ReportPoints", "ReportFirstIn", "ReportFirstWon", "ReportSecondWon", "ReportDoubleFaults",
-        "ReportAces", "ReportWinners", "ReportNetErrors", "ReportOutErrors", "ReportBreaks", "ReportSaved",
-        "ReportHolds", "ReportBestRun", "ReportMatchTime", "ReportAvgGame", "ReportLongGame", "ReportPerPoint",
-        "ReportAvgHr", "ReportMaxHr", "ReportKeyHr", "ReportCalories"
+        Str.ReportSet, Str.ReportPoints, Str.ReportFirstIn, Str.ReportFirstWon, Str.ReportSecondWon, Str.ReportDoubleFaults,
+        Str.ReportAces, Str.ReportWinners, Str.ReportNetErrors, Str.ReportOutErrors, Str.ReportBreaks, Str.ReportSaved,
+        Str.ReportHolds, Str.ReportBestRun, Str.ReportMatchTime, Str.ReportAvgGame, Str.ReportLongGame, Str.ReportPerPoint,
+        Str.ReportAvgHr, Str.ReportMaxHr, Str.ReportKeyHr, Str.ReportCalories
     ];
-    const TITLE_KEYS = ["ReportScore", "ReportServe", "ReportEndings", "ReportPressure", "ReportTime", "ReportBody"];
+    const TITLE_KEYS = [Str.ReportScore, Str.ReportServe, Str.ReportEndings, Str.ReportPressure, Str.ReportTime, Str.ReportBody];
     // What fits between the two columns of values on the smallest screen.
     const LABEL_MAX_CHARS = 11;
 
@@ -39,9 +39,9 @@ module ReportTests {
     }
 
     function titles(pages as Array<Array>) as String {
-        var keys = [] as Array<String>;
+        var keys = [] as Array<Number>;
         for (var i = 0; i < pages.size(); i++) {
-            keys.add(pages[i][0] as String);
+            keys.add(pages[i][0] as Number);
         }
         return joined(keys);
     }
@@ -51,9 +51,10 @@ module ReportTests {
         var match = newMatch(MatchFormat.ONE_SET);
         match.games("MMMMMM");
         Test.assertEqual(titles(pagesOf(match, false, 0, new FakeSensors())),
-                         "ReportScore,ReportServe,ReportPressure,ReportTime,ReportBody");
+                         joined([Str.ReportScore, Str.ReportServe, Str.ReportPressure, Str.ReportTime, Str.ReportBody]));
         Test.assertEqual(titles(pagesOf(match, true, 0, new FakeSensors())),
-                         "ReportScore,ReportServe,ReportEndings,ReportPressure,ReportTime,ReportBody");
+                         joined([Str.ReportScore, Str.ReportServe, Str.ReportEndings, Str.ReportPressure, Str.ReportTime,
+                                 Str.ReportBody]));
         return true;
     }
 
@@ -160,7 +161,7 @@ module ReportTests {
         for (var c = 0; c < I18n.CODES.size(); c++) {
             var table = I18n.table(I18n.CODES[c] as String);
             for (var i = 0; i < ROW_LABEL_KEYS.size(); i++) {
-                var label = table.get(ROW_LABEL_KEYS[i]) as String;
+                var label = table[ROW_LABEL_KEYS[i]];
                 Test.assertMessage(label.length() <= LABEL_MAX_CHARS, label + " is too long");
             }
         }

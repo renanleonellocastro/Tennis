@@ -36,8 +36,8 @@ function testMainMenuLabelsExistInEveryLanguage(logger as Test.Logger) as Boolea
     for (var c = 0; c < codes.size(); c++) {
         var table = I18n.table(codes[c] as String);
         for (var i = 0; i < rows.size(); i++) {
-            var key = (rows[i] as Array)[0] as String;
-            Test.assertMessage(table.hasKey(key), "no label " + key + " in " + (codes[c] as String));
+            var key = (rows[i] as Array)[0] as Number;
+            Test.assertMessage(table[key].length() > 0, "no label " + key + " in " + (codes[c] as String));
         }
     }
     return true;

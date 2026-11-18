@@ -30,8 +30,8 @@ module EndingChoicesTests {
         for (var i = 0; i < endings.size(); i++) {
             assertKeyInEveryLanguage(EndingChoices.labelKey(endings[i]));
         }
-        Test.assertEqual(EndingChoices.labelKey(Ending.ERROR_NET), "EndingErrorNet");
-        assertKeyInEveryLanguage("EndingTitle");
+        Test.assertEqual(EndingChoices.labelKey(Ending.ERROR_NET), Str.EndingErrorNet);
+        assertKeyInEveryLanguage(Str.EndingTitle);
         return true;
     }
 
@@ -41,8 +41,8 @@ module EndingChoicesTests {
         Test.assertEqual(EndingChoices.author(Ending.ACE, Player.OPPONENT), Player.OPPONENT);
         Test.assertEqual(EndingChoices.author(Ending.ERROR_NET, Player.ME), Player.OPPONENT);
         Test.assertEqual(EndingChoices.author(Ending.ERROR_OUT, Player.OPPONENT), Player.ME);
-        Test.assertEqual(EndingChoices.authorKey(Ending.WINNER, Player.ME), "PlayerMe");
-        Test.assertEqual(EndingChoices.authorKey(Ending.ERROR_OUT, Player.ME), "PlayerOpponent");
+        Test.assertEqual(EndingChoices.authorKey(Ending.WINNER, Player.ME), Str.PlayerMe);
+        Test.assertEqual(EndingChoices.authorKey(Ending.ERROR_OUT, Player.ME), Str.PlayerOpponent);
         return true;
     }
 }

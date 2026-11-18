@@ -116,7 +116,7 @@ module PracticeTests {
         Test.assertEqual(bench.field(RecordingFields.DISTANCE), 240);
         Test.assertEqual(bench.controller.clockSeconds(), 300);
         Test.assertEqual(PracticePresenter.totalText(bench.controller.log()), "21/27  78%");
-        Test.assertEqual(bench.controller.farewellKey() as String, "SavedMsg");
+        Test.assertEqual(bench.controller.farewellKey() as Number, Str.SavedMsg);
         return true;
     }
 }

@@ -255,7 +255,7 @@ module PracticeTests {
         Test.assertEqual(bench.locator.calls, "+-");
         Test.assertEqual(bench.field(RecordingFields.BLOCK_HITS), 2);
         Test.assertEqual(bench.field(RecordingFields.BLOCK_MISSES), 1);
-        Test.assertEqual(bench.controller.farewellKey() as String, "SavedMsg");
+        Test.assertEqual(bench.controller.farewellKey() as Number, Str.SavedMsg);
         return true;
     }
 
@@ -266,7 +266,7 @@ module PracticeTests {
         bench.controller.end();
         bench.controller.discard();
         Test.assertEqual(bench.session.calls, "spD");
-        Test.assertEqual(bench.controller.farewellKey() as String, "DiscardedMsg");
+        Test.assertEqual(bench.controller.farewellKey() as Number, Str.DiscardedMsg);
         return true;
     }
 

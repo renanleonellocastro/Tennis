@@ -15,7 +15,7 @@ module WholeMatchTests {
         const GAME = 1;
         const SET = 2;
         const MATCH = 3;
-        const STAKES = ["LabelBreakPoint", "LabelSetPoint", "LabelMatchPoint"];
+        const STAKES = [Str.LabelBreakPoint, Str.LabelSetPoint, Str.LabelMatchPoint];
 
         var format as Number;
         var isNoAd as Boolean;
@@ -167,12 +167,12 @@ module WholeMatchTests {
         }
 
         function notice() as String {
-            var keys = [] as Array<String>;
+            var keys = [] as Array<Number>;
             if (closed == GAME || closed == SET) {
-                keys.add(closed == SET ? "NoticeSet" : "NoticeGame");
+                keys.add(closed == SET ? Str.NoticeSet : Str.NoticeGame);
             }
             if (isChangeDue) {
-                keys.add("NoticeChangeEnds");
+                keys.add(Str.NoticeChangeEnds);
             }
             return joined(keys);
         }
@@ -531,7 +531,7 @@ module WholeMatchTests {
         // and that the stored match is gone.
         function save(surface as Number, kind as Number, finalScore as String, counts as String) as Void {
             controller.save(new MatchTags([surface, kind]));
-            Test.assertEqualMessage(controller.farewellKey() as String, "SavedMsg", where());
+            Test.assertEqualMessage(controller.farewellKey() as Number, Str.SavedMsg, where());
             checkSummary(setupWord(surface, kind), finalScore, counts);
             checkClosed("S");
         }
@@ -566,7 +566,7 @@ module WholeMatchTests {
 
         function discard() as Void {
             controller.discard();
-            Test.assertEqualMessage(controller.farewellKey() as String, "DiscardedMsg", where());
+            Test.assertEqualMessage(controller.farewellKey() as Number, Str.DiscardedMsg, where());
             checkClosed("D");
         }
 

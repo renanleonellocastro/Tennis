@@ -16,8 +16,8 @@ module EndingChoices {
         return endings.size() - 1;
     }
 
-    function labelKey(ending as Number) as String {
-        var keys = ["", "EndingWinner", "EndingAce", "EndingErrorNet", "EndingErrorOut"] as Array<String>;
+    function labelKey(ending as Number) as Number {
+        var keys = ["", Str.EndingWinner, Str.EndingAce, Str.EndingErrorNet, Str.EndingErrorOut] as Array<Number>;
         return keys[ending];
     }
 
@@ -28,7 +28,7 @@ module EndingChoices {
         return isError ? Player.opponentOf(winner) : winner;
     }
 
-    function authorKey(ending as Number, winner as Number) as String {
-        return author(ending, winner) == Player.ME ? "PlayerMe" : "PlayerOpponent";
+    function authorKey(ending as Number, winner as Number) as Number {
+        return author(ending, winner) == Player.ME ? Str.PlayerMe : Str.PlayerOpponent;
     }
 }

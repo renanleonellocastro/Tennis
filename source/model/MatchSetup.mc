@@ -15,14 +15,14 @@ class MatchSetup extends OptionList {
     // off then on).
     function initialize(stored as Object?) {
         OptionList.initialize(
-            ["SetupFormat", "SetupNoAd", "SetupDetail", "SetupFirstServe", "SetupGps"] as Array<String>,
+            [Str.SetupFormat, Str.SetupNoAd, Str.SetupDetail, Str.SetupFirstServe, Str.SetupGps] as Array<Number>,
             [
-                ["FormatBestOf3", "FormatMatchTieBreak", "FormatOneSet", "FormatProSet", "FormatTieBreakOnly"],
-                ["ValueOff", "ValueOn"],
-                ["DetailSimple", "DetailDetailed"],
-                ["PlayerMe", "PlayerOpponent"],
-                ["ValueOff", "ValueOn"]
-            ] as Array< Array<String> >,
+                [Str.FormatBestOf3, Str.FormatMatchTieBreak, Str.FormatOneSet, Str.FormatProSet, Str.FormatTieBreakOnly],
+                [Str.ValueOff, Str.ValueOn],
+                [Str.DetailSimple, Str.DetailDetailed],
+                [Str.PlayerMe, Str.PlayerOpponent],
+                [Str.ValueOff, Str.ValueOn]
+            ] as Array< Array<Number> >,
             stored);
     }
 

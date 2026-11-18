@@ -54,23 +54,23 @@ module MatchPresenterTests {
         match.games(games);
         match.play(points);
         var stake = MatchPresenter.pressure(match.state());
-        return stake == null ? "none" : (stake[0] as String) + " " + (stake[1] as Number);
+        return stake == null ? "none" : (stake[0] as Number) + " " + (stake[1] as Number);
     }
 
     (:test)
     function testPressureNamesTheHeaviestPointAndItsHolder(logger as Test.Logger) as Boolean {
         Test.assertEqual(pressureAfter(MatchFormat.BEST_OF_3, "", ""), "none");
         Test.assertEqual(pressureAfter(MatchFormat.BEST_OF_3, "", "MMM"), "none");
-        Test.assertEqual(pressureAfter(MatchFormat.BEST_OF_3, "", "OOO"), "LabelBreakPoint 1");
-        Test.assertEqual(pressureAfter(MatchFormat.BEST_OF_3, "M", "MMM"), "LabelBreakPoint 0");
-        Test.assertEqual(pressureAfter(MatchFormat.BEST_OF_3, "MMMMM", "MMM"), "LabelSetPoint 0");
-        Test.assertEqual(pressureAfter(MatchFormat.BEST_OF_3, "OOOOO", "OOO"), "LabelSetPoint 1");
-        Test.assertEqual(pressureAfter(MatchFormat.ONE_SET, "MMMMM", "MMM"), "LabelMatchPoint 0");
-        Test.assertEqual(pressureAfter(MatchFormat.BEST_OF_3, "OOOOOOOOOOO", "OOO"), "LabelMatchPoint 1");
+        Test.assertEqual(pressureAfter(MatchFormat.BEST_OF_3, "", "OOO"), Str.LabelBreakPoint + " 1");
+        Test.assertEqual(pressureAfter(MatchFormat.BEST_OF_3, "M", "MMM"), Str.LabelBreakPoint + " 0");
+        Test.assertEqual(pressureAfter(MatchFormat.BEST_OF_3, "MMMMM", "MMM"), Str.LabelSetPoint + " 0");
+        Test.assertEqual(pressureAfter(MatchFormat.BEST_OF_3, "OOOOO", "OOO"), Str.LabelSetPoint + " 1");
+        Test.assertEqual(pressureAfter(MatchFormat.ONE_SET, "MMMMM", "MMM"), Str.LabelMatchPoint + " 0");
+        Test.assertEqual(pressureAfter(MatchFormat.BEST_OF_3, "OOOOOOOOOOO", "OOO"), Str.LabelMatchPoint + " 1");
         return true;
     }
 
-    function bannerText(isPaused as Boolean, keys as Array<String>, points as String) as String {
+    function bannerText(isPaused as Boolean, keys as Array<Number>, points as String) as String {
         var match = newMatch(MatchFormat.BEST_OF_3);
         match.play(points);
         var banner = MatchPresenter.banner(isPaused, keys, match.state());
@@ -80,8 +80,8 @@ module MatchPresenterTests {
     (:test)
     function testBannerPrefersPauseThenNoticeThenPressure(logger as Test.Logger) as Boolean {
         Strings.loadTables("eng");
-        var notice = ["NoticeGame"] as Array<String>;
-        var none = [] as Array<String>;
+        var notice = [Str.NoticeGame] as Array<Number>;
+        var none = [] as Array<Number>;
         Test.assertEqual(bannerText(true, notice, "OOO"), "Paused|" + BannerTone.NOTICE);
         Test.assertEqual(bannerText(false, notice, "OOO"), "Game|" + BannerTone.NOTICE);
         Test.assertEqual(bannerText(false, none, "OOO"), "BREAK POINT|" + BannerTone.OPPONENT);
@@ -103,9 +103,9 @@ module MatchPresenterTests {
     (:test)
     function testNoticeTextJoinsTheTranslatedKeys(logger as Test.Logger) as Boolean {
         Strings.loadTables("eng");
-        Test.assertEqual(MatchPresenter.noticeText([] as Array<String>), "");
-        Test.assertEqual(MatchPresenter.noticeText(["NoticeSet"] as Array<String>), "Set");
-        Test.assertEqual(MatchPresenter.noticeText(["NoticeGame", "NoticeChangeEnds"] as Array<String>),
+        Test.assertEqual(MatchPresenter.noticeText([] as Array<Number>), "");
+        Test.assertEqual(MatchPresenter.noticeText([Str.NoticeSet] as Array<Number>), "Set");
+        Test.assertEqual(MatchPresenter.noticeText([Str.NoticeGame, Str.NoticeChangeEnds] as Array<Number>),
                          "Game. Change ends");
         return true;
     }
@@ -116,20 +116,20 @@ module MatchPresenterTests {
         var lost = newMatch(MatchFormat.TIE_BREAK_ONLY);
         won.play("MMMMMMM");
         lost.play("OOOOOOO");
-        Test.assertEqual(MatchPresenter.finalTitleKey(won.state()), "FinalYouWon");
-        Test.assertEqual(MatchPresenter.finalTitleKey(lost.state()), "FinalYouLost");
-        Test.assertEqual(MatchPresenter.finalTitleKey(newMatch(MatchFormat.BEST_OF_3).state()), "FinalMatchEnded");
+        Test.assertEqual(MatchPresenter.finalTitleKey(won.state()), Str.FinalYouWon);
+        Test.assertEqual(MatchPresenter.finalTitleKey(lost.state()), Str.FinalYouLost);
+        Test.assertEqual(MatchPresenter.finalTitleKey(newMatch(MatchFormat.BEST_OF_3).state()), Str.FinalMatchEnded);
         return true;
     }
 
     (:test)
     function testMatchScreenTextsExistInEveryLanguage(logger as Test.Logger) as Boolean {
-        var keys = ["LabelMe", "LabelOpponent", "LabelAdvantage", "LabelBreakPoint", "LabelSetPoint",
-                    "LabelMatchPoint", "NoticeGame", "NoticeSet", "NoticeChangeEnds", "Paused", "ControlFault",
-                    "HomeHint", "FinalYouWon", "FinalYouLost", "FinalMatchEnded", "EndMatchQ", "TouchNeededMsg",
-                    "SetupStart", "PlayerMe", "PlayerOpponent"];
+        var keys = [Str.LabelMe, Str.LabelOpponent, Str.LabelAdvantage, Str.LabelBreakPoint, Str.LabelSetPoint,
+                    Str.LabelMatchPoint, Str.NoticeGame, Str.NoticeSet, Str.NoticeChangeEnds, Str.Paused, Str.ControlFault,
+                    Str.HomeHint, Str.FinalYouWon, Str.FinalYouLost, Str.FinalMatchEnded, Str.EndMatchQ, Str.TouchNeededMsg,
+                    Str.SetupStart, Str.PlayerMe, Str.PlayerOpponent];
         for (var i = 0; i < keys.size(); i++) {
-            assertKeyInEveryLanguage(keys[i] as String);
+            assertKeyInEveryLanguage(keys[i] as Number);
         }
         return true;
     }

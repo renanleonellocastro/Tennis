@@ -43,13 +43,13 @@ class HomeView extends WatchUi.View {
     hidden function drawAppName(dc as Dc) as Void {
         dc.setColor(Theme.COLOR_ACCENT, Graphics.COLOR_TRANSPARENT);
         dc.drawText(dc.getWidth() / 2, dc.getHeight() * NAME_Y_PERCENT / 100,
-                    Graphics.FONT_LARGE, Strings.t("AppName").toUpper(),
+                    Graphics.FONT_LARGE, Strings.t(Str.AppName).toUpper(),
                     Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
     }
 
     hidden function drawMenuHint(dc as Dc) as Void {
         Theme.drawPill(dc, dc.getWidth() / 2, dc.getHeight() * HINT_Y_PERCENT / 100,
-                       Strings.t("HomeHint"), Graphics.FONT_XTINY, Theme.COLOR_ACCENT);
+                       Strings.t(Str.HomeHint), Graphics.FONT_XTINY, Theme.COLOR_ACCENT);
     }
 }
 

@@ -4,13 +4,13 @@ import Toybox.Lang;
 // keys of the string table, so a new option is one more key in its row and
 // no new code. MatchSetup and MatchTags are the two lists of the app.
 class OptionList {
-    hidden var _labelKeys as Array<String>;
-    hidden var _valueKeys as Array< Array<String> >;
+    hidden var _labelKeys as Array<Number>;
+    hidden var _valueKeys as Array< Array<Number> >;
     hidden var _values as Array<Number>;
 
     // Takes what storage returned. Anything that is not a full list of valid
     // options falls back to the first option of every field.
-    function initialize(labelKeys as Array<String>, valueKeys as Array< Array<String> >, stored as Object?) {
+    function initialize(labelKeys as Array<Number>, valueKeys as Array< Array<Number> >, stored as Object?) {
         _labelKeys = labelKeys;
         _valueKeys = valueKeys;
         _values = firstOptions();
@@ -52,11 +52,11 @@ class OptionList {
         _values[field] = (_values[field] + 1) % optionCount(field);
     }
 
-    function labelKey(field as Number) as String {
+    function labelKey(field as Number) as Number {
         return _labelKeys[field];
     }
 
-    function valueKey(field as Number) as String {
+    function valueKey(field as Number) as Number {
         return _valueKeys[field][_values[field]];
     }
 

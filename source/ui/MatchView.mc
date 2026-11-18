@@ -11,7 +11,7 @@ class MatchView extends WatchUi.View {
     hidden const SECOND_SERVE_MARK = "2";
     // Indexed by Player, which is also the BannerTone of a point at stake.
     hidden const TONE_COLORS = [Theme.COLOR_ACCENT, Theme.COLOR_TEXT_DIM, Theme.COLOR_WARM];
-    hidden const LABEL_KEYS = ["LabelMe", "LabelOpponent"];
+    hidden const LABEL_KEYS = [Str.LabelMe, Str.LabelOpponent];
     hidden const CENTERED = Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER;
 
     hidden var _controller as MatchController;
@@ -95,7 +95,7 @@ class MatchView extends WatchUi.View {
         var justify = player == Player.ME ? Graphics.TEXT_JUSTIFY_LEFT : Graphics.TEXT_JUSTIFY_RIGHT;
         dc.setColor(TONE_COLORS[player] as Number, Graphics.COLOR_TRANSPARENT);
         dc.drawText(_layout.labelX(player), _layout.labelsY(), Graphics.FONT_XTINY,
-                    Strings.t(LABEL_KEYS[player] as String), justify | Graphics.TEXT_JUSTIFY_VCENTER);
+                    Strings.t(LABEL_KEYS[player] as Number), justify | Graphics.TEXT_JUSTIFY_VCENTER);
     }
 
     // The ball sits next to the server and carries a 2 on a second serve.
@@ -131,7 +131,7 @@ class MatchView extends WatchUi.View {
 
     hidden function drawFooter(dc as Dc) as Void {
         MatchDraw.draw(dc, _layout, [_controller.clockSeconds(), _controller.heartRate(), _controller.isPaused()],
-                         "ControlFault");
+                         Str.ControlFault);
     }
 }
 

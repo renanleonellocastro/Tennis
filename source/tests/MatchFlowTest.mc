@@ -12,10 +12,10 @@ module MatchFlowTests {
         var running = MatchFlow.matchMenuRows(false);
         var paused = MatchFlow.matchMenuRows(true);
         Test.assertEqual(running.size(), 3);
-        Test.assertEqual((running[0] as Array)[0] as String, "MatchMenuPause");
-        Test.assertEqual((paused[0] as Array)[0] as String, "MatchMenuResume");
-        Test.assertEqual((running[1] as Array)[0] as String, "MatchMenuFix");
-        Test.assertEqual((running[2] as Array)[0] as String, "MatchMenuEnd");
+        Test.assertEqual((running[0] as Array)[0] as Number, Str.MatchMenuPause);
+        Test.assertEqual((paused[0] as Array)[0] as Number, Str.MatchMenuResume);
+        Test.assertEqual((running[1] as Array)[0] as Number, Str.MatchMenuFix);
+        Test.assertEqual((running[2] as Array)[0] as Number, Str.MatchMenuEnd);
         return true;
     }
 
@@ -73,7 +73,7 @@ module MatchFlowTests {
         var bench = simpleBench(MatchFormat.BEST_OF_3);
         assertRowsAreMethodsOf(MatchFlow.finalMenuRows(), new FinalMenuDelegate(bench.controller));
         assertRowsAreMethodsOf(MatchFlow.resumeMenuRows(), new ResumeMenuDelegate(bench.store));
-        assertKeyInEveryLanguage("DiscardQ");
+        assertKeyInEveryLanguage(Str.DiscardQ);
         return true;
     }
 
@@ -84,7 +84,7 @@ module MatchFlowTests {
         Test.assert(confirm.onResponse(WatchUi.CONFIRM_NO));
         Test.assert(bench.controller.farewellKey() == null);
         Test.assert(confirm.onResponse(WatchUi.CONFIRM_YES));
-        Test.assertEqual(bench.controller.farewellKey() as String, "DiscardedMsg");
+        Test.assertEqual(bench.controller.farewellKey() as Number, Str.DiscardedMsg);
         return true;
     }
 
@@ -105,9 +105,9 @@ module MatchFlowTests {
     function testFinalMenuOffersSaveTheReportAndDiscard(logger as Test.Logger) as Boolean {
         var rows = MatchFlow.finalMenuRows();
         Test.assertEqual(rows.size(), 3);
-        Test.assertEqual((rows[0] as Array)[0] as String, "FinalSave");
-        Test.assertEqual((rows[1] as Array)[0] as String, "FinalReport");
-        Test.assertEqual((rows[2] as Array)[0] as String, "FinalDiscard");
+        Test.assertEqual((rows[0] as Array)[0] as Number, Str.FinalSave);
+        Test.assertEqual((rows[1] as Array)[0] as Number, Str.FinalReport);
+        Test.assertEqual((rows[2] as Array)[0] as Number, Str.FinalDiscard);
         return true;
     }
 
@@ -115,7 +115,7 @@ module MatchFlowTests {
     function testSaveMenuHasARowPerTagAndTheSaveRow(logger as Test.Logger) as Boolean {
         Strings.loadTables("eng");
         var tags = new MatchTags([1, 0]);
-        var menu = MatchFlow.optionMenu(tags, tags.fields(), "FinalSave");
+        var menu = MatchFlow.optionMenu(tags, tags.fields(), Str.FinalSave);
         var surface = menu.getItem(0) as WatchUi.MenuItem;
         Test.assertEqual(surface.getId() as Number, MatchTags.SURFACE);
         Test.assertEqual(surface.getLabel(), "Surface");
