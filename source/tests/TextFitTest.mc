@@ -1,0 +1,112 @@
+import Toybox.Lang;
+import Toybox.Test;
+
+// Tests for the room of the texts on the screens where it is smallest.
+// The limits come from looking at every screen in the six languages on the
+// simulator: a longer text is cut by the edge of the screen or runs into
+// the numbers next to it.
+module TextFitTests {
+    // The label of a menu row, including the row that is not selected.
+    const MENU_ROW_KEYS = [
+        "MenuStartMatch", "MenuPractice", "MenuSettings", "MenuAbout", "SetupFormat", "SetupNoAd", "SetupDetail",
+        "SetupFirstServe", "SetupGps", "SetupStart", "MatchMenuPause", "MatchMenuResume", "MatchMenuFix",
+        "MatchMenuEnd", "FixUndoGame", "FixGameMe", "FixGameOpponent", "EndingWinner", "EndingAce",
+        "EndingErrorNet", "EndingErrorOut", "FinalSave", "FinalReport", "FinalDiscard", "TagSurface", "TagKind",
+        "PracticeMenuEnd"
+    ];
+    const MENU_ROW_MAX_CHARS = 15;
+
+    // The smaller second line of a menu row.
+    const SUB_LABEL_KEYS = [
+        "FormatBestOf3", "FormatMatchTieBreak", "FormatOneSet", "FormatProSet", "FormatTieBreakOnly", "ValueOn",
+        "ValueOff", "DetailSimple", "DetailDetailed", "PlayerMe", "PlayerOpponent", "TagNotSet", "SurfaceClay",
+        "SurfaceHard", "SurfaceGrass", "KindMatch", "KindFriendly"
+    ];
+    const SUB_LABEL_MAX_CHARS = 20;
+
+    // A menu title: a longer one wraps and loses its second line.
+    const TITLE_KEYS = ["AppName", "EndingTitle"];
+    const TITLE_MAX_CHARS = 8;
+
+    // Report rows with a ratio such as 46/57 on both sides.
+    const RATIO_LABEL_KEYS = ["ReportFirstWon", "ReportSecondWon", "ReportBreaks", "ReportSaved", "ReportHolds"];
+    const RATIO_LABEL_MAX_CHARS = 8;
+
+    // Report rows of the time and body pages: the label starts at the left
+    // and its number ends at the right, on the same line. The numbers are
+    // as long as 1:23:45 for the match, 12:34 for a game and 1234 calories.
+    const MATCH_TIME_KEYS = ["ReportMatchTime"];
+    const MATCH_TIME_MAX_CHARS = 7;
+    const GAME_TIME_KEYS = ["ReportAvgGame", "ReportLongGame", "ReportPerPoint"];
+    const GAME_TIME_MAX_CHARS = 9;
+    const BODY_LABEL_KEYS = ["ReportAvgHr", "ReportMaxHr", "ReportKeyHr", "ReportCalories"];
+    const BODY_LABEL_MAX_CHARS = 10;
+
+    // A message screen: a longer line runs over the frame ring on the
+    // rectangular screens.
+    const MESSAGE_KEYS = ["ComingSoonMsg", "AboutText", "TouchNeededMsg", "SavedMsg", "DiscardedMsg"];
+    const MESSAGE_LINE_MAX_CHARS = 15;
+
+    // The first text of the keys that is longer than the limit in any
+    // language, or null when all of them fit.
+    function firstTooLong(keys as Array<String>, maxChars as Number) as String? {
+        for (var c = 0; c < I18n.CODES.size(); c++) {
+            var table = I18n.table(I18n.CODES[c] as String);
+            for (var i = 0; i < keys.size(); i++) {
+                var text = table.get(keys[i]) as String;
+                if (text.length() > maxChars) {
+                    return text;
+                }
+            }
+        }
+        return null;
+    }
+
+    (:test)
+    function testMenuRowsFitTheSmallRoundScreenInEveryLanguage(logger as Test.Logger) as Boolean {
+        Test.assert(firstTooLong(MENU_ROW_KEYS, MENU_ROW_MAX_CHARS) == null);
+        Test.assert(firstTooLong(SUB_LABEL_KEYS, SUB_LABEL_MAX_CHARS) == null);
+        return true;
+    }
+
+    (:test)
+    function testMenuTitlesFitOnOneLineInEveryLanguage(logger as Test.Logger) as Boolean {
+        Test.assert(firstTooLong(TITLE_KEYS, TITLE_MAX_CHARS) == null);
+        return true;
+    }
+
+    (:test)
+    function testRatioRowsOfTheReportLeaveRoomForTheirNumbers(logger as Test.Logger) as Boolean {
+        Test.assert(firstTooLong(RATIO_LABEL_KEYS, RATIO_LABEL_MAX_CHARS) == null);
+        return true;
+    }
+
+    (:test)
+    function testTimeAndBodyRowsOfTheReportLeaveRoomForTheirNumbers(logger as Test.Logger) as Boolean {
+        Test.assert(firstTooLong(MATCH_TIME_KEYS, MATCH_TIME_MAX_CHARS) == null);
+        Test.assert(firstTooLong(GAME_TIME_KEYS, GAME_TIME_MAX_CHARS) == null);
+        Test.assert(firstTooLong(BODY_LABEL_KEYS, BODY_LABEL_MAX_CHARS) == null);
+        return true;
+    }
+
+    (:test)
+    function testMessageLinesStayInsideTheFrameRingInEveryLanguage(logger as Test.Logger) as Boolean {
+        var lineChars = new MessageView("", 0, 0).LINE_CHARS;
+        for (var c = 0; c < I18n.CODES.size(); c++) {
+            var table = I18n.table(I18n.CODES[c] as String);
+            for (var i = 0; i < MESSAGE_KEYS.size(); i++) {
+                var lines = Theme.splitTwoLines(table.get(MESSAGE_KEYS[i]) as String, lineChars);
+                Test.assert((lines[0] as String).length() <= MESSAGE_LINE_MAX_CHARS);
+                Test.assert((lines[lines.size() - 1] as String).length() <= MESSAGE_LINE_MAX_CHARS);
+            }
+        }
+        return true;
+    }
+
+    (:test)
+    function testATextOverTheLimitIsFound(logger as Test.Logger) as Boolean {
+        Test.assertEqual(firstTooLong(["AppName"], 5), "Tennis");
+        Test.assert(firstTooLong(["AppName"], 6) == null);
+        return true;
+    }
+}

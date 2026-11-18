@@ -1,6 +1,8 @@
 # Tennis: product plan
 
-Status: requirements agreed on 2026-11-17. Implementation has not started.
+Status: requirements agreed on 2026-11-17. Milestones M0 to M8 are built
+and checked on the simulator. The test on a real watch and the publishing
+are left to the owner, see [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md).
 
 ## 1. Goal
 

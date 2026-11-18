@@ -35,6 +35,11 @@ typedef Locator as interface {
     function turnOff() as Void;
 };
 
+// Calls back once, after a delay. A new ring replaces the one that waits.
+typedef Alarm as interface {
+    function ring(delayMs as Number, callback as Method() as Void) as Void;
+};
+
 typedef KeyValueStore as interface {
     function get(key as String) as Object?;
     function put(key as String, value as Array) as Void;

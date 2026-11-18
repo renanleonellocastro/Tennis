@@ -37,7 +37,7 @@ Tests keep covering everything testable (see [TESTING.md](TESTING.md)); the tool
 
 The simulator suite needs a running simulator, so it stays a separate step: `make sim`, then `make test`. CI runs the same gates.
 
-`make build-all` compiles the app for every device in `manifest.xml` (80 today) at the same type check level, each device in its own folder under `bin/all/`. It prints one `PASS` or `FAIL` line per device with the compiler output of each failure, and exits with an error when any device fails. It takes about a minute and a half on a laptop (`BUILD_ALL_OPTIONS="--jobs 4"` sets how many compile at once; device ids there limit the run), so it is not part of `make check` or CI: run it before each release and after any change to `manifest.xml`.
+`make build-all` compiles the app for every device in `manifest.xml` (80 today) at the same type check level, each device in its own folder under `bin/all/`. It prints one `PASS` or `FAIL` line per device with the compiler output of each failure, and exits with an error when any device fails. It takes about a minute and a half on a laptop (`BUILD_ALL_OPTIONS="--jobs 4"` sets how many compile at once; device ids there limit the run), so it is not part of `make check` or of the CI of each push: run it before each release and after any change to `manifest.xml`. The release workflow runs it on every version tag, before it builds the package.
 
 `make function-length` prints the full function length report, longest first, without failing.
 

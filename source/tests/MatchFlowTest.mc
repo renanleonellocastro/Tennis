@@ -73,7 +73,6 @@ module MatchFlowTests {
         var bench = simpleBench(MatchFormat.BEST_OF_3);
         assertRowsAreMethodsOf(MatchFlow.finalMenuRows(), new FinalMenuDelegate(bench.controller));
         assertRowsAreMethodsOf(MatchFlow.resumeMenuRows(), new ResumeMenuDelegate(bench.store));
-        assertKeyInEveryLanguage("ResumeTitle");
         assertKeyInEveryLanguage("DiscardQ");
         return true;
     }
@@ -116,7 +115,7 @@ module MatchFlowTests {
     function testSaveMenuHasARowPerTagAndTheSaveRow(logger as Test.Logger) as Boolean {
         Strings.loadTables("eng");
         var tags = new MatchTags([1, 0]);
-        var menu = MatchFlow.optionMenu("FinalSave", tags, tags.fields(), "FinalSave");
+        var menu = MatchFlow.optionMenu(tags, tags.fields(), "FinalSave");
         var surface = menu.getItem(0) as WatchUi.MenuItem;
         Test.assertEqual(surface.getId() as Number, MatchTags.SURFACE);
         Test.assertEqual(surface.getLabel(), "Surface");

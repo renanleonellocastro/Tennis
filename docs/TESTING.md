@@ -10,7 +10,7 @@ API audit, and a manual pass on a real watch for hardware behavior.
 | Resources check | XML validity, string catalogs in sync, generated string tables up to date | `make resources-check` | `make check` and CI |
 | Device API audit | Every Toybox symbol used against the API database of every target device | `make audit` | `make check` and CI |
 | Compile matrix | Type check level 2 for one device per screen shape; all 80 devices when packaging | `make build-shapes`, `make package` | `make check` and CI |
-| All devices build | Type check level 2 for each of the 80 devices on its own, one result per device (about a minute and a half) | `make build-all` | Manual, before each release |
+| All devices build | Type check level 2 for each of the 80 devices on its own, one result per device (about a minute and a half) | `make build-all` | Manual, before each release; the release workflow on a version tag |
 | Tool tests | The Python tools at 100% line and branch coverage | `make test-tools` | `make check` and CI |
 | Watch pass | Hardware behavior that cannot be simulated | Real watch | Manual, before each release |
 
@@ -59,7 +59,8 @@ passes only when it reads `PASSED` and no test failed or errored.
   watches can score with keys, with touch or not at all.
 * `MatchLayoutTest`: rows and columns do not overlap on the three screen
   shapes, the serve ball stays inside a round screen, the font choice, the
-  mini court and the touch control band.
+  mini court, the touch control band and the wider spacing of the lower
+  rows on a screen that is not round.
 * `MatchPresenterTest`: every text of the match and final screens.
 * `MatchControllerTest`: scoring in simple and detailed mode, faults, undo,
   pause, notices, change of ends, ending and reopening a match.
@@ -78,6 +79,11 @@ passes only when it reads `PASSED` and no test failed or errored.
   point endings, pressure, time, body), the missing value mark, the pager,
   the layout on the three screen shapes and the length of the row labels in
   every language.
+* `TextFitTest`: the length of every menu row, menu title, second line and
+  ratio label of the report in every language, against the room measured
+  on the Forerunner 55, and the length of the lines of every message
+  screen and of the time and body labels of the report, against the frame
+  ring and the width of the Venu Sq 2.
 * `RecordingTest`: steps and distance counted from the first reading, over
   a pause, a missing reading and midnight, per lap; the recorder starting,
   pausing, opening laps with the score of their set, writing the summary
@@ -90,6 +96,10 @@ passes only when it reads `PASSED` and no test failed or errored.
   entries, pause, laps per set, the summary written when the match opens,
   when it is saved with tags and when the app closes, discard, and a
   resumed match with its score, clock and laps.
+* `PacedSessionTest`: the wait after each start, stop and save of the
+  activity: a stop and a save held back until the watch wrote the last
+  record, a start that cancels a waiting stop, discard, the alarm of the
+  watch and the goodbye message that stays while a save waits.
 * `PracticeLogTest`: hits, misses, undo inside the open block only, closing
   blocks, empty blocks that do not close, totals.
 * `PracticePresenterTest`: success rate rounding, the texts of the practice
@@ -102,8 +112,9 @@ passes only when it reads `PASSED` and no test failed or errored.
   practice text in every language, and a short real activity recorded and
   discarded.
 
-The practice suites run with the rest in `make test` (421 tests on the
-Forerunner 55 at the end of M6).
+The practice suites run with the rest in `make test`. At the end of M8 the
+suite has 446 tests and passes with no failure on the Forerunner 55
+(`fr55`), the Venu 2 (`venu2`) and the Venu Sq 2 (`venusq2`).
 
 The recording tests use fakes for the session, sensors, GPS and storage
 (`source/tests/RecordingFakes.mc`), so they need no sensor data.
@@ -137,12 +148,48 @@ discarded by the test suite can leave empty or stale laps in the next file
 the simulator saves; that is a simulator effect, so save the file to check
 in a run that follows another run of the app, not the test suite.
 
+## Memory
+
+The smallest watches give an app 128 kB. The memory in use was measured
+once for M8 on the simulator, with a throwaway copy of the app that played
+by itself a detailed match of 300 entries (150 serve faults and 150 points)
+in the best of 3 format, ended it and opened the final menu and the save
+menu, and printed `System.getSystemStats().usedMemory` after each step.
+The few hundred bytes that the script itself takes are subtracted. 1 kB is
+1024 bytes.
+
+| Watch | Release build, highest | Debug build, highest |
+|---|---|---|
+| Forerunner 55 (`fr55`) | 92.8 kB | 107.7 kB |
+| Forerunner 245 (`fr245`) | 92.8 kB | 107.7 kB |
+| fenix 6 (`fenix6`) | 92.8 kB | 107.7 kB |
+| fenix 6S (`fenix6s`) | 92.8 kB | 107.7 kB |
+| Venu Sq (`venusq`) | 92.8 kB | 107.7 kB |
+| Venu 2 (`venu2`), a touch watch with more memory | 81.3 kB | 81.8 kB |
+
+The highest value is the moment the save menu opens after the long match.
+The release build is the one of `make package` and of
+`make build BUILD_OPTIONS=-r`; the debug build of a plain `make build`
+takes about 15 kB more on these watches. On the Forerunner 55 debug build
+the steps read, within half a kB: home screen 94.5 kB, main menu 96.0 kB, match setup
+98.5 kB, start of the match 102.4 kB, after 300 entries 105.6 kB, point
+ending list 106.5 kB, match menu 106.4 kB, final score 106.0 kB,
+statistics 106.6 kB, save menu 107.7 kB. A practice of 12 closed blocks with its
+summary and save menu stays at 99.2 kB in the debug build.
+
+The readings are taken between the steps, so memory that a screen takes
+and gives back while it draws is not in them, and nothing was measured on
+a real watch. Keep the debug build under 108 kB: measure again after a
+change that adds code or texts.
+
 ## Watch pass (before each release)
 
 First run `make build-all`: every device in `manifest.xml` must compile.
 
-Sideload: `make build DEVICE=fr55`, then copy `bin/Tennis-fr55.prg` to
-`GARMIN/APPS/` over USB.
+Sideload: `make build DEVICE=fr55 BUILD_OPTIONS=-r`, then copy
+`bin/Tennis-fr55.prg` to `GARMIN/APPS/` over USB. `-r` makes the release
+build, the one the store package holds; it takes less memory than the debug
+build (see [Memory](#memory)).
 
 * [ ] The app opens on the home screen: frame ring, brand arc, app name and
       MENU pill, nothing clipped.

@@ -186,13 +186,18 @@ them.
   before the app closes may miss the file that is being closed: `log_size`
   of that file shows it, and the file of the resumed match repeats the
   entry (see below).
+* **Time for the last record.** The watch needs about a second to write
+  the record of a start or a stop. The app therefore waits 1.5 seconds
+  after a start before it stops the timer, and 1.5 seconds after a stop
+  before it saves (see `docs/RECORDING.md`). Without the wait, a match
+  saved within a second of its last point, or reopened and finished again
+  within a second, could miss its last entry.
 * **Two corners that lose entries.** A correction made while the match is
   paused, when it ends the match and the player saves without resuming,
-  reaches no record. And a finished match that is reopened and finished
-  again within about a second may miss its last entry: the stop record
-  was written in most runs on the simulator, but not in all. In both
-  cases `log_size` is larger than the entries found and the converter
-  reports them as missing.
+  reaches no record. And when the app is closed within a second and a
+  half of the last point, the save cannot wait and the last entry may be
+  missing. In both cases `log_size` is larger than the entries found and
+  the converter reports them as missing.
 
 #### A match that is closed and resumed
 
@@ -350,11 +355,17 @@ rows of `points.csv` were compared with the script entry by entry.
 | Closed and resumed twice, three files | 166 | Every row equal, all integrity checks true, score `6-7(6-8) 5-4`; one entry missing from the first file came back with the second |
 | Long match | 303 | Every row equal, all integrity checks true, score `7-6(7-0) 6-7(1-7) 7-5` equal to `final_score` |
 
-A first run of the long match reopened the finished match and finished it
-again within a second. Its file had 302 of the 303 entries: the last one
-was missing and the converter said so (`missing_sequences` 303,
-`statistics_match` false). This is the second corner listed in
-[How the watch writes the log](#how-the-watch-writes-the-log).
+A first run of the long match reopened the finished match, finished it
+again and saved it within a second. Its file had 302 of the 303 entries:
+the last one was missing and the converter said so (`missing_sequences`
+303, `statistics_match` false). The cause was the save coming before the
+watch had written the record of the last stop; the app now waits (see
+"Time for the last record" in
+[How the watch writes the log](#how-the-watch-writes-the-log)). With the
+wait, nine runs on the simulator (fr55) lost nothing: three reopened the
+finished match, finished it again with another ending 20 ms later and
+saved 20 ms after that (the last row carries the new ending), and six
+saved 50 to 800 ms after the last point.
 
 An ace by the receiver is refused by the watch, so such a step of a script
 is not an entry.

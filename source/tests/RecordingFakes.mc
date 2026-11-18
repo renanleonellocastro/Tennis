@@ -55,6 +55,27 @@ class FakeSession {
     }
 }
 
+// Keeps the callback until the test lets the time pass.
+class FakeAlarm {
+    var delays as Array<Number> = [] as Array<Number>;
+    hidden var _callback as (Method() as Void)? = null;
+
+    function ring(delayMs as Number, callback as Method() as Void) as Void {
+        delays.add(delayMs);
+        _callback = callback;
+    }
+
+    function isWaiting() as Boolean {
+        return _callback != null;
+    }
+
+    function pass() as Void {
+        var callback = _callback as Method() as Void;
+        _callback = null;
+        callback.invoke();
+    }
+}
+
 class FakeSensors {
     var beats as Number? = null;
     var stepCount as Number? = null;

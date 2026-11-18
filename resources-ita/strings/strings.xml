@@ -9,12 +9,12 @@
     <string id="MenuSettings">Impostazioni</string>
     <string id="MenuAbout">Info</string>
     <string id="ComingSoonMsg">Prossimamente</string>
-    <string id="AboutText">Tennis 0.1.0 MIT</string>
+    <string id="AboutText">Tennis 1.0.0 MIT</string>
 
     <!-- Match setup -->
     <string id="SetupFormat">Formato</string>
     <string id="FormatBestOf3">Al meglio di 3 set</string>
-    <string id="FormatMatchTieBreak">2 set + super tie break</string>
+    <string id="FormatMatchTieBreak">2 set + tie break</string>
     <string id="FormatOneSet">1 set</string>
     <string id="FormatProSet">Pro set a 8</string>
     <string id="FormatTieBreakOnly">Solo tie break</string>
@@ -47,12 +47,12 @@
     <!-- Match menu -->
     <string id="MatchMenuPause">Pausa</string>
     <string id="MatchMenuResume">Riprendi</string>
-    <string id="MatchMenuFix">Correggi punteggio</string>
+    <string id="MatchMenuFix">Correggi punti</string>
     <string id="MatchMenuEnd">Termina partita</string>
     <string id="EndMatchQ">Terminare la partita?</string>
     <string id="FixUndoGame">Annulla game</string>
     <string id="FixGameMe">Game per me</string>
-    <string id="FixGameOpponent">Game per avversario</string>
+    <string id="FixGameOpponent">Game per avv.</string>
 
     <!-- How a point ended (detailed mode) -->
     <string id="EndingTitle">Punto</string>
@@ -87,7 +87,7 @@
     <string id="ReportSet">Set</string>
     <string id="ReportPoints">Punti</string>
     <string id="ReportServe">SERVIZIO</string>
-    <string id="ReportFirstIn">1ª in campo</string>
+    <string id="ReportFirstIn">1ª palla</string>
     <string id="ReportFirstWon">Vinti 1ª</string>
     <string id="ReportSecondWon">Vinti 2ª</string>
     <string id="ReportDoubleFaults">Doppi falli</string>
@@ -103,17 +103,14 @@
     <string id="ReportBestRun">Serie</string>
     <string id="ReportTime">TEMPO</string>
     <string id="ReportMatchTime">Partita</string>
-    <string id="ReportAvgGame">Game medio</string>
-    <string id="ReportLongGame">Game lungo</string>
+    <string id="ReportAvgGame">Per game</string>
+    <string id="ReportLongGame">Più lungo</string>
     <string id="ReportPerPoint">Per punto</string>
     <string id="ReportBody">CORPO</string>
     <string id="ReportAvgHr">FC media</string>
     <string id="ReportMaxHr">FC max</string>
     <string id="ReportKeyHr">FC chiave</string>
     <string id="ReportCalories">Calorie</string>
-
-    <!-- Resume a match the app closed on -->
-    <string id="ResumeTitle">Partita aperta</string>
 
     <!-- Activity file fields -->
     <string id="FitStepsLabel">Passi</string>

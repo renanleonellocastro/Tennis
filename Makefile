@@ -4,6 +4,10 @@
 DEVICE ?= fr55
 KEY ?= $(HOME)/.garmin-keys/developer_key.der
 TYPE_CHECK ?= 2
+# Extra compiler options of `make build`. `BUILD_OPTIONS=-r` makes the
+# release build that the store package holds: it takes less memory on the
+# watch, and an error report carries no line numbers.
+BUILD_OPTIONS ?=
 # One device per screen shape: small round MIP, round AMOLED, rectangular.
 SHAPE_DEVICES ?= fr55 venu2 venusq2
 
@@ -26,7 +30,7 @@ TOOLS_COVERAGE = --cov=tools --cov-branch --cov-report=term-missing --cov-fail-u
 help:
 	@echo "Targets:"
 	@echo "  key            Generate a developer signing key (once)"
-	@echo "  build          Compile a debug build for DEVICE (default: fr55)"
+	@echo "  build          Compile a debug build for DEVICE (default: fr55); BUILD_OPTIONS=-r for a release build"
 	@echo "  build-shapes   Compile for one device per screen shape"
 	@echo "  build-all      Compile for every device in manifest.xml, one result per device"
 	@echo "  test-build     Compile the unit test build for DEVICE"
@@ -50,7 +54,7 @@ key:
 build: key
 	@mkdir -p bin
 	$(MONKEYC) -f monkey.jungle -d $(DEVICE) -o bin/Tennis-$(DEVICE).prg \
-		-y $(KEY) -w -l $(TYPE_CHECK)
+		-y $(KEY) -w -l $(TYPE_CHECK) $(BUILD_OPTIONS)
 
 build-shapes:
 	@for device in $(SHAPE_DEVICES); do \

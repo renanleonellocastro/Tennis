@@ -4,10 +4,13 @@ import Toybox.Timer;
 import Toybox.WatchUi;
 
 // Small transient screen with a colored ring and a message. Closes itself
-// after a delay (or on any key via its delegate).
+// after a delay (or on any key via its delegate), but stays while a save
+// still waits for the watch: closing the last screen closes the app.
 class MessageView extends WatchUi.View {
+    const HOLD_MS = 300;
+
     const TONE_ARC_HALF_SWEEP = 28;
-    const LINE_CHARS = 16;
+    const LINE_CHARS = 15;
 
     hidden var _text as String;
     hidden var _color as Number;
@@ -36,7 +39,11 @@ class MessageView extends WatchUi.View {
     }
 
     function onTimeout() as Void {
-        WatchUi.popView(WatchUi.SLIDE_DOWN);
+        if (MatchFlow.isSaving()) {
+            (_timer as Timer.Timer).start(method(:onTimeout), HOLD_MS, false);
+        } else {
+            WatchUi.popView(WatchUi.SLIDE_DOWN);
+        }
     }
 
     function onUpdate(dc as Dc) as Void {
@@ -79,12 +86,13 @@ class MessageDelegate extends WatchUi.BehaviorDelegate {
     }
 
     function onSelect() as Boolean {
-        WatchUi.popView(WatchUi.SLIDE_DOWN);
-        return true;
+        return onBack();
     }
 
     function onBack() as Boolean {
-        WatchUi.popView(WatchUi.SLIDE_DOWN);
+        if (!MatchFlow.isSaving()) {
+            WatchUi.popView(WatchUi.SLIDE_DOWN);
+        }
         return true;
     }
 }

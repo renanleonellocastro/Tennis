@@ -78,6 +78,17 @@ What the simulator showed, and what the code does about it:
   match screen opens.
 * Two entries a second for a whole match lost nothing (three entries fit
   between two records).
+* The simulator looks at the session about once a second. A `save()` that
+  came before the look that follows a `stop()` closed the file without the
+  record of that stop (about half of the runs with a save 50 to 800 ms
+  after the stop, none from 1200 ms on). A `start()` and a `stop()` inside
+  the same second left no record at all.
+* So the session of a match is wrapped in `PacedSession`: a stop waits
+  until the last start is 1.5 seconds old and a save until the last stop
+  is. A start that comes while a stop still waits drops that stop. The
+  wait runs on one timer (`WatchAlarm`, owned by the app). The goodbye
+  screen stays up while a save waits, and when the app closes anyway
+  whatever waits is done at once.
 * An undo writes the field again with a lower newest sequence number; the
   converter drops the undone entries.
 
@@ -88,9 +99,9 @@ Accepted for version 1:
   entries in its first record, which brings it back.
 * A correction made while paused that ends the match, saved without a
   resume, reaches no record. `log_size` shows the gap.
-* A finished match that is reopened and finished again within about a
-  second may miss its last entry in the file (seen in a few simulator
-  runs, not in most). `log_size` shows the gap.
+* A match whose last point is marked and the app is closed (not saved
+  from the menu) within the next second and a half is saved at once, so
+  its last entry may miss the file. `log_size` shows the gap.
 * Smart Recording on a real watch (records less often than once a second)
   cannot be tested on the simulator.
 

@@ -9,12 +9,12 @@
     <string id="MenuSettings">Settings</string>
     <string id="MenuAbout">About</string>
     <string id="ComingSoonMsg">Coming soon</string>
-    <string id="AboutText">Tennis 0.1.0 MIT</string>
+    <string id="AboutText">Tennis 1.0.0 MIT</string>
 
     <!-- Match setup -->
     <string id="SetupFormat">Format</string>
     <string id="FormatBestOf3">Best of 3 sets</string>
-    <string id="FormatMatchTieBreak">2 sets + 10 point tie break</string>
+    <string id="FormatMatchTieBreak">2 sets + tie break</string>
     <string id="FormatOneSet">1 set</string>
     <string id="FormatProSet">Pro set to 8</string>
     <string id="FormatTieBreakOnly">Tie break only</string>
@@ -52,14 +52,14 @@
     <string id="EndMatchQ">End the match?</string>
     <string id="FixUndoGame">Undo game</string>
     <string id="FixGameMe">Game for me</string>
-    <string id="FixGameOpponent">Game for opponent</string>
+    <string id="FixGameOpponent">Game for opp.</string>
 
     <!-- How a point ended (detailed mode) -->
     <string id="EndingTitle">Point</string>
     <string id="EndingWinner">Winner</string>
     <string id="EndingAce">Ace</string>
-    <string id="EndingErrorNet">Error in the net</string>
-    <string id="EndingErrorOut">Error out</string>
+    <string id="EndingErrorNet">Net error</string>
+    <string id="EndingErrorOut">Out error</string>
 
     <!-- Final score -->
     <string id="FinalYouWon">You won</string>
@@ -111,9 +111,6 @@
     <string id="ReportMaxHr">Max HR</string>
     <string id="ReportKeyHr">Key pts HR</string>
     <string id="ReportCalories">Calories</string>
-
-    <!-- Resume a match the app closed on -->
-    <string id="ResumeTitle">Open match</string>
 
     <!-- Activity file fields -->
     <string id="FitStepsLabel">Steps</string>
