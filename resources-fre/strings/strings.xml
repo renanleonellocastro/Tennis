@@ -4,17 +4,17 @@
 
     <string id="HomeHint">MENU</string>
 
-    <string id="MenuStartMatch">Démarrer un match</string>
+    <string id="MenuStartMatch">Nouveau match</string>
     <string id="MenuPractice">Entraînement</string>
     <string id="MenuSettings">Réglages</string>
     <string id="MenuAbout">À propos</string>
     <string id="ComingSoonMsg">Bientôt disponible</string>
-    <string id="AboutText">Tennis 0.1.0 MIT</string>
+    <string id="AboutText">Tennis 1.0.0 MIT</string>
 
     <!-- Match setup -->
     <string id="SetupFormat">Format</string>
     <string id="FormatBestOf3">2 sets gagnants</string>
-    <string id="FormatMatchTieBreak">2 sets + super tie break</string>
+    <string id="FormatMatchTieBreak">2 sets + tie break</string>
     <string id="FormatOneSet">1 set</string>
     <string id="FormatProSet">Pro set à 8</string>
     <string id="FormatTieBreakOnly">Tie break seul</string>
@@ -47,18 +47,18 @@
     <!-- Match menu -->
     <string id="MatchMenuPause">Pause</string>
     <string id="MatchMenuResume">Reprendre</string>
-    <string id="MatchMenuFix">Corriger le score</string>
-    <string id="MatchMenuEnd">Terminer le match</string>
-    <string id="EndMatchQ">Terminer le match ?</string>
+    <string id="MatchMenuFix">Corriger score</string>
+    <string id="MatchMenuEnd">Terminer</string>
+    <string id="EndMatchQ">Finir le match ?</string>
     <string id="FixUndoGame">Annuler le jeu</string>
     <string id="FixGameMe">Jeu pour moi</string>
-    <string id="FixGameOpponent">Jeu pour l'adversaire</string>
+    <string id="FixGameOpponent">Jeu pour adv.</string>
 
     <!-- How a point ended (detailed mode) -->
     <string id="EndingTitle">Point</string>
     <string id="EndingWinner">Coup gagnant</string>
     <string id="EndingAce">Ace</string>
-    <string id="EndingErrorNet">Faute dans le filet</string>
+    <string id="EndingErrorNet">Faute au filet</string>
     <string id="EndingErrorOut">Faute dehors</string>
 
     <!-- Final score -->
@@ -88,8 +88,8 @@
     <string id="ReportPoints">Points</string>
     <string id="ReportServe">SERVICE</string>
     <string id="ReportFirstIn">1re balle</string>
-    <string id="ReportFirstWon">Gagnés 1re</string>
-    <string id="ReportSecondWon">Gagnés 2e</string>
+    <string id="ReportFirstWon">Pts 1re</string>
+    <string id="ReportSecondWon">Pts 2e</string>
     <string id="ReportDoubleFaults">Doubles f.</string>
     <string id="ReportEndings">POINTS</string>
     <string id="ReportAces">Aces</string>
@@ -99,7 +99,7 @@
     <string id="ReportPressure">PRESSION</string>
     <string id="ReportBreaks">Breaks</string>
     <string id="ReportSaved">Sauvées</string>
-    <string id="ReportHolds">Jeux tenus</string>
+    <string id="ReportHolds">Tenus</string>
     <string id="ReportBestRun">Série</string>
     <string id="ReportTime">TEMPS</string>
     <string id="ReportMatchTime">Match</string>
@@ -111,9 +111,6 @@
     <string id="ReportMaxHr">FC max</string>
     <string id="ReportKeyHr">FC clé</string>
     <string id="ReportCalories">Calories</string>
-
-    <!-- Resume a match the app closed on -->
-    <string id="ResumeTitle">Match ouvert</string>
 
     <!-- Activity file fields -->
     <string id="FitStepsLabel">Pas</string>

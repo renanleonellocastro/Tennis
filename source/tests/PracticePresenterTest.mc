@@ -153,4 +153,11 @@ module PracticeTests {
         Test.assertEqual(pager.page(), 0);
         return true;
     }
+
+    (:test)
+    function testSummaryTitleSitsLowerOnAScreenThatIsNotRound(logger as Test.Logger) as Boolean {
+        Test.assertEqual(PracticePresenter.summaryTitleY(true), 13);
+        Test.assertEqual(PracticePresenter.summaryTitleY(false), 15);
+        return true;
+    }
 }

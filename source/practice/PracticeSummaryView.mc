@@ -1,12 +1,12 @@
 import Toybox.Graphics;
 import Toybox.Lang;
+import Toybox.System;
 import Toybox.WatchUi;
 
 module PracticeFlow {
     // The summary of a practice: the total, one row per block and the time.
     class PracticeSummaryView extends WatchUi.View {
         // Rows of the screen, as percentages of its height.
-        hidden const TITLE_Y = 13;
         hidden const TOTAL_Y = 25;
         hidden const FIRST_ROW_Y = 40;
         hidden const ROW_STEP = 10;
@@ -33,7 +33,9 @@ module PracticeFlow {
             dc.setColor(Theme.COLOR_TEXT, Theme.COLOR_BG);
             dc.clear();
             Theme.drawBrandArc(dc, Theme.COLOR_ACCENT);
-            drawLine(dc, TITLE_Y, Graphics.FONT_XTINY, Theme.COLOR_TEXT_DIM, Strings.t("PracticeTotal"));
+            var isRound = System.getDeviceSettings().screenShape == System.SCREEN_SHAPE_ROUND;
+            drawLine(dc, PracticePresenter.summaryTitleY(isRound), Graphics.FONT_XTINY, Theme.COLOR_TEXT_DIM,
+                     Strings.t("PracticeTotal"));
             drawLine(dc, TOTAL_Y, Graphics.FONT_SMALL, Theme.COLOR_ACCENT, PracticePresenter.totalText(log));
             drawRows(dc, PracticePresenter.summaryRows(log, _pager.firstRow(), _pager.pageSize()));
             drawLine(dc, FOOTER_Y, Graphics.FONT_XTINY, Theme.COLOR_TEXT_DIM,

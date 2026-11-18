@@ -79,4 +79,10 @@ module PracticePresenter {
         var mark = pageText(page, pages);
         return mark.length() == 0 ? clock : clock + GAP + mark;
     }
+
+    // The row of the summary title, as a percentage of the height. The brand
+    // arc sits lower on a screen that is not round, so the title moves down.
+    function summaryTitleY(isRound as Boolean) as Number {
+        return isRound ? 13 : 15;
+    }
 }

@@ -10,7 +10,7 @@ class MessageView extends WatchUi.View {
     const HOLD_MS = 300;
 
     const TONE_ARC_HALF_SWEEP = 28;
-    const LINE_CHARS = 16;
+    const LINE_CHARS = 15;
 
     hidden var _text as String;
     hidden var _color as Number;

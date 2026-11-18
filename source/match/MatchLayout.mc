@@ -15,6 +15,12 @@ class MatchLayout {
     // The bottom row is sized for the clock and, from the recording
     // milestone on, the heart rate next to it.
     hidden const CLOCK_Y = 89;
+    // A screen that is not round has free room at the bottom: its labels
+    // sit a little higher and its controls and clock lower, so the three
+    // rows do not touch.
+    hidden const FLAT_LABELS_SHIFT = -1;
+    hidden const FLAT_CONTROLS_SHIFT = 1;
+    hidden const FLAT_CLOCK_SHIFT = 3;
     hidden const FOOTER_GAP = 3;
     hidden const HEART_DOT_DIVISOR = 60;
     hidden const PLAYER_X = 23;
@@ -49,6 +55,11 @@ class MatchLayout {
         return _height * percent / 100;
     }
 
+    // A row of the lower half, moved by the shift on a screen that is not round.
+    hidden function lowRow(percent as Number, flatShift as Number) as Number {
+        return row(_isRound ? percent : percent + flatShift);
+    }
+
     // A column given for my side, mirrored for the opponent.
     hidden function column(percent as Number, player as Number) as Number {
         var mine = _width * percent / 100;
@@ -72,11 +83,11 @@ class MatchLayout {
     }
 
     function labelsY() as Number {
-        return row(LABELS_Y);
+        return lowRow(LABELS_Y, FLAT_LABELS_SHIFT);
     }
 
     function clockY() as Number {
-        return row(CLOCK_Y);
+        return lowRow(CLOCK_Y, FLAT_CLOCK_SHIFT);
     }
 
     // The bottom row.
@@ -194,7 +205,7 @@ class MatchLayout {
     }
 
     function controlsY() as Number {
-        return row(CONTROLS_Y);
+        return lowRow(CONTROLS_Y, FLAT_CONTROLS_SHIFT);
     }
 
     function menuControlX() as Number {
@@ -206,6 +217,7 @@ class MatchLayout {
     }
 
     function isOnControls(y as Number) as Boolean {
-        return _hasTouchControls && y >= row(CONTROLS_TOP) && y < row(CONTROLS_BOTTOM);
+        return _hasTouchControls && y >= lowRow(CONTROLS_TOP, FLAT_CONTROLS_SHIFT)
+            && y < lowRow(CONTROLS_BOTTOM, FLAT_CONTROLS_SHIFT);
     }
 }

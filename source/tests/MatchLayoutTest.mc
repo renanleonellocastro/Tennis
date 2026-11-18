@@ -146,6 +146,32 @@ module MatchLayoutTests {
         return true;
     }
 
+    // A screen that is not round spreads its lower rows: 64, 78 and 92
+    // percent of the height instead of 65, 77 and 89.
+    (:test)
+    function testLowerRowsSpreadOnAScreenThatIsNotRound(logger as Test.Logger) as Boolean {
+        var flat = new MatchLayout(320, 360, true, false);
+        var round = new MatchLayout(360, 360, true, true);
+        Test.assertEqual(flat.labelsY(), 230);
+        Test.assertEqual(flat.controlsY(), 280);
+        Test.assertEqual(flat.clockY(), 331);
+        Test.assertEqual(round.labelsY(), 234);
+        Test.assertEqual(round.controlsY(), 277);
+        Test.assertEqual(round.clockY(), 320);
+        return true;
+    }
+
+    (:test)
+    function testControlBandFollowsTheControlsOnAScreenThatIsNotRound(logger as Test.Logger) as Boolean {
+        var flat = new MatchLayout(320, 360, true, false);
+        Test.assert(!flat.isOnControls(258));
+        Test.assert(flat.isOnControls(259));
+        Test.assert(flat.isOnControls(flat.controlsY()));
+        Test.assert(flat.isOnControls(305));
+        Test.assert(!flat.isOnControls(306));
+        return true;
+    }
+
     (:test)
     function testFooterCentersTheClockAloneWithoutAHeartRate(logger as Test.Logger) as Boolean {
         var layouts = testLayouts();

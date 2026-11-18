@@ -69,7 +69,7 @@ module PracticeFlow {
     }
 
     function pushPracticeMenu(controller as PracticeController) as Void {
-        WatchUi.pushView(MatchFlow.menuOf("MenuPractice", practiceMenuRows(controller.isPaused())),
+        WatchUi.pushView(MatchFlow.menuOf(practiceMenuRows(controller.isPaused())),
                          new PracticeMenuDelegate(controller), WatchUi.SLIDE_UP);
     }
 
@@ -90,7 +90,7 @@ module PracticeFlow {
     // Summary: save or discard.
 
     function pushSaveMenu(controller as PracticeController) as Void {
-        WatchUi.pushView(MatchFlow.menuOf("MenuPractice", saveMenuRows()), new PracticeSaveMenuDelegate(controller),
+        WatchUi.pushView(MatchFlow.menuOf(saveMenuRows()), new PracticeSaveMenuDelegate(controller),
                          WatchUi.SLIDE_UP);
     }
 

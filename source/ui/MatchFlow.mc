@@ -46,8 +46,10 @@ module MatchFlow {
         ];
     }
 
-    function menuOf(titleKey as String, rows as Array) as WatchUi.Menu2 {
-        var menu = new WatchUi.Menu2({:title => Strings.t(titleKey)});
+    // Every menu carries the app name: a longer title wraps and is cut on
+    // the small round screens.
+    function menuOf(rows as Array) as WatchUi.Menu2 {
+        var menu = new WatchUi.Menu2({:title => Strings.t("AppName")});
         for (var i = 0; i < rows.size(); i++) {
             var row = rows[i] as Array;
             menu.addItem(new WatchUi.MenuItem(Strings.t(row[0] as String), null, row[1] as Symbol, null));
@@ -59,9 +61,8 @@ module MatchFlow {
 
     // One row per field with its current option, then the row that goes
     // on. The id of a field row is the field; the last row has a symbol.
-    function optionMenu(titleKey as String, options as OptionList, fields as Array<Number>,
-                        confirmKey as String) as WatchUi.Menu2 {
-        var menu = new WatchUi.Menu2({:title => Strings.t(titleKey)});
+    function optionMenu(options as OptionList, fields as Array<Number>, confirmKey as String) as WatchUi.Menu2 {
+        var menu = new WatchUi.Menu2({:title => Strings.t("AppName")});
         for (var i = 0; i < fields.size(); i++) {
             menu.addItem(new WatchUi.MenuItem(Strings.t(options.labelKey(fields[i])),
                                               Strings.t(options.valueKey(fields[i])), fields[i], null));
@@ -71,7 +72,7 @@ module MatchFlow {
     }
 
     function setupMenu(setup as MatchSetup, fields as Array<Number>) as WatchUi.Menu2 {
-        return optionMenu("MenuStartMatch", setup, fields, "SetupStart");
+        return optionMenu(setup, fields, "SetupStart");
     }
 
     // Opens with the start row selected, so a match with the remembered
@@ -117,7 +118,7 @@ module MatchFlow {
     function offerResume() as Void {
         var store = new MatchStore(new AppStorage());
         if (store.hasMatch()) {
-            WatchUi.pushView(menuOf("ResumeTitle", resumeMenuRows()), new ResumeMenuDelegate(store),
+            WatchUi.pushView(menuOf(resumeMenuRows()), new ResumeMenuDelegate(store),
                              WatchUi.SLIDE_UP);
         }
     }
@@ -180,7 +181,7 @@ module MatchFlow {
     // Final score: save, the report or discard.
 
     function pushFinalMenu(controller as MatchController) as Void {
-        WatchUi.pushView(menuOf("FinalMatchEnded", finalMenuRows()), new FinalMenuDelegate(controller),
+        WatchUi.pushView(menuOf(finalMenuRows()), new FinalMenuDelegate(controller),
                          WatchUi.SLIDE_UP);
     }
 
@@ -188,7 +189,7 @@ module MatchFlow {
     // remembered tags is one press away. Replaces the final menu.
     function showSaveMenu(controller as MatchController) as Void {
         var tags = TagStore.load();
-        var menu = optionMenu("FinalSave", tags, tags.fields(), "FinalSave");
+        var menu = optionMenu(tags, tags.fields(), "FinalSave");
         menu.setFocus(tags.fields().size());
         WatchUi.switchToView(menu, new SaveMenuDelegate(controller, tags), WatchUi.SLIDE_LEFT);
     }
@@ -246,12 +247,12 @@ module MatchFlow {
     }
 
     function pushMatchMenu(controller as MatchController) as Void {
-        WatchUi.pushView(menuOf("AppName", matchMenuRows(controller.isPaused())),
+        WatchUi.pushView(menuOf(matchMenuRows(controller.isPaused())),
                          new MatchMenuDelegate(controller), WatchUi.SLIDE_UP);
     }
 
     function showFixMenu(controller as MatchController) as Void {
-        WatchUi.switchToView(menuOf("MatchMenuFix", fixMenuRows()), new FixMenuDelegate(controller),
+        WatchUi.switchToView(menuOf(fixMenuRows()), new FixMenuDelegate(controller),
                              WatchUi.SLIDE_LEFT);
     }
 
