@@ -84,6 +84,17 @@ passes only when it reads `PASSED` and no test failed or errored.
   on the Forerunner 55, and the length of the lines of every message
   screen and of the time and body labels of the report, against the frame
   ring and the width of the Venu Sq 2.
+* `TextWidthTest`: the widest text of each place the app draws itself, in
+  every language and with the largest numbers a match gives (sets of 7-6
+  and 18-16, a clock of 9:59:59, a heart rate of 188, ratios of 88/88),
+  measured in pixels in the fonts of the watch the suite runs on: against
+  the edge of the screen on its row and against the neighbour on the same
+  row. It covers the match screen (sets, banner, double notice, player
+  labels, advantage, bottom row, touch controls), the practice screen, the
+  final score, every row kind of the report, the message screens and the
+  practice summary. The rows of a menu are drawn by the watch: their
+  width is checked on the Forerunner 55 only, against the room measured
+  on its screenshots (125 pixels on the row under the chosen one).
 * `RecordingTest`: steps and distance counted from the first reading, over
   a pause, a missing reading and midnight, per lap; the recorder starting,
   pausing, opening laps with the score of their set, writing the summary
@@ -99,7 +110,14 @@ passes only when it reads `PASSED` and no test failed or errored.
 * `PacedSessionTest`: the wait after each start, stop and save of the
   activity: a stop and a save held back until the watch wrote the last
   record, a start that cancels a waiting stop, discard, the alarm of the
-  watch and the goodbye message that stays while a save waits.
+  watch and the goodbye message that stays while a save waits, and the
+  point log field paced so a game given by the fix of the score reaches
+  the file three entries at a time.
+* `WholeMatch...Test` (one file per format, with `WholeMatchBench`) and
+  `WholePracticeTest`: whole matches played point by
+  point for every format, with and without advantage, simple and detailed,
+  checked after every point against an independent count, plus a whole
+  practice session.
 * `PracticeLogTest`: hits, misses, undo inside the open block only, closing
   blocks, empty blocks that do not close, totals.
 * `PracticePresenterTest`: success rate rounding, the texts of the practice
@@ -112,8 +130,8 @@ passes only when it reads `PASSED` and no test failed or errored.
   practice text in every language, and a short real activity recorded and
   discarded.
 
-The practice suites run with the rest in `make test`. At the end of M8 the
-suite has 446 tests and passes with no failure on the Forerunner 55
+The practice suites run with the rest in `make test`. The suite has 494
+tests and passes with no failure on the Forerunner 55
 (`fr55`), the Venu 2 (`venu2`) and the Venu Sq 2 (`venusq2`).
 
 The recording tests use fakes for the session, sensors, GPS and storage
@@ -128,7 +146,7 @@ report; nothing enforces it, so keep it true when the engine changes.
 
 | Not automatable | Reason | Covered by |
 |---|---|---|
-| Drawing that needs a `Dc` (layout, fonts) | No graphics context in unit tests | Looking at the simulator on fr55, venu2 and venusq2 |
+| Drawing itself (colors, shapes, what the watch draws in a menu) | The unit tests have no screen; they only measure text widths on a buffered bitmap | Looking at the simulator on fr55, venu2 and venusq2 |
 | Functions that push, switch or pop views (`MatchFlow`, the delegates) | A view stack exists only in a running app | Watch pass; they hold no decision of their own |
 | Touch against button input | Simulator input differs from a real digitizer | Watch pass |
 | Vibration, tones and backlight | Hardware | Watch pass |
