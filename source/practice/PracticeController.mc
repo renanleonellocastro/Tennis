@@ -54,45 +54,55 @@ class PracticeController {
         return Reaction.NONE;
     }
 
-    // Nothing is counted or undone during a pause or after the end.
     function hit() as Number {
-        if (!isLive()) {
-            return Reaction.NONE;
-        }
-        _log.hit();
-        return afterEntry();
+        return count(true);
     }
 
     function miss() as Number {
+        return count(false);
+    }
+
+    // A press during a pause only ends the pause, so no count is lost.
+    // Nothing is counted after the end.
+    hidden function count(isHit as Boolean) as Number {
+        if (isPaused()) {
+            return wake();
+        }
         if (!isLive()) {
             return Reaction.NONE;
         }
-        _log.miss();
-        return afterEntry();
+        _log.method(isHit ? :hit : :miss).invoke();
+        return afterEntry(Cue.POINT);
     }
 
+    // Ends the pause, with a buzz that says the practice is on again.
+    hidden function wake() as Number {
+        togglePause();
+        return Reaction.withCue(Cue.GAME);
+    }
+
+    // Nothing is undone during a pause or after the end.
     function undo() as Number {
-        return isLive() && _log.undo() ? afterEntry() : Reaction.NONE;
+        return isLive() && _log.undo() ? afterEntry(Cue.UNDO) : Reaction.NONE;
     }
 
-    hidden function afterEntry() as Number {
+    hidden function afterEntry(cue as Number) as Number {
         _recorder.setBlock(_log.hits(), _log.misses());
-        return Reaction.REFRESH;
+        return Reaction.withCue(cue);
     }
 
     // START closes the block and opens the next. While paused it resumes
     // instead, so the button that started the pause from the menu also
-    // ends it. The watch vibrates, since a block is closed without looking.
+    // ends it. The long cue plays, since a block is closed without looking.
     function closeBlock() as Number {
         if (isPaused()) {
-            togglePause();
-            return Reaction.REFRESH;
+            return wake();
         }
         if (!isLive() || !_log.closeBlock()) {
             return Reaction.NONE;
         }
         _recorder.closeBlock();
-        return Reaction.REFRESH | Reaction.VIBRATE;
+        return Reaction.withCue(Cue.LONG);
     }
 
     function openMenu() as Number {

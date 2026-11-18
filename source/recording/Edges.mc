@@ -40,6 +40,12 @@ typedef Alarm as interface {
     function ring(delayMs as Number, callback as Method() as Void) as Void;
 };
 
+// Vibrates the steps of a cue (see MatchAlert), or does nothing on a watch
+// that cannot vibrate.
+typedef Buzzer as interface {
+    function buzz(steps as Array<Number>) as Void;
+};
+
 typedef KeyValueStore as interface {
     function get(key as String) as Object?;
     function put(key as String, value as Array) as Void;

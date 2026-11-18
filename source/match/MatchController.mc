@@ -1,12 +1,21 @@
 import Toybox.Lang;
 
-// What the screen has to do after an input, as flags.
+// What the screen has to do after an input: flags, and above them the Cue
+// the watch plays so the player feels what the press did.
 module Reaction {
     const NONE = 0;
     const REFRESH = 1;
-    const VIBRATE = 2;
     const ASK_ENDING = 4;
     const OPEN_MENU = 8;
+    const CUE = 16;
+
+    function withCue(cue as Number) as Number {
+        return REFRESH + CUE * cue;
+    }
+
+    function cueOf(reaction as Number) as Number {
+        return reaction / CUE;
+    }
 }
 
 // Turns the actions of the match screen into engine calls and keeps what
@@ -104,7 +113,11 @@ class MatchController {
     }
 
     // In detailed mode the point waits until the player says how it ended.
+    // A press during a pause only ends the pause, so no point is lost.
     hidden function scorePoint(winner as Number) as Number {
+        if (isPaused()) {
+            return wake();
+        }
         if (!isLive()) {
             return Reaction.NONE;
         }
@@ -138,47 +151,54 @@ class MatchController {
         if (!_engine.point(winner, ending, clockSeconds(), heartRate())) {
             return Reaction.NONE;
         }
-        return afterEntry(games, sets);
+        return afterEntry(games, sets, Cue.POINT);
+    }
+
+    // Ends the pause, with a buzz that says the match is on again.
+    hidden function wake() as Number {
+        togglePause();
+        return Reaction.withCue(Cue.GAME);
     }
 
     // START logs a serve fault. While paused it resumes instead, so the
     // button that started the pause from the menu also ends it.
     function fault() as Number {
         if (isPaused()) {
-            togglePause();
-            return Reaction.REFRESH;
+            return wake();
         }
         var games = ScoreFixer.gamesPlayed(state());
         var sets = state().finishedSets();
         if (!isLive() || !_engine.fault(clockSeconds(), heartRate())) {
             return Reaction.NONE;
         }
-        return afterEntry(games, sets);
+        return afterEntry(games, sets, Cue.FAULT);
     }
 
-    // Shows what the entry closed and stops the clock when it ended the match.
-    hidden function afterEntry(gamesBefore as Number, setsBefore as Number) as Number {
-        _notice.show(noticeKeysSince(gamesBefore, setsBefore), _time.now());
+    // Shows what the entry closed and stops the clock when it ended the
+    // match. The cue of the entry gives way to a heavier one: a game, and
+    // the long one for a set, a change of ends or the end of the match.
+    hidden function afterEntry(gamesBefore as Number, setsBefore as Number, cue as Number) as Number {
+        var closed = closedKey(gamesBefore, setsBefore);
         writePointLog();
         persist();
         if (state().isFinished()) {
             stopClock();
         }
-        return state().isChangeOfEndsDue() ? Reaction.REFRESH | Reaction.VIBRATE : Reaction.REFRESH;
+        if (announce(closed) || state().isFinished() || closed == Str.NoticeSet) {
+            return Reaction.withCue(Cue.LONG);
+        }
+        return Reaction.withCue(closed == null ? cue : Cue.GAME);
     }
 
-    // The end of the match has its own screen, so it needs no notice, and
-    // the engine never asks for a change of ends after it.
-    hidden function noticeKeysSince(gamesBefore as Number, setsBefore as Number) as Array<Number> {
-        var keys = [] as Array<Number>;
-        var closed = closedKey(gamesBefore, setsBefore);
-        if (closed != null && !state().isFinished()) {
-            keys.add(closed);
-        }
-        if (state().isChangeOfEndsDue()) {
-            keys.add(Str.NoticeChangeEnds);
-        }
-        return keys;
+    // Shows the notice of what was closed and returns true when the players
+    // change ends. That notice stands alone and stays until the next entry,
+    // since it is read on the way to the bench. The end of the match has its
+    // own screen and needs no notice.
+    hidden function announce(closed as Number?) as Boolean {
+        var isChange = !state().isFinished() && state().isChangeOfEndsDue();
+        var key = state().isFinished() ? null : closed;
+        _notice.show(isChange ? Str.NoticeChangeEnds : key, _time.now(), isChange);
+        return isChange;
     }
 
     // What the last entry closed: a set, a game or nothing.
@@ -194,11 +214,11 @@ class MatchController {
         if (isPaused() || !_engine.undo()) {
             return Reaction.NONE;
         }
-        return afterCorrection();
+        return corrected(Cue.UNDO);
     }
 
     // A correction can reopen a finished match or finish an open one.
-    hidden function afterCorrection() as Number {
+    hidden function corrected(cue as Number) as Number {
         _notice.clear();
         writePointLog();
         if (state().isFinished()) {
@@ -207,7 +227,7 @@ class MatchController {
             runClock();
         }
         persist();
-        return Reaction.REFRESH;
+        return Reaction.withCue(cue);
     }
 
     function openMenu() as Number {
@@ -217,11 +237,21 @@ class MatchController {
     // Fix the score.
 
     function undoGame() as Number {
-        return ScoreFixer.undoGame(_engine) ? afterCorrection() : Reaction.NONE;
+        return fixed(ScoreFixer.undoGame(_engine));
     }
 
     function awardGame(player as Number) as Number {
-        return ScoreFixer.awardGame(_engine, player, clockSeconds(), _recorder) ? afterCorrection() : Reaction.NONE;
+        return fixed(ScoreFixer.awardGame(_engine, player, clockSeconds(), _recorder));
+    }
+
+    // A fix that worked says so with the game notice and the game cue.
+    hidden function fixed(isDone as Boolean) as Number {
+        if (!isDone) {
+            return Reaction.NONE;
+        }
+        var reaction = corrected(Cue.GAME);
+        announce(Str.NoticeGame);
+        return reaction;
     }
 
     // Pause and end.
@@ -290,12 +320,12 @@ class MatchController {
 
     // Goes back from the final screen to the match. A decided match gets
     // its last entry removed, since a decided match takes no more points.
-    function reopen() as Void {
+    function reopen() as Number {
         _isEnded = false;
         if (state().isFinished()) {
             _engine.undo();
         }
-        afterCorrection();
+        return corrected(Cue.UNDO);
     }
 
     // Readers for the screen.
@@ -335,7 +365,7 @@ class MatchController {
         return _clock.seconds(_time.now());
     }
 
-    function noticeKeys() as Array<Number> {
-        return _notice.keys(_time.now());
+    function noticeKey() as Number? {
+        return _notice.key(_time.now());
     }
 }

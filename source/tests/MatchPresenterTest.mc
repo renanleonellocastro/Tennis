@@ -70,18 +70,18 @@ module MatchPresenterTests {
         return true;
     }
 
-    function bannerText(isPaused as Boolean, keys as Array<Number>, points as String) as String {
+    function bannerText(isPaused as Boolean, key as Number?, points as String) as String {
         var match = newMatch(MatchFormat.BEST_OF_3);
         match.play(points);
-        var banner = MatchPresenter.banner(isPaused, keys, match.state());
+        var banner = MatchPresenter.banner(isPaused, key, match.state());
         return (banner[0] as String) + "|" + (banner[1] as Number);
     }
 
     (:test)
     function testBannerPrefersPauseThenNoticeThenPressure(logger as Test.Logger) as Boolean {
         Strings.loadTables("eng");
-        var notice = [Str.NoticeGame] as Array<Number>;
-        var none = [] as Array<Number>;
+        var notice = Str.NoticeGame;
+        var none = null;
         Test.assertEqual(bannerText(true, notice, "OOO"), "Paused|" + BannerTone.NOTICE);
         Test.assertEqual(bannerText(false, notice, "OOO"), "Game|" + BannerTone.NOTICE);
         Test.assertEqual(bannerText(false, none, "OOO"), "BREAK POINT|" + BannerTone.OPPONENT);
@@ -97,16 +97,6 @@ module MatchPresenterTests {
         Test.assertEqual(MatchPresenter.clockText(3599), "59:59");
         Test.assertEqual(MatchPresenter.clockText(3600), "1:00:00");
         Test.assertEqual(MatchPresenter.clockText(3725), "1:02:05");
-        return true;
-    }
-
-    (:test)
-    function testNoticeTextJoinsTheTranslatedKeys(logger as Test.Logger) as Boolean {
-        Strings.loadTables("eng");
-        Test.assertEqual(MatchPresenter.noticeText([] as Array<Number>), "");
-        Test.assertEqual(MatchPresenter.noticeText([Str.NoticeSet] as Array<Number>), "Set");
-        Test.assertEqual(MatchPresenter.noticeText([Str.NoticeGame, Str.NoticeChangeEnds] as Array<Number>),
-                         "Game. Change ends");
         return true;
     }
 

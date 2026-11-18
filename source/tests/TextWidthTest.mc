@@ -101,18 +101,6 @@ module TextFitTests {
         return texts;
     }
 
-    // "Game. Change ends" and "Set. Change ends" in every language.
-    function doubleNotices() as Array<String> {
-        var texts = [] as Array<String>;
-        for (var c = 0; c < I18n.CODES.size(); c++) {
-            var table = I18n.table(I18n.CODES[c] as String);
-            var ends = MatchPresenter.NOTICE_GAP + (table[Str.NoticeChangeEnds]);
-            texts.add((table[Str.NoticeGame]) + ends);
-            texts.add((table[Str.NoticeSet]) + ends);
-        }
-        return texts;
-    }
-
     function widest(texts as Array<String>, font as Graphics.FontDefinition) as Number {
         var most = 0;
         for (var i = 0; i < texts.size(); i++) {
@@ -147,7 +135,6 @@ module TextFitTests {
         Test.assert(isInside(widest(textsWithTail([Str.PracticeBlock], " 88"), font), at.centerX(), at.setsY(),
                              inkHalf(font)));
         Test.assert(isInside(widest(textsOf(BANNER_KEYS), font), at.centerX(), at.bannerY(), inkHalf(font)));
-        Test.assert(isInside(widest(doubleNotices(), font), at.centerX(), at.bannerY(), inkHalf(font)));
         return true;
     }
 

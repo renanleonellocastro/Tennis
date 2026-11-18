@@ -72,7 +72,8 @@ class MatchBench {
     }
 
     function notice() as String {
-        return joined(controller.noticeKeys());
+        var key = controller.noticeKey();
+        return key == null ? "" : key.toString();
     }
 }
 

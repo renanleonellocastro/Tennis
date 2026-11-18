@@ -59,9 +59,7 @@ module PracticeFlow {
 
     // Carries out the Reaction flags of an input on the practice screen.
     function react(reaction as Number, controller as PracticeController) as Void {
-        if ((reaction & Reaction.VIBRATE) != 0) {
-            MatchAlert.changeEnds();
-        }
+        MatchAlert.play(Reaction.cueOf(reaction));
         if ((reaction & Reaction.OPEN_MENU) != 0) {
             pushPracticeMenu(controller);
         }
@@ -74,8 +72,7 @@ module PracticeFlow {
     }
 
     function showEndConfirmation(controller as PracticeController) as Void {
-        WatchUi.switchToView(new WatchUi.Confirmation(Strings.t(Str.EndPracticeQ)),
-                             new PracticeConfirmDelegate(controller.method(:end)), WatchUi.SLIDE_IMMEDIATE);
+        MatchFlow.showQuestion(Str.EndPracticeQ, controller.method(:end));
     }
 
     // Replaces the practice screen, which must be the one on top.
@@ -95,8 +92,7 @@ module PracticeFlow {
     }
 
     function showDiscardConfirmation(controller as PracticeController) as Void {
-        WatchUi.switchToView(new WatchUi.Confirmation(Strings.t(Str.DiscardQ)),
-                             new PracticeConfirmDelegate(controller.method(:discard)), WatchUi.SLIDE_IMMEDIATE);
+        MatchFlow.showQuestion(Str.DiscardQ, controller.method(:discard));
     }
 
     // Replaces the summary, which must be the one on top, once the practice

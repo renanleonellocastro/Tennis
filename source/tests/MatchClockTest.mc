@@ -38,23 +38,34 @@ module MatchClockTests {
     }
 
     (:test)
-    function testNoticeShowsItsKeysForFourSeconds(logger as Test.Logger) as Boolean {
+    function testNoticeShowsItsKeyForFourSeconds(logger as Test.Logger) as Boolean {
         var notice = new MatchNotice();
-        Test.assertEqual(notice.keys(0).size(), 0);
-        notice.show([Str.NoticeGame, Str.NoticeChangeEnds] as Array<Number>, 1000);
-        Test.assertEqual(joined(notice.keys(1000)), joined([Str.NoticeGame, Str.NoticeChangeEnds]));
-        Test.assertEqual(notice.keys(1000 + MatchNotice.VISIBLE_MS - 1).size(), 2);
-        Test.assertEqual(notice.keys(1000 + MatchNotice.VISIBLE_MS).size(), 0);
-        Test.assertEqual(notice.keys(1000).size(), 0);
+        Test.assert(notice.key(0) == null);
+        notice.show(Str.NoticeGame, 1000, false);
+        Test.assertEqual(notice.key(1000) as Number, Str.NoticeGame);
+        Test.assertEqual(notice.key(1000 + MatchNotice.VISIBLE_MS - 1) as Number, Str.NoticeGame);
+        Test.assert(notice.key(1000 + MatchNotice.VISIBLE_MS) == null);
+        notice.show(null, 2000, false);
+        Test.assert(notice.key(2000) == null);
+        return true;
+    }
+
+    (:test)
+    function testNoticeThatStaysOutlivesTheFourSeconds(logger as Test.Logger) as Boolean {
+        var notice = new MatchNotice();
+        notice.show(Str.NoticeChangeEnds, 0, true);
+        Test.assertEqual(notice.key(MatchNotice.VISIBLE_MS * 100) as Number, Str.NoticeChangeEnds);
+        notice.show(Str.NoticeGame, 0, false);
+        Test.assert(notice.key(MatchNotice.VISIBLE_MS) == null);
         return true;
     }
 
     (:test)
     function testNoticeCanBeCleared(logger as Test.Logger) as Boolean {
         var notice = new MatchNotice();
-        notice.show([Str.NoticeSet] as Array<Number>, 0);
+        notice.show(Str.NoticeSet, 0, true);
         notice.clear();
-        Test.assertEqual(notice.keys(1).size(), 0);
+        Test.assert(notice.key(1) == null);
         return true;
     }
 

@@ -13,7 +13,6 @@ module MatchPresenter {
     // Tennis writes a score as two numbers joined by this sign.
     const SCORE_SEPARATOR = "-";
     const SET_GAP = "  ";
-    const NOTICE_GAP = ". ";
     const SECONDS_PER_MINUTE = 60;
     const MINUTES_PER_HOUR = 60;
     // Checked in this order for each player: the heaviest label wins.
@@ -95,12 +94,12 @@ module MatchPresenter {
 
     // [text, BannerTone] of the line under the set score. A pause comes
     // first, then a fresh notice, then the point at stake.
-    function banner(isPaused as Boolean, noticeKeys as Array<Number>, state as MatchState) as Array {
+    function banner(isPaused as Boolean, noticeKey as Number?, state as MatchState) as Array {
         if (isPaused) {
             return [Strings.t(Str.Paused), BannerTone.NOTICE];
         }
-        if (noticeKeys.size() > 0) {
-            return [noticeText(noticeKeys), BannerTone.NOTICE];
+        if (noticeKey != null) {
+            return [Strings.t(noticeKey), BannerTone.NOTICE];
         }
         var stake = pressure(state);
         return stake == null ? ["", BannerTone.NOTICE] : [Strings.t(stake[0] as Number), stake[1]];
@@ -123,15 +122,6 @@ module MatchPresenter {
     // "" when the watch has no reading.
     function heartRateText(beats as Number?) as String {
         return beats == null ? "" : beats.toString();
-    }
-
-    // The notice keys as one translated line, or "" for no notice.
-    function noticeText(keys as Array<Number>) as String {
-        var text = "";
-        for (var i = 0; i < keys.size(); i++) {
-            text += (i == 0 ? "" : NOTICE_GAP) + Strings.t(keys[i]);
-        }
-        return text;
     }
 
     function finalTitleKey(state as MatchState) as Number {

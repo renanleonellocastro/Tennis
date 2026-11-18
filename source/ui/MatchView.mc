@@ -69,7 +69,7 @@ class MatchView extends WatchUi.View {
     }
 
     hidden function drawBanner(dc as Dc, state as MatchState) as Void {
-        var banner = MatchPresenter.banner(_controller.isPaused(), _controller.noticeKeys(), state);
+        var banner = MatchPresenter.banner(_controller.isPaused(), _controller.noticeKey(), state);
         dc.setColor(TONE_COLORS[banner[1] as Number] as Number, Graphics.COLOR_TRANSPARENT);
         dc.drawText(_layout.centerX(), _layout.bannerY(), Graphics.FONT_XTINY, banner[0] as String, CENTERED);
     }

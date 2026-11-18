@@ -76,7 +76,7 @@ class FinalScoreDelegate extends WatchUi.BehaviorDelegate {
     }
 
     function onBack() as Boolean {
-        _controller.reopen();
+        MatchAlert.play(Reaction.cueOf(_controller.reopen()));
         MatchFlow.showMatch(_controller, WatchUi.SLIDE_DOWN);
         return true;
     }

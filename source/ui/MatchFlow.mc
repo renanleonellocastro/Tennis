@@ -123,6 +123,18 @@ module MatchFlow {
         }
     }
 
+    // Replaces the resume offer. The stored match goes only on a yes; a no
+    // keeps it for the next launch, as leaving the offer with BACK does.
+    function showResumeDiscardConfirmation(store as MatchStore) as Void {
+        showQuestion(Str.DiscardQ, store.method(:clear));
+    }
+
+    // Replaces the menu on top with a question that runs the action on a yes.
+    function showQuestion(key as Number, action as Method() as Void) as Void {
+        WatchUi.switchToView(new WatchUi.Confirmation(Strings.t(key)),
+                             new PracticeFlow.PracticeConfirmDelegate(action), WatchUi.SLIDE_IMMEDIATE);
+    }
+
     // The score comes back from the stored log and marks; the activity is a
     // new one.
     function resume(store as MatchStore) as Void {
@@ -157,9 +169,7 @@ module MatchFlow {
 
     // Carries out the Reaction flags of an input on the match screen.
     function react(reaction as Number, controller as MatchController) as Void {
-        if ((reaction & Reaction.VIBRATE) != 0) {
-            MatchAlert.changeEnds();
-        }
+        MatchAlert.play(Reaction.cueOf(reaction));
         if ((reaction & Reaction.ASK_ENDING) != 0) {
             pushEndingMenu(controller);
         }
@@ -225,8 +235,7 @@ module MatchFlow {
     }
 
     function showDiscardConfirmation(controller as MatchController) as Void {
-        WatchUi.switchToView(new WatchUi.Confirmation(Strings.t(Str.DiscardQ)),
-                             new DiscardConfirmDelegate(controller), WatchUi.SLIDE_IMMEDIATE);
+        showQuestion(Str.DiscardQ, controller.method(:discard));
     }
 
     // Replaces the final screen, which must be the one on top, once the
@@ -257,8 +266,7 @@ module MatchFlow {
     }
 
     function showEndConfirmation(controller as MatchController) as Void {
-        WatchUi.switchToView(new WatchUi.Confirmation(Strings.t(Str.EndMatchQ)),
-                             new EndMatchConfirmDelegate(controller), WatchUi.SLIDE_IMMEDIATE);
+        showQuestion(Str.EndMatchQ, controller.method(:end));
     }
 
     // Detailed mode: how the point ended.
