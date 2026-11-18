@@ -177,6 +177,15 @@ them.
 * **Entries between two records.** A record holds three entries, so up to
   three entries marked within one second all reach the file. Two entries a
   second, kept up for a whole match, lost nothing.
+* **More than three entries at once.** "Fix the score, give game" logs
+  four points or more in one step (seven or more in a tie break). The app
+  hands them to the field three at a time, each value 1.5 seconds after
+  the one before, so every entry reaches a record. A stop of the timer
+  waits for the last value. Before this pacing the oldest of those entries
+  never reached the file. When the app is closed inside that wait, the
+  values that still wait are skipped: `missing_sequences` of that file
+  shows it, and the file of the resumed match starts with the newest
+  three entries.
 * **Undo.** An undo sets the field again with a lower newest sequence
   number, and the numbers above it are used again by the next entries.
   An entry that was written and then undone stays in older records and is

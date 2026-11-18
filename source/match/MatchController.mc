@@ -221,7 +221,7 @@ class MatchController {
     }
 
     function awardGame(player as Number) as Number {
-        return ScoreFixer.awardGame(_engine, player, clockSeconds()) ? afterCorrection() : Reaction.NONE;
+        return ScoreFixer.awardGame(_engine, player, clockSeconds(), _recorder) ? afterCorrection() : Reaction.NONE;
     }
 
     // Pause and end.

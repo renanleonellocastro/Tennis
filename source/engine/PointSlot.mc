@@ -25,6 +25,11 @@ module PointSlot {
         return [0, 0, 0, 0, 0, 0, 0, 0, 0] as Array<Number>;
     }
 
+    // The sequence number of the newest entry of a field, 0 when it has none.
+    function newest(field as Array<Number>) as Number {
+        return field[0] & SEQUENCE_MASK;
+    }
+
     // Built from the state right before the entry. The sequence number is
     // the place of the entry in the log, counted from 1.
     function header(sequence as Number, state as MatchState) as Number {

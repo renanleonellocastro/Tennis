@@ -14,6 +14,8 @@ class FakeSession {
     // The newest sequence number of the point log at each start and stop,
     // where the watch writes a record.
     var records as Array<Number> = [] as Array<Number>;
+    // The newest sequence number of every value the point log field took.
+    var written as Array<Number> = [] as Array<Number>;
 
     function start() as Void {
         calls += "s";
@@ -46,6 +48,9 @@ class FakeSession {
 
     function setField(id as Number, value as FieldValue) as Void {
         fields.put(id, value);
+        if (id == RecordingFields.POINT_LOG) {
+            written.add((value as Array<Number>)[0] & PointSlot.SEQUENCE_MASK);
+        }
     }
 
     // An array field as text, or "" when it was never written.

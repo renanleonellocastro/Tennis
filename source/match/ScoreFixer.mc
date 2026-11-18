@@ -11,11 +11,14 @@ module ScoreFixer {
     }
 
     // Gives the game in progress to a player by logging plain points for
-    // that player until it closes. False when the match is already over.
-    function awardGame(engine as MatchEngine, player as Number, time as Number) as Boolean {
+    // that player until it closes. Each point is handed to the recorder on
+    // its own: the file takes three entries at a time (see PacedSession).
+    // False when the match is already over.
+    function awardGame(engine as MatchEngine, player as Number, time as Number, recorder as MatchRecorder) as Boolean {
         var games = gamesPlayed(engine.state());
         var isLogged = false;
         while (gamesPlayed(engine.state()) == games && engine.point(player, Ending.NONE, time, null)) {
+            recorder.writePointLog(engine.slots());
             isLogged = true;
         }
         return isLogged;

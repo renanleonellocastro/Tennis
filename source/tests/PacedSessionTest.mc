@@ -14,6 +14,14 @@ module PacedSessionTests {
         function initialize() {
             paced = new PacedSession(session, alarm);
         }
+
+        // Hands over the point log field once for each entry, as a game
+        // given by the fix of the score does.
+        function log(first as Number, last as Number) as Void {
+            for (var sequence = first; sequence <= last; sequence++) {
+                paced.setField(RecordingFields.POINT_LOG, [sequence, 0, 0, 0, 0, 0, 0, 0, 0] as Array<Number>);
+            }
+        }
     }
 
     // Counts how often the alarm called, and can ask for one more ring.
@@ -127,6 +135,116 @@ module PacedSessionTests {
         bench.alarm.pass();
         bench.alarm.pass();
         Test.assertEqual(bench.session.records.toString(), "[1, 2]");
+        return true;
+    }
+
+    // The field holds three entries: seven entries logged at once reach
+    // the file in three values, each one wait after the other.
+    (:test)
+    function testEntriesLoggedAtOnceReachTheFileThreeAtATime(logger as Test.Logger) as Boolean {
+        var bench = new Bench();
+        bench.log(1, 7);
+        Test.assertEqual(bench.session.written.toString(), "[1]");
+        bench.alarm.pass();
+        Test.assertEqual(bench.session.written.toString(), "[1, 4]");
+        bench.alarm.pass();
+        Test.assertEqual(bench.session.written.toString(), "[1, 4, 7]");
+        bench.alarm.pass();
+        Test.assert(!bench.alarm.isWaiting());
+        return true;
+    }
+
+    (:test)
+    function testAnEntryInsideTheWaitReplacesNothingTheFileMisses(logger as Test.Logger) as Boolean {
+        var bench = new Bench();
+        bench.log(1, 1);
+        bench.alarm.pass();
+        bench.log(2, 3);
+        Test.assertEqual(bench.session.written.toString(), "[1, 2]");
+        bench.alarm.pass();
+        Test.assertEqual(bench.session.written.toString(), "[1, 2, 3]");
+        return true;
+    }
+
+    (:test)
+    function testAnUndoDropsTheWaitingValuesItRemoves(logger as Test.Logger) as Boolean {
+        var bench = new Bench();
+        bench.log(1, 7);
+        bench.log(2, 2);
+        bench.alarm.pass();
+        Test.assertEqual(bench.session.written.toString(), "[1, 2]");
+        bench.log(3, 5);
+        bench.alarm.pass();
+        Test.assertEqual(bench.session.written.toString(), "[1, 2, 5]");
+        return true;
+    }
+
+    (:test)
+    function testAnUndoBelowWhatTheFileHasIsWrittenInItsTurn(logger as Test.Logger) as Boolean {
+        var bench = new Bench();
+        bench.log(1, 5);
+        bench.alarm.pass();
+        bench.log(2, 2);
+        bench.log(3, 6);
+        bench.alarm.pass();
+        bench.alarm.pass();
+        Test.assertEqual(bench.session.written.toString(), "[1, 4, 5, 6]");
+        return true;
+    }
+
+    // The record of the stop carries the last value, so the stop follows
+    // it at once, and only after every value had its wait.
+    (:test)
+    function testStopWaitsForTheValuesAndFollowsTheLastAtOnce(logger as Test.Logger) as Boolean {
+        var bench = new Bench();
+        bench.paced.start();
+        bench.alarm.pass();
+        bench.log(1, 5);
+        bench.paced.stop();
+        bench.paced.save();
+        Test.assertEqual(bench.session.calls, "s");
+        bench.alarm.pass();
+        Test.assertEqual(bench.session.calls, "s");
+        bench.alarm.pass();
+        Test.assertEqual(bench.session.calls, "sp");
+        Test.assertEqual(bench.session.records.toString(), "[0, 5]");
+        Test.assertEqual(bench.session.written.toString(), "[1, 4, 5]");
+        bench.alarm.pass();
+        Test.assertEqual(bench.session.calls, "spS");
+        return true;
+    }
+
+    (:test)
+    function testDiscardDropsTheValuesThatWait(logger as Test.Logger) as Boolean {
+        var bench = new Bench();
+        bench.log(1, 7);
+        bench.paced.discard();
+        bench.alarm.pass();
+        Test.assertEqual(bench.session.written.toString(), "[1]");
+        Test.assert(!bench.alarm.isWaiting());
+        return true;
+    }
+
+    // A game given from 0-0 logs four points at once. No value of the
+    // field may be more than three entries ahead of the one before.
+    (:test)
+    function testAGameGivenByTheFixReachesTheFileWhole(logger as Test.Logger) as Boolean {
+        var bench = new Bench();
+        var match = new MatchBench(MatchFormat.TIE_BREAK_ONLY, false);
+        match.session = bench.session;
+        var recorder = new MatchRecorder(bench.paced, match.sensors, match.locator);
+        var controller = new MatchController(match.engine, match.setupOf(MatchFormat.TIE_BREAK_ONLY, false),
+                                             match.time, recorder, match.store);
+        controller.awardGame(Player.OPPONENT);
+        while (bench.alarm.isWaiting()) {
+            bench.alarm.pass();
+        }
+        var written = bench.session.written;
+        Test.assertEqual(written[written.size() - 1], match.engine.log().size());
+        for (var i = 1; i < written.size(); i++) {
+            Test.assert(written[i] - written[i - 1] <= PointSlot.SLOTS);
+        }
+        Test.assert(written[0] <= PointSlot.SLOTS);
         return true;
     }
 

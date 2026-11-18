@@ -6,7 +6,13 @@ and the project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-Nothing yet.
+### Fixed
+
+* A game given by "Fix the score" logs four points or more at once, but
+  the activity file takes three entries per record: the oldest of them
+  never reached the file, and the converter stopped the replay there. The
+  point log field is now paced, so those entries reach the file three at
+  a time.
 
 ## [1.0.0] - not released yet
 

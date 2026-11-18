@@ -89,6 +89,12 @@ What the simulator showed, and what the code does about it:
   wait runs on one timer (`WatchAlarm`, owned by the app). The goodbye
   screen stays up while a save waits, and when the app closes anyway
   whatever waits is done at once.
+* The point log field is paced by the same wait. It holds three entries,
+  and a game given by "Fix the score" logs four points or more at once.
+  `ScoreFixer` hands each point to the recorder, and `PacedSession` keeps
+  every value of the field for 1.5 seconds before the next one replaces
+  it. Values that wait are merged, so the file gets the entries three at
+  a time. A stop waits for the last value and follows it at once.
 * An undo writes the field again with a lower newest sequence number; the
   converter drops the undone entries.
 

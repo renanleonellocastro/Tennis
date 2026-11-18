@@ -3,6 +3,10 @@ import Toybox.Test;
 
 // Tests for cutting the log back and for the corrections of fix the score.
 module ScoreFixerTests {
+    function recorder() as MatchRecorder {
+        return new MatchRecorder(new FakeSession(), new FakeSensors(), new FakeLocator());
+    }
+
     (:test)
     function testTruncateCutsTheLogAndReplays(logger as Test.Logger) as Boolean {
         var match = newMatch(MatchFormat.BEST_OF_3);
@@ -76,11 +80,11 @@ module ScoreFixerTests {
     function testAwardGameLogsPointsUntilTheGameCloses(logger as Test.Logger) as Boolean {
         var match = newMatch(MatchFormat.BEST_OF_3);
         match.play("OOO");
-        Test.assert(ScoreFixer.awardGame(match.engine, Player.ME, 70));
+        Test.assert(ScoreFixer.awardGame(match.engine, Player.ME, 70, recorder()));
         Test.assertEqual(match.score(), "0-0 1-0 0-0");
         Test.assertEqual(match.engine.log().size(), 8);
         Test.assertEqual(PointEntry.time(match.engine.log().at(7)), 70);
-        Test.assert(ScoreFixer.awardGame(match.engine, Player.OPPONENT, 80));
+        Test.assert(ScoreFixer.awardGame(match.engine, Player.OPPONENT, 80, recorder()));
         Test.assertEqual(match.score(), "0-0 1-1 0-0");
         return true;
     }
@@ -89,7 +93,7 @@ module ScoreFixerTests {
     function testAwardGameClosesATieBreakAndTheSet(logger as Test.Logger) as Boolean {
         var match = matchAtSixAll(MatchFormat.BEST_OF_3);
         match.play("OOO");
-        Test.assert(ScoreFixer.awardGame(match.engine, Player.ME, 0));
+        Test.assert(ScoreFixer.awardGame(match.engine, Player.ME, 0, recorder()));
         Test.assertEqual(match.score(), "1-0 0-0 0-0");
         Test.assertEqual(match.state().setTieBreakPoints(0, Player.ME), 7);
         return true;
@@ -99,10 +103,10 @@ module ScoreFixerTests {
     function testAwardGameCanEndTheMatchAndThenRefuses(logger as Test.Logger) as Boolean {
         var match = newMatch(MatchFormat.ONE_SET);
         match.games("MMMMM");
-        Test.assert(ScoreFixer.awardGame(match.engine, Player.ME, 0));
+        Test.assert(ScoreFixer.awardGame(match.engine, Player.ME, 0, recorder()));
         Test.assert(match.state().isFinished());
         var size = match.engine.log().size();
-        Test.assert(!ScoreFixer.awardGame(match.engine, Player.ME, 0));
+        Test.assert(!ScoreFixer.awardGame(match.engine, Player.ME, 0, recorder()));
         Test.assertEqual(match.engine.log().size(), size);
         return true;
     }
