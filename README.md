@@ -9,27 +9,24 @@ and calories, and finish with a full statistics report of your game.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-ffaa00.svg)](LICENSE)
 [![Connect IQ](https://img.shields.io/badge/Connect%20IQ-watch%20app-ff8800)](https://developer.garmin.com/connect-iq/)
-[![Status](https://img.shields.io/badge/status-in%20development-ff5500)](#status)
+[![Status](https://img.shields.io/badge/status-release%20candidate-ff5500)](#-status)
 
 </div>
 
 ## 🚧 Status
 
-This project is in development. Nothing is released or published yet.
+Version 1.0.0 is built and ready for its release steps. It is not published
+yet: no version tag, no GitHub release and no store entry exist.
 
-* **Built**: the scoring engine with every match format, the match setup,
-  the match screen and its controls, simple and detailed point logging,
-  serve faults, undo and score fixes, activity recording (heart rate,
-  calories, steps, distance, optional GPS, one lap per set), resume of an
-  interrupted match, and the export converter.
-* **In progress**: the report on the watch and the match tags, the point
-  log inside the activity file, and practice mode.
-* **Still to do**: the test pass on real watches, store assets and the
-  release.
-
-The list below is what version 1 is planned to do, as agreed in
-[docs/PLAN.md](docs/PLAN.md). The [user guide](docs/USER_GUIDE.md) marks
-what is not built yet.
+* **Built and tested on the simulator**: everything in the feature list
+  below, in six languages, compiled for the 80 watch models of
+  `manifest.xml`.
+* **Still to do, by the owner**: the test pass on a real watch, the store
+  entry and the release itself. The steps are in
+  [docs/RELEASE_CHECKLIST.md](docs/RELEASE_CHECKLIST.md).
+* **Not verified yet**: anything that needs a real watch, such as the real
+  buttons and touch, the vibration, the heart rate, steps and GPS values,
+  and how Garmin Connect shows the activity.
 
 ## ✨ Features of version 1
 
@@ -53,8 +50,11 @@ what is not built yet.
   be resumed.
 * ❤️ **Activity recording**: a Tennis activity in Garmin Connect with heart
   rate, calories, steps, distance, optional GPS and one lap per set.
-* 📊 **End of match report**: serve, return, point and pressure numbers and
-  times, for both players, on the watch and as fields in Garmin Connect.
+* 📊 **End of match report**: score, serve, point endings, pressure, time
+  and body pages for both players on the watch. The same numbers are stored
+  in the activity file for the export.
+* 🏷 **Match tags**: surface (clay, hard, grass) and type (match or
+  friendly), chosen when you save.
 * 📤 **Open data**: every point stored in the activity file, with a free
   converter to CSV and JSON and an approximate court heat map.
 * ⌚ **80 watch models** and 🌍 **6 languages** (English, Portuguese,
@@ -66,6 +66,8 @@ what is not built yet.
   each kind of watch, the report and the export.
 * [Store listing](docs/STORE_LISTING.md): the Connect IQ store texts in the
   six languages, ready for the day the app is published.
+* [Release checklist](docs/RELEASE_CHECKLIST.md): what is left for the
+  owner before and during publishing.
 * [Plan](docs/PLAN.md): the agreed requirements, decisions and milestones.
 
 ## 👨‍👩‍👧 Same family as Stretches
@@ -126,10 +128,13 @@ It writes into the chosen directory:
 * `heatmap.png`: only when the activity has a GPS track. An approximate
   picture of where you moved on the court.
 
-The watch app does not write the match data into the activity file yet, so
-for now the converter is proven only against files built by its own tests.
-The fields, the columns and the limits of the heat map are described in
-[docs/DATA_FORMAT.md](docs/DATA_FORMAT.md).
+A practice gives `blocks.csv` (one row for each block) and `practice.json`
+instead.
+
+The watch writes every point into the activity file. This was proven with
+files recorded by the Connect IQ simulator, not yet with a file from a real
+watch. The fields, the columns and the limits of the heat map are described
+in [docs/DATA_FORMAT.md](docs/DATA_FORMAT.md).
 
 ## 🤝 Contributing
 

@@ -6,8 +6,8 @@ in the six languages of the app: English, Portuguese, Spanish, French, German
 and Italian.
 
 The app is **not published yet**. This listing describes version 1.0.0 as
-agreed in [PLAN.md](PLAN.md). Every statement that still depends on work in
-progress or on a test with a real watch is in
+it is built. Every statement that still depends on a test with a real watch
+or on a decision of the owner is in
 [To confirm before release](#to-confirm-before-release).
 
 ## Rules for every text
@@ -45,10 +45,12 @@ The three permissions of `manifest.xml` and why each one is needed.
 
 * **Fit**: records the match or the practice as an activity (Tennis sport),
   with the heart rate, calories and time that the watch measures.
-* **FitContributor**: adds the data of the app to that activity. Today:
-  steps and distance, for the activity and for each set. Planned for
-  version 1: set scores, final score, statistics, match setup with tags and
-  the point log.
+* **FitContributor**: adds the data of the app to that activity: steps and
+  distance for the activity and for each set, set scores, final score,
+  statistics, match setup with tags and the point log. A practice gets the
+  hits and misses of each block instead. Only steps, distance, hits and
+  misses carry a label, so those are the ones Garmin Connect can show; the
+  others are read by the export converter.
 * **Positioning**: turns the GPS on only when the player switches GPS on in
   the match setup. The watch adds the track to the activity. The app itself
   does not read or keep the positions.
@@ -97,7 +99,7 @@ WHAT YOU CAN DO
 * Undo the last entry with one press, or fix the score from the menu.
 * Pause, end, save or discard. A match interrupted when the app closes can be resumed.
 * Study your game after the match: aces, double faults, first serve percentage, points won on first and on second serve, break points won and saved, winners, errors, longest run of points and more, for both players.
-* Find it in Garmin Connect as a Tennis activity, with one lap per set and the main statistics.
+* Find it in Garmin Connect as a Tennis activity, with one lap per set, plus your steps and distance.
 * Tag the match when you save it: clay, hard or grass, match or friendly.
 * Practice mode: record a training session and count hits and misses in blocks, with the success rate of each block.
 * Optional GPS on watches that have it.
@@ -162,8 +164,8 @@ O QUE VOCÊ PODE FAZER
 * Desfazer o último lançamento com um aperto ou corrigir o placar pelo menu.
 * Pausar, encerrar, salvar ou descartar. Uma partida interrompida quando o app fecha pode ser retomada.
 * Estudar o seu jogo depois da partida: aces, duplas faltas, percentual de primeiro saque, pontos ganhos com o primeiro e com o segundo saque, break points ganhos e salvos, winners, erros, maior sequência de pontos e mais, para os dois jogadores.
-* Encontrar tudo no Garmin Connect como uma atividade de Tênis, com uma volta por set e as principais estatísticas.
-* Classificar a partida ao salvar: saibro, quadra dura ou grama, partida oficial ou amistoso.
+* Encontrar tudo no Garmin Connect como uma atividade de Tênis, com uma volta por set, além dos passos e da distância.
+* Classificar a partida ao salvar: saibro, dura ou grama, partida ou amistoso.
 * Modo treino: grave uma sessão e conte acertos e erros em blocos, com o aproveitamento de cada bloco.
 * GPS opcional nos relógios que têm GPS.
 * Seis idiomas, de acordo com o idioma do relógio: inglês, português, espanhol, francês, alemão e italiano.
@@ -171,7 +173,7 @@ O QUE VOCÊ PODE FAZER
 CONTROLES
 * UP: ponto para mim. DOWN: ponto para o adversário.
 * START: falta de saque. BACK: desfazer.
-* Segurar UP: menu com Pausar, Corrigir placar e Encerrar partida.
+* Segurar UP: menu com Pausar, Corrigir placar e Encerrar.
 * Telas de toque: toque na metade esquerda para o seu ponto e na metade direita para o ponto do adversário. Relógios sem os botões UP e DOWN mostram os botões MENU e FALTA na tela.
 
 SEUS DADOS SÃO SEUS
@@ -227,8 +229,8 @@ LO QUE PUEDES HACER
 * Deshacer la última anotación con una pulsación o corregir el marcador desde el menú.
 * Pausar, terminar, guardar o descartar. Un partido interrumpido al cerrarse la app se puede reanudar.
 * Estudiar tu juego después del partido: aces, dobles faltas, porcentaje de primer saque, puntos ganados con el primer y con el segundo saque, puntos de break ganados y salvados, winners, errores, mayor racha de puntos y más, para los dos jugadores.
-* Encontrarlo en Garmin Connect como una actividad de Tenis, con una vuelta por set y las estadísticas principales.
-* Etiquetar el partido al guardarlo: tierra batida, pista dura o hierba, partido oficial o amistoso.
+* Encontrarlo en Garmin Connect como una actividad de Tenis, con una vuelta por set, además de los pasos y la distancia.
+* Etiquetar el partido al guardarlo: tierra, dura o hierba, partido o amistoso.
 * Modo práctica: graba una sesión y cuenta aciertos y fallos por bloques, con el porcentaje de acierto de cada bloque.
 * GPS opcional en los relojes que lo tienen.
 * Seis idiomas, según el idioma de tu reloj: inglés, portugués, español, francés, alemán e italiano.
@@ -236,7 +238,7 @@ LO QUE PUEDES HACER
 CONTROLES
 * UP: punto para mí. DOWN: punto para el rival.
 * START: falta de saque. BACK: deshacer.
-* Mantener pulsado UP: menú con Pausar, Corregir marcador y Terminar partido.
+* Mantener pulsado UP: menú con Pausar, Corregir y Terminar.
 * Pantallas táctiles: toca la mitad izquierda para tu punto y la mitad derecha para el punto del rival. Los relojes sin botones UP y DOWN muestran los botones MENÚ y FALTA en la pantalla.
 
 TUS DATOS SON TUYOS
@@ -292,8 +294,8 @@ CE QUE VOUS POUVEZ FAIRE
 * Annuler la dernière saisie d'une pression ou corriger le score depuis le menu.
 * Mettre en pause, terminer, enregistrer ou supprimer. Un match interrompu à la fermeture de l'application peut être repris.
 * Analyser votre jeu après le match : aces, doubles fautes, pourcentage de premières balles, points gagnés sur première et sur seconde balle, balles de break gagnées et sauvées, coups gagnants, fautes, plus longue série de points et plus encore, pour les deux joueurs.
-* Retrouver le match dans Garmin Connect comme une activité Tennis, avec un tour par set et les principales statistiques.
-* Classer le match à l'enregistrement : terre battue, dur ou gazon, match officiel ou amical.
+* Retrouver le match dans Garmin Connect comme une activité Tennis, avec un tour par set, ainsi que vos pas et la distance.
+* Classer le match à l'enregistrement : terre battue, dur ou gazon, match ou amical.
 * Mode entraînement : enregistrez une séance et comptez les coups réussis et manqués par blocs, avec le taux de réussite de chaque bloc.
 * GPS en option sur les montres qui en ont un.
 * Six langues, selon la langue de votre montre : anglais, portugais, espagnol, français, allemand et italien.
@@ -301,7 +303,7 @@ CE QUE VOUS POUVEZ FAIRE
 COMMANDES
 * UP : point pour moi. DOWN : point pour l'adversaire.
 * START : faute de service. BACK : annuler.
-* Appui long sur UP : menu avec Pause, Corriger le score et Terminer le match.
+* Appui long sur UP : menu avec Pause, Corriger score et Terminer.
 * Écrans tactiles : touchez la moitié gauche pour votre point et la moitié droite pour le point de l'adversaire. Les montres sans boutons UP et DOWN affichent les boutons MENU et FAUTE à l'écran.
 
 VOS DONNÉES VOUS APPARTIENNENT
@@ -357,8 +359,8 @@ DAS KANNST DU TUN
 * Den letzten Eintrag mit einem Tastendruck zurücknehmen oder den Spielstand im Menü korrigieren.
 * Pausieren, beenden, speichern oder verwerfen. Ein Match, das beim Schließen der App unterbrochen wurde, lässt sich fortsetzen.
 * Dein Spiel nach dem Match auswerten: Asse, Doppelfehler, Quote des ersten Aufschlags, gewonnene Punkte nach dem ersten und nach dem zweiten Aufschlag, genutzte und abgewehrte Breakbälle, Winner, Fehler, längste Punkteserie und mehr, für beide Spieler.
-* Alles in Garmin Connect als Tennisaktivität wiederfinden, mit einer Runde pro Satz und den wichtigsten Statistiken.
-* Das Match beim Speichern einordnen: Sand, Hartplatz oder Rasen, Wettkampf oder Freundschaftsspiel.
+* Alles in Garmin Connect als Tennisaktivität wiederfinden, mit einer Runde pro Satz sowie Schritten und Distanz.
+* Das Match beim Speichern einordnen: Sand, Hartplatz oder Rasen, Match oder Freundschaftsspiel.
 * Trainingsmodus: Zeichne eine Einheit auf und zähle Treffer und Fehler in Blöcken, mit der Trefferquote jedes Blocks.
 * GPS zum Zuschalten auf Uhren, die GPS haben.
 * Sechs Sprachen, passend zur Sprache deiner Uhr: Englisch, Portugiesisch, Spanisch, Französisch, Deutsch und Italienisch.
@@ -366,7 +368,7 @@ DAS KANNST DU TUN
 BEDIENUNG
 * UP: Punkt für mich. DOWN: Punkt für den Gegner.
 * START: Aufschlagfehler. BACK: zurücknehmen.
-* UP gedrückt halten: Menü mit Pause, Spielstand korrigieren und Match beenden.
+* UP gedrückt halten: Menü mit Pause, Korrigieren und Match beenden.
 * Touchscreens: Tippe auf die linke Hälfte für deinen Punkt und auf die rechte Hälfte für den Punkt des Gegners. Uhren ohne die Tasten UP und DOWN zeigen die Schaltflächen MENÜ und FEHLER auf dem Bildschirm.
 
 DEINE DATEN GEHÖREN DIR
@@ -422,8 +424,8 @@ COSA PUOI FARE
 * Annullare l'ultima voce con una pressione o correggere il punteggio dal menu.
 * Mettere in pausa, terminare, salvare o eliminare. Una partita interrotta alla chiusura dell'app si può riprendere.
 * Studiare il tuo gioco dopo la partita: ace, doppi falli, percentuale di prime di servizio, punti vinti con la prima e con la seconda, palle break vinte e salvate, vincenti, errori, serie di punti più lunga e altro ancora, per entrambi i giocatori.
-* Ritrovare tutto in Garmin Connect come attività Tennis, con un giro per set e le statistiche principali.
-* Classificare la partita al salvataggio: terra, cemento o erba, partita ufficiale o amichevole.
+* Ritrovare tutto in Garmin Connect come attività Tennis, con un giro per set, più i passi e la distanza.
+* Classificare la partita al salvataggio: terra, cemento o erba, partita o amichevole.
 * Modalità allenamento: registra una sessione e conta colpi riusciti ed errori a blocchi, con la percentuale di riuscita di ogni blocco.
 * GPS opzionale sugli orologi che lo hanno.
 * Sei lingue, in base alla lingua dell'orologio: inglese, portoghese, spagnolo, francese, tedesco e italiano.
@@ -431,7 +433,7 @@ COSA PUOI FARE
 COMANDI
 * UP: punto per me. DOWN: punto per l'avversario.
 * START: fallo di servizio. BACK: annulla.
-* Tenere premuto UP: menu con Pausa, Correggi punteggio e Termina partita.
+* Tenere premuto UP: menu con Pausa, Correggi punti e Termina partita.
 * Schermi touch: tocca la metà sinistra per il tuo punto e la metà destra per il punto dell'avversario. Gli orologi senza i tasti UP e DOWN mostrano i pulsanti MENU e FALLO sullo schermo.
 
 I TUOI DATI SONO TUOI
@@ -457,32 +459,32 @@ Gratuita e open source, con licenza MIT.
 Prima versione: punteggio dal vivo in cinque formati di partita, registrazione semplice o dettagliata dei punti, falli di servizio con un solo tasto, rapporto con le statistiche dopo la partita, attività Tennis in Garmin Connect con un giro per set, modalità allenamento, esportazione aperta dei dati, sei lingue e 80 orologi.
 ```
 
-## Screenshots to capture
+## Screenshots
 
-None exists yet. Capture them on the Forerunner 55 simulator (the reference
-device) once every screen is built, and save them under
-`docs/images/screenshots/`. Upload them in this order, so the preview tells
-the whole story:
+Taken on the Forerunner 55 simulator (the reference device) from the real
+screens of the app, in English, and saved under `docs/images/screenshots/`.
+The simulator gives no heart rate, so the match screens show the clock
+alone. Upload them in this order, so the preview tells the whole story:
 
-1. Match screen in the middle of a game: set score on top, large game
-   points, serve ball, mini court, heart rate and clock.
-2. Match screen with a BREAK POINT label and the second serve mark on the
-   ball.
-3. Match setup: Format, No advantage, Point detail, First serve, GPS, Start.
-4. Detailed mode: the list that asks how the point ended.
-5. The Change ends notice.
-6. Final score with You won, the sets and the time played.
-7. One page of the watch report (serve numbers).
-8. Practice mode with a block in progress.
-9. Home screen.
-10. A touch watch without UP and DOWN buttons (for example the Venu 2):
-    match screen with the MENU and FAULT buttons.
+1. `match.png`: match screen in the middle of a game, with the set score
+   on top, large game points, serve ball, mini court and clock.
+2. `break-point.png`: match screen with the BREAK POINT label.
+3. `setup.png`: match setup, on the Format row.
+4. `ending.png`: detailed mode, the list that asks how the point ended.
+5. `final.png`: final score with You won, the sets and the time played.
+6. `report.png`: the SERVE page of the statistics.
+7. `practice.png`: practice mode with a block in progress.
+8. `home.png`: home screen.
+9. `touch.png`: the match screen on a Venu 2, a touch watch without UP and
+   DOWN buttons, with the MENU and FAULT buttons.
 
 Other assets, following Stretches:
 
-* App icon: built per device from `resources/drawables/launcher_icon.png`.
-* Hero image: a marketing graphic, `docs/images/store-hero.png` (not made
-  yet).
+* App icon: built per device from the 80 by 80 pixel
+  `resources/drawables/launcher_icon.png`. The compiler scales it to the
+  size each watch asks for (30 to 70 pixels over the 80 devices); the ball
+  and its seams stay readable at every one of those sizes.
+* Hero image: a marketing graphic, optional. None was made.
 
 ## Support and metadata
 
@@ -492,37 +494,27 @@ Other assets, following Stretches:
 
 ## To confirm before release
 
-Every item below must be checked, and the texts above corrected where the
-app ends up different.
+Everything else in this listing was checked against the code, the tests or
+a simulator run. These items need a real watch or the owner; the steps are
+in [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md). Correct the texts above
+where the watch ends up different.
 
-1. **Watch report (M5, in progress).** The description promises a statistics
-   report on the watch after the match. Confirm the pages and the list of
-   statistics named in the text.
-2. **Match tags (M5, in progress).** Surface (clay, hard, grass) and match
-   or friendly, chosen when saving. Confirm the option names in each
-   language against the strings of the app.
-3. **Statistics in Garmin Connect (M5, in progress).** Today only steps and
-   distance are written as extra fields. "The main statistics" depends on
-   M5 and on how Garmin Connect shows them.
-4. **Point log in the activity file.** The "Your data is yours" section
-   and the FitContributor line depend on it. Confirmed on the simulator
-   (Forerunner 55): scripted matches, one of them closed and resumed, were
-   converted and matched the script point by point. Still to confirm with
-   a file of a real watch.
-5. **Practice mode on a real watch.** Counters, blocks and the success
-   rate per block work on the simulator; nothing ran on a real watch.
-6. **Controls on real watches.** Hold UP for the menu, taps on touch
-   screens, the MENU and FAULT buttons on watches without UP and DOWN
-   buttons, and the vibration at the change of ends need the watch pass of
-   `docs/TESTING.md`.
-7. **All 80 devices.** The Tennis sport type, steps and the hidden GPS
-   switch on watches without GPS are open checks of the plan.
-8. **Version.** The About text of the app still says 0.1.0. It must read
-   1.0.0 before this listing is used.
-9. **Dashboard limits.** Only the 140 character limit of the short
+1. **Real watch.** Nothing ran on a real watch: the buttons (hold UP for
+   the menu), taps, the MENU and FAULT buttons on watches without UP and
+   DOWN, the vibration at the change of ends, heart rate, steps, distance
+   and GPS.
+2. **Point log from a real watch.** The "Your data is yours" section
+   depends on it. On the simulator, scripted matches, one of them closed
+   and resumed and one reopened and finished again, were converted and
+   matched the script point by point. A file of a real watch, also with
+   Smart Recording, is still to be converted.
+3. **Garmin Connect.** How the Tennis activity, the laps, Steps, Distance,
+   Hits and Misses look in Garmin Connect was not seen.
+4. **Dashboard limits.** Only the 140 character limit of the short
    description is known from Stretches. Check the limits of the app name,
    the full description and the tags on the dashboard, and the category
    list.
-10. **App name.** The watch shows "Tennis" ("Tênis" in Portuguese, "Tenis"
-    in Spanish). The longer store name is a proposal.
-11. **Screenshots and hero image.** Not captured yet.
+5. **App name.** The watch shows "Tennis" ("Tênis" in Portuguese, "Tenis"
+   in Spanish). The longer store name is a proposal.
+6. **Translations.** The five translations of the app and of this listing
+   were not reviewed by native speakers.

@@ -6,9 +6,14 @@ and the project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-Nothing is released or published yet. This section lists what milestones M0
-to M7 of [docs/PLAN.md](docs/PLAN.md) delivered; it becomes the first
-version when M8 (release) is done.
+Nothing yet.
+
+## [1.0.0] - not released yet
+
+The first version. It is built and checked on the simulator, but it has no
+tag, no GitHub release and no store entry yet: the date goes here on the day
+it is tagged. What is left is in
+[docs/RELEASE_CHECKLIST.md](docs/RELEASE_CHECKLIST.md).
 
 ### Added
 
@@ -38,16 +43,22 @@ version when M8 (release) is done.
   file and writes `match.json`, `points.csv` when the file carries a point
   log and, with a GPS track, an approximate court heat map. It joins the
   activity files of a resumed match into one export. The data format is
-  documented in [docs/DATA_FORMAT.md](docs/DATA_FORMAT.md). The watch does
-  not write the point log to the activity file yet, so today an export has
-  the summary and the laps but no point by point data.
+  documented in [docs/DATA_FORMAT.md](docs/DATA_FORMAT.md).
+* **Point log in the activity file** (M6): the watch writes every point and
+  fault into the activity file, so an export has the match point by point.
+  Proven with files recorded by the simulator.
 * **Practice mode** (M7): hit and miss counters by block, one lap per block
   with its counters, a summary on the watch, save or discard, and the
   export of a practice as `blocks.csv` and `practice.json`.
-* **Documentation**: user guide, store listing draft in six languages,
-  recording notes, testing strategy and quality bar.
+* **Documentation**: user guide, store listing in six languages, release
+  checklist, recording notes, testing strategy and quality bar.
+* **Store assets** (M8): simulator screenshots of the real screens under
+  `docs/images/screenshots/`.
 * `make build-all`: compiles the app for every device in `manifest.xml` and
   reports each device on its own.
+* `make build BUILD_OPTIONS=-r`: the release build for a watch plugged in
+  by cable. On the simulator it takes about 15 kB less memory than the
+  default debug build (`docs/TESTING.md`, Memory).
 
 ### Changed
 
@@ -56,3 +67,25 @@ version when M8 (release) is done.
   Forerunner 55).
 * A match and a practice each write only their own developer fields to the
   activity file.
+* Every menu carries the app name as its title. The longer titles wrapped
+  and were cut on the small round screens.
+* Shorter texts for menu rows and report labels in the six languages, so
+  none is cut on the Forerunner 55. The match tie break format reads
+  "2 sets + tie break".
+* Shorter report labels in German, Spanish, Italian and Portuguese (game
+  times, key points heart rate, service games held, break points saved,
+  first serve in): on the Venu Sq 2 the longer ones touched or ran into
+  the number on the same line.
+* On a screen that is not round, the labels, the touch buttons and the clock
+  of the match and practice screens sit further apart, and the title of the
+  practice summary sits below the brand arc.
+* A message screen breaks its text one character earlier, so the about
+  text takes two lines and stays inside the frame ring of a rectangular
+  screen.
+* The release workflow compiles every device on its own before packaging.
+
+### Fixed
+
+* A finished match that was reopened with BACK and finished again within
+  about a second lost its last entry in the activity file. The watch now
+  waits for the last record before it stops and saves.

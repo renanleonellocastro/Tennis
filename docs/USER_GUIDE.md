@@ -3,10 +3,9 @@
 How to record a tennis match or a practice with the Tennis app on a Garmin
 watch, and how to read the result afterwards.
 
-The app is in development and is not published yet. This guide describes
-version 1.0.0 as agreed in [PLAN.md](PLAN.md). The parts that are not built
-or not yet tested on a real watch are marked **(planned)** and listed in
-[To confirm before release](#to-confirm-before-release).
+The app is not published yet. This guide describes version 1.0.0 as it is
+built. It was checked on the Connect IQ simulator; what still needs a real
+watch is listed in [To confirm before release](#to-confirm-before-release).
 
 Names in **bold** are what the watch shows in English. The app follows the
 language of the watch: English, Portuguese, Spanish, French, German or
@@ -82,7 +81,7 @@ selected, so the next match with the same setup is one press away.
 | Format | How it is played |
 |---|---|
 | **Best of 3 sets** | Sets to 6 games, with a tie break to 7 points at 6 games all |
-| **2 sets + 10 point tie break** | The same, but a tie break to 10 points replaces the third set |
+| **2 sets + tie break** | The same, but a tie break to 10 points replaces the third set |
 | **1 set** | One set to 6 games, with a tie break to 7 points at 6 games all |
 | **Pro set to 8** | One set to 8 games, with a tie break to 7 points at 8 games all |
 | **Tie break only** | One tie break to 10 points |
@@ -125,12 +124,12 @@ named **Point** asks how the point ended:
 
 * **Winner**: a ball the other player could not reach.
 * **Ace**: offered only when the player who won the point was serving.
-* **Error in the net**
-* **Error out**
+* **Net error**
+* **Out error**
 
 Under each choice the list shows who hit that last ball, **Me** or
-**Opponent**. For example, if you won the point, **Error out** is the
-opponent's error. The list opens on **Error out**, the most common ending,
+**Opponent**. For example, if you won the point, **Out error** is the
+opponent's error. The list opens on **Out error**, the most common ending,
 so that case is two presses. BACK on the list cancels the point and nothing
 is logged.
 
@@ -156,7 +155,7 @@ that it was played on a second serve.
   the score went wrong some time ago:
   * **Undo game** removes the game in progress, or the game before it when
     the current game has no point yet.
-  * **Game for me** and **Game for opponent** give the game in progress to
+  * **Game for me** and **Game for opp.** give the game in progress to
     that player.
 
 The score, the server, the sides and the statistics are always worked out
@@ -176,14 +175,16 @@ When the last point of the match is played, or after **End match**, the
 final score screen shows **You won**, **You lost** or **Match ended**, with
 the sets and the time played.
 
-* Press START (or tap) and choose **Save** or **Discard**. Discard asks
-  **Discard the activity?** first. The watch confirms with **Saved!** or
-  **Discarded**.
+* Press START (or tap) and choose **Save**, **Statistics** or **Discard**.
+  Discard asks **Discard the activity?** first. The watch confirms with
+  **Saved!** or **Discarded**.
+* **Save** first shows two tags: **Surface** (**Not set**, **Clay**,
+  **Hard**, **Grass**) and **Type** (**Not set**, **Match**, **Friendly**).
+  Selecting a tag moves it to its next option. The list opens on **Save**
+  and remembers your last tags, so saving with the same tags is two
+  presses.
 * Press BACK to return to the match, for example when the last point was
   entered by mistake. If the match was decided, that last point is removed.
-
-**(planned)** When you save, the app also asks for two tags: the surface
-(clay, hard or grass) and whether it was a match or a friendly.
 
 The watch keeps no history of matches. Saved matches live in Garmin Connect
 and in the export.
@@ -195,13 +196,14 @@ survives the app closing.
 
 * If the app closes during a match, what was recorded so far is saved as an
   activity.
-* The next time you open the app, a menu named **Open match** offers
-  **Resume** or **Discard**. BACK keeps the match for later. Starting a new
+* The next time you open the app, a menu offers **Resume** or
+  **Discard**. BACK keeps the match for later. Starting a new
   match replaces it.
 * **Resume** brings back the score, the server, the sides and the
   statistics exactly. The clock goes on from the time of the last entry.
-* A resumed match is recorded as a **new** activity, so that match has two
-  activities in Garmin Connect, each with its own time, steps and distance.
+* A resumed match is recorded as a **new** activity, so a match that was
+  resumed once has two activities in Garmin Connect, each with its own
+  time, steps and distance. Every further resume adds one more.
 * A first serve fault that was waiting for its second serve comes back. A
   point whose ending you were still choosing in the list is lost.
 * If the watch itself restarts or runs out of battery, the activity of that
@@ -211,24 +213,27 @@ survives the app closing.
 
 ## The report
 
-### On the watch (planned)
+### On the watch
 
-After the match the watch shows pages you can scroll through:
+On the final score screen, press DOWN or swipe up, or choose **Statistics**
+in its menu. A small arrow at the bottom of the final score reminds you.
+DOWN and START go to the next page, UP goes to the previous one and BACK
+returns to the final score. Each page has one column for you and one for
+the opponent:
 
-* The final score, set by set.
-* Serve: aces, double faults, first serve percentage, points won on first
-  and on second serve, service games won.
-* Return: return games won, break points won.
-* Points: winners, errors in the net, errors out, total points won.
-* Pressure: break points won and saved, longest run of points, average
-  heart rate on deciding points.
-* Times: the duration of each set and game, and the average time between
-  points.
-* Heart rate and calories.
+| Page | Rows |
+|---|---|
+| **SCORE** | The games of each set and the total points won |
+| **SERVE** | **1st in**, **1st won**, **2nd won**, **Dbl faults** |
+| **POINTS** | **Aces**, **Winners**, **Net errors**, **Out errors** |
+| **PRESSURE** | **Breaks**, **Saved** (break points saved), **Holds**, **Best run** |
+| **TIME** | **Match**, **Avg game**, **Long game**, **Per point** |
+| **BODY** | **Avg HR**, **Max HR**, **Key pts HR**, **Calories** |
 
-The numbers are shown for both players where the log allows it. Winners,
-aces and the two kinds of error need the **Detailed** point detail. With
-**Simple** the app knows only who won each point.
+The **POINTS** page needs the **Detailed** point detail, so a match logged
+with **Simple** has five pages. A value the watch could not work out, for
+example the heart rate when there was no reading, shows a mark instead of a
+number.
 
 ### In Garmin Connect
 
@@ -238,8 +243,11 @@ A saved match is a Tennis activity with:
 * One lap per set.
 * **Steps** and **Distance** as extra fields, for the whole match and for
   each set.
-* **(planned)** The main statistics as extra fields.
 * The GPS track, when the GPS switch was on.
+
+The set scores, the final score, the statistics, the tags and the point log
+are stored in the same activity file. Garmin Connect does not show them;
+the export below reads them.
 
 ## Exporting your data
 
@@ -264,8 +272,9 @@ The converter prints the files it wrote in the chosen folder. Without
 `--out` they go to a folder named after the file, next to it (for
 `activity.fit`, the folder `activity-export`).
 
-A match that was closed and resumed is saved as two activity files. Give
-both to the converter in one command and it joins them into one result:
+A match that was closed and resumed is saved as two or more activity
+files, one for each part. Give all of them to the converter in one command,
+in any order, and it joins them into one result:
 
    ```
    uv run tennis-export first-half.fit second-half.fit --out my-match
@@ -338,32 +347,24 @@ GPS track.
 
 ## To confirm before release
 
-Every item below must be checked, and this guide corrected where the app
-ends up different.
+Everything in this guide was checked on the Connect IQ simulator with
+scripted input. The items below need a real watch or the owner, and this
+guide must be corrected where the watch behaves differently. The steps are
+in [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md).
 
-1. **Watch report (M5, in progress).** The pages and their order in
-   [The report](#the-report) come from the plan.
-2. **Match tags (M5, in progress).** When the tags are asked and how the
-   options are named.
-3. **Statistics in Garmin Connect (M5, in progress).** Only **Steps** and
-   **Distance** are written as extra fields today.
-4. **Point log in the activity file.** Confirmed on the simulator
-   (Forerunner 55): scripted matches, one of them closed and resumed, were
-   exported with `tennis-export` and matched the script point by point.
-   Still to confirm: the same with a file of a real watch (also with Smart
-   Recording on), and the exact name of the export action in Garmin
-   Connect.
-5. **Practice mode on a real watch.** The section was checked on the
-   simulator only (Forerunner 55, Venu 2, Venu Sq 2), with scripted input
-   instead of real key presses. How Garmin Connect shows the laps of a
-   practice is open.
-6. **Controls on real watches.** Hold UP for the menu, taps, the back swipe
-   and the **MENU** and **FAULT** buttons need the watch pass of
-   [TESTING.md](TESTING.md). The Venu 2 as the example of a two button
-   watch needs a check too.
-7. **Vibration at the change of ends** on a real watch.
-8. **All 80 devices.** The Tennis sport type, steps, and the hidden GPS row
-   on watches without GPS are open checks of the plan.
-9. **Settings.** The menu has a **Settings** entry that shows **Coming
-   soon**. The plan does not define its content, so this guide does not
-   describe it.
+1. **Controls on a real watch.** Real key presses, hold UP for the menu,
+   taps, swipes and the **MENU**, **FAULT** and **NEXT** buttons on a watch
+   without UP and DOWN buttons.
+2. **Vibration at the change of ends.**
+3. **Sensor values.** Heart rate, calories, steps, distance and the GPS
+   track: the simulator gives none or fixed values, so the **BODY** page
+   and those fields were never seen with real numbers.
+4. **Activity file of a real watch.** The point log was proven with files
+   of the simulator only. Confirm it with a real file, also with Smart
+   Recording on, and when a match is saved less than two seconds after its
+   last point.
+5. **Garmin Connect.** How it shows the Tennis activity, the laps, the
+   **Steps** and **Distance** fields and the laps of a practice, and the
+   exact name of its export action.
+6. **Settings.** The menu has a **Settings** entry that shows **Coming
+   soon**. The plan does not define its content.
